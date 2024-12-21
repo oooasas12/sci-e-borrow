@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: #0a0a0a;
+  background: #FAFAFA;
+}
+
+@mixin setFont($fontName) {
+  @font-face {
+    font-family: $fontName;
+    src: url('./fonts/myFontExtraLight.woff2') format('woff2'),
+         url('./fonts/myFontExtraLight.woff') format('woff');
+    font-weight: 200;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: $fontName;
+    src: url('./fonts/myFontLight.woff2') format('woff2'),
+         url('./fonts/myFontLight.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: $fontName;
+    src: url('./fonts/myFontRegular.woff2') format('woff2'),
+         url('./fonts/myFontRegular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: $fontName;
+    src: url('./fonts/myFontMedium.woff2') format('woff2'),
+         url('./fonts/myFontMedium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: $fontName;
+    src: url('./fonts/myFontSemiBold.woff2') format('woff2'),
+         url('./fonts/myFontSemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: $fontName;
+    src: url('./fonts/myFontBold.woff2') format('woff2'),
+         url('./fonts/myFontBold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+  }
+}
+
+body {
+  &.myFonts {
+    @include setFont('myFonts');
+    font-family: 'myFonts', 'Kanit', sans-serif;
+  }
+}
