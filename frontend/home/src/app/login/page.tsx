@@ -11,6 +11,7 @@ export default function Login() {
   const router = useRouter();
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [errorLogin, setErrorLogin] = useState(false)
 
   const handleClick = () => {
     if (username && password) {
@@ -20,6 +21,7 @@ export default function Login() {
       router.push('/report')
     }else {
       console.log("กรุณากรอกข้อมูลให้ครบถ้วน")
+      setErrorLogin(true)
     }
   }
 
@@ -33,21 +35,22 @@ export default function Login() {
                 <img src="/images/600x400.png" className=" rounded-l-lg h-full object-cover" alt="" />
               </div>
               <div className="w-full lg:w-2/3 ">
-                <div className="flex gap-8 flex-col p-8 h-full justify-center">
+                <form action={handleClick} className="flex gap-8 flex-col p-8 h-full justify-center">
                   <div className="flex gap-4 items-center">
                     <img src="/images/logo-sci.png" className=" size-[80px] " alt="" />
-                    <span className="md:text-xl">ระบบยืม-คืนครุภัณฑ์ <br /> คณะวิทยาศาตร์และเทคโนโลยี</span>
+                    <span className="md:text-xl text-font_color">ระบบยืม-คืนครุภัณฑ์ <br /> คณะวิทยาศาตร์และเทคโนโลยี</span>
                   </div>
                   <div className="flex flex-col gap-2 ">
-                    <span className="text-sm">Username</span>
+                    <span className="text-sm text-font_color">Username</span>
                     <input type="text" onChange={event => setUsername(event.target.value)} className=" rounded-lg border-black border hover:bg-gray-50 px-2 h-10 focus:outline-primary_1" />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <span className="text-sm">Password</span>
+                    <span className="text-sm text-font_color">Password</span>
                     <input type="password" onChange={event => setPassword(event.target.value)} className=" rounded-lg border-black border hover:bg-gray-50 px-2 h-10 focus:outline-primary_1" />
+                    <span className="text-xs text-red-500">{errorLogin ? "Username หรือ Password ไม่ถูกต้อง" : ""}</span>
                   </div>
-                  <ButtonPrimary onClick={handleClick} data="เข้าสู่ระบบ" size="medium" className="ml-auto" icon={<FiLogIn />} />
-                </div>
+                  <ButtonPrimary onClick={handleClick} type="submit" data="เข้าสู่ระบบ" size="medium" className="ml-auto" icon={<FiLogIn />} />
+                </form>
               </div>
             </div>
           </div>

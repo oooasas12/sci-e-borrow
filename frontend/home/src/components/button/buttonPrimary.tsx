@@ -10,6 +10,7 @@ type ButtonData = {
     href?: string; // ใช้สำหรับ Link
     className?: string; // รองรับคลาสเพิ่มเติม
     size: 'small' | 'medium' | 'large';
+    type?: 'button' | 'submit';
 };
 
 export const ButtonPrimary = ({
@@ -18,7 +19,8 @@ export const ButtonPrimary = ({
     onClick,
     href,
     className,
-    size
+    size,
+    type = 'button'
 }: ButtonData) => {
     const router = useRouter();
 
@@ -37,6 +39,7 @@ export const ButtonPrimary = ({
                 ${className} 
                 ${size == 'large' ? 'min-h-14' : size == 'medium' ? 'min-h-12' : 'min-h-10' }
             `}
+            type={type}
         >
             {icon && <span>{icon}</span>}
             <span>{data}</span>

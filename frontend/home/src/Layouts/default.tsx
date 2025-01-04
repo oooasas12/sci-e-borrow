@@ -1,3 +1,4 @@
+import Sidebar from "@/components/layouts/sidebar";
 import React from "react";
 
 interface Props {
@@ -9,10 +10,12 @@ interface Props {
 const Layout = ({ children, header, noPadding }: Props) => {
   return (
     <>
-        <div>aaaaaaaaaaaaa</div>
-        <div >
+      <div className="flex lg:flex-row overflow-auto">
+        <Sidebar />
+        <div className=" w-full">
           {children}
         </div>
+      </div>
     </>
   );
 };
