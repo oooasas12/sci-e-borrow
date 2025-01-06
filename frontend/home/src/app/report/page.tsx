@@ -54,6 +54,7 @@ const ReportPage: React.FC = () => {
     const [openDelData, setOpenDelData] = useState(false);
     const [selectGroup, setSelectGroup] = useState<string[]>([]);
     const [selectedEquipment, setSelectedEquipment] = useState('');
+    const [filterEquipment, setFilterEquipment] = useState('');
     const [errorInput, setErrorInput] = useState(false);
     const [editData, setEditData] = useState<Inputs>();
     const [delData, setDelData] = useState({
@@ -63,10 +64,10 @@ const ReportPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [perPage, setPerPage] = useState(10)
 
-    const [group, setGroup] = useState([
+    const group = [
         { id: '1', name: 'test group 1' },
         { id: '2', name: 'test group 2' }
-    ]);
+    ];
 
 
     const equipment = [
@@ -80,7 +81,11 @@ const ReportPage: React.FC = () => {
         if (selectGroup.length != 0) {
             results = results.filter(item => selectGroup.includes(item.group.toLowerCase()))
         }
-        results = results.filter(item => item.equipment.toLowerCase().includes(searchTerm.toLowerCase()))
+        results = results.filter(item => 
+            item.equipment.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            item.id_equipment.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            item.location.toLowerCase().includes(searchTerm.toLowerCase())
+        )
         setFilteredData(results);
     }, [searchTerm, selectGroup]);
 
@@ -102,17 +107,20 @@ const ReportPage: React.FC = () => {
 
     const onSubmit = (data: Inputs) => {
         setSelectedEquipment('');
-        if (data.equipment) {
-            console.log("data: ", data);
-            setErrorInput(false);
+        if (!data.equipment) {
+            setErrorInput(true);
+            return;
         }
+        setErrorInput(false);
         console.log(data);
+        console.log(equipment.find(item => item.name === data.equipment)?.id);
     };
 
     const handleEdit = (data: any) => {
         console.log("Edit data: ", data);
         setEditData(data);
         setOpenEditData(true);
+        setSelectedEquipment(data.equipment)
     }
 
     const handleDel = (index: number, id_equipment: string) => {
@@ -146,7 +154,7 @@ const ReportPage: React.FC = () => {
                         <div className='flex gap-2'>
                             <Input
                                 type="text"
-                                placeholder="Search reports..."
+                                placeholder="ค้นหา..."
                                 className='w-[300px] bg-white'
                                 value={searchTerm}
                                 onChange={handleSearch}
@@ -154,7 +162,7 @@ const ReportPage: React.FC = () => {
                             <Listbox value={selectGroup}>
                                 <div className="relative z-10 my-scroll">
                                     <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-center gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                        <span className='text-sm'>สถานะ</span>
+                                        <span className='text-sm'>กลุ่มครุภัณฑ์</span>
                                         {selectGroup.length != 0 && (
                                             <div className='flex gap-1 items-center border-l-2 pl-3'>
                                                 {selectGroup.length > 2 ? (
@@ -232,7 +240,7 @@ const ReportPage: React.FC = () => {
                                 currentPage * perPage
                             ).map((item, index) => (
                                 <TableRow key={item.id}>
-                                    <TableCell>{index}</TableCell>
+                                    <TableCell>{item.id}</TableCell>
                                     <TableCell>{item.id_equipment}</TableCell>
                                     <TableCell>{item.equipment}</TableCell>
                                     <TableCell>{item.group}</TableCell>
@@ -265,7 +273,7 @@ const ReportPage: React.FC = () => {
                 />
 
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:mt-[100px] text-center sm:p-0">
+                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:items-center text-center sm:p-0">
                         <DialogPanel
                             transition
                             className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-xl sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
@@ -333,7 +341,7 @@ const ReportPage: React.FC = () => {
                 />
 
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:mt-[100px] text-center sm:p-0">
+                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:items-center text-center sm:p-0">
                         <DialogPanel
                             transition
                             className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-xl sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"

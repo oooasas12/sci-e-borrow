@@ -24,7 +24,7 @@ const PaginationList: FC<IPagination> = ({
 }) => {
   const [toggleDropup, setToggleDropup] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(Math.ceil(total_item / items_per_page));
-  const totalPerPage = [5, 10, 15, 20, 25, 50, 100]
+  const totalPerPage = [5, 10, 20, 25, 50, 100]
 
   const pageRange = () => {
 
@@ -139,15 +139,15 @@ const PaginationList: FC<IPagination> = ({
           <div className="flex flex-row gap-2 items-center relative">
             {toggleDropup && (
               <div
-                className="w-12 h-[160px] ring-1 ring-inset ring-gray-300 absolute rounded-md bottom-10 right-0 bg-white flex flex-col object-contain"
+                className="w-14 h-[160px] ring-1 ring-inset ring-gray-300 absolute rounded-md bottom-10 right-0 bg-white flex flex-col object-contain"
                 ref={dropupRef}
               >
                 {totalPerPage.map((total, index) => (
                   <div
                     key={index}
-                    className={`h-1/5 flex items-center justify-center cursor-pointer text-center hover:bg-standswork-zeus-black-100/10 ${index === 0 && 'rounded-t-lg'
+                    className={`h-1/6 flex items-center justify-center cursor-pointer text-center hover:bg-standswork-zeus-black-100/10 ${index === 0 && 'rounded-t-lg'
                       } ${index === totalPerPage.length - 1 && 'rounded-b-lg'
-                      } text-[14px] hover:font-medium`}
+                      } text-[14px]  hover:bg-gray-100 `}
                     onClick={() => onPerPageSelector(total)}
                   >
                     <span className='my-auto'>{total}</span>
@@ -157,7 +157,7 @@ const PaginationList: FC<IPagination> = ({
             )}
             <p>per page : </p>
             <div
-              className="ring-1 bg-white  ring-inset ring-gray-300 w-12 h-10 rounded-md hover:ring-2 cursor-pointer flex justify-center items-center"
+              className="ring-1 bg-white  ring-inset ring-gray-300 w-fit px-2 h-8 rounded-md hover:ring-2 cursor-pointer flex justify-center items-center"
               onClick={() => setToggleDropup(!toggleDropup)}
             >
               <p>{items_per_page}</p>

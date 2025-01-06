@@ -40,7 +40,7 @@ export const Sidebar = () => {
                 </div>
                 <div className="flex flex-col mt-8 ">
                     <Link href={{
-                        pathname: '/admin/report'
+                        pathname: '/report'
                     }}
                         className="flex gap-2 py-2 px-4 hover:bg-dark items-center text-white cursor-pointer"><FaListAlt /> รายงานการยีม-คืน</Link>
                     <div className="flex flex-col gap-2 ">
