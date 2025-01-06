@@ -7,8 +7,8 @@ import { FaUser } from "react-icons/fa6";
 import { FaListAlt } from "react-icons/fa";
 import Link from "next/link";
 
-type SidebarData = {
-};
+// type SidebarData = {
+// };
 
 export const Sidebar = () => {
     const router = useRouter();

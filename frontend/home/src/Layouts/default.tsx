@@ -7,7 +7,7 @@ interface Props {
   noPadding?: boolean;
 }
 
-const Layout = ({ children, header, noPadding }: Props) => {
+const Layout = ({ children }: Props) => {
   return (
     <>
       <div className="flex lg:flex-row overflow-auto">

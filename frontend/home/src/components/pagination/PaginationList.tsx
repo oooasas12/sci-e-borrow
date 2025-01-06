@@ -1,7 +1,5 @@
 
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { FC, useEffect, useRef, useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '../ui/pagination';
 import { RxDoubleArrowLeft, RxDoubleArrowRight } from "react-icons/rx";
 
@@ -20,7 +18,7 @@ const PaginationList: FC<IPagination> = ({
   total_item,
   onPerPageSelector,
   pageDirectHandler,
-  slidePagination,
+  // slidePagination,
 }) => {
   const [toggleDropup, setToggleDropup] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(Math.ceil(total_item / items_per_page));
@@ -52,71 +50,71 @@ const PaginationList: FC<IPagination> = ({
     setTotalPages(Math.ceil(total_item / items_per_page))
   }, [total_item, items_per_page]);
 
-  const renderPagination = () => {
-    const paginationItems = [];
+  // const renderPagination = () => {
+  //   const paginationItems = [];
 
-    // หน้าแรก
-    // paginationItems.push(
-    //   <PaginationItem key="first" className='hidden lg:block' >
-    //     <PaginationLink href="#" isActive={current_page === 1} onClick={(event) => {
-    //       event.preventDefault();
-    //       pageDirectHandler(0);
-    //     }}>
-    //       1
-    //     </PaginationLink>
-    //   </PaginationItem>
-    // );
+  //   // หน้าแรก
+  //   // paginationItems.push(
+  //   //   <PaginationItem key="first" className='hidden lg:block' >
+  //   //     <PaginationLink href="#" isActive={current_page === 1} onClick={(event) => {
+  //   //       event.preventDefault();
+  //   //       pageDirectHandler(0);
+  //   //     }}>
+  //   //       1
+  //   //     </PaginationLink>
+  //   //   </PaginationItem>
+  //   // );
 
-    // Ellipsis ก่อนเลขหน้าใกล้ currentPage
-    if (current_page > 3) {
-      paginationItems.push(
-        <PaginationItem key="ellipsis-start" className='hidden lg:block'>
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
+  //   // Ellipsis ก่อนเลขหน้าใกล้ currentPage
+  //   if (current_page > 3) {
+  //     paginationItems.push(
+  //       <PaginationItem key="ellipsis-start" className='hidden lg:block'>
+  //         <PaginationEllipsis />
+  //       </PaginationItem>
+  //     );
+  //   }
 
-    // แสดงหน้าปัจจุบัน และรอบข้าง
-    for (let i = current_page - 2; i <= current_page + 2; i++) {
-      if (i > 1 && i < totalPages) {
-        paginationItems.push(
-          <PaginationItem key={i} className='hidden lg:block'>
-            <PaginationLink href="#" className={`${current_page === i && 'bg-gray-100'}`} isActive={current_page === i} onClick={(event) => {
-              event.preventDefault();
-              pageDirectHandler(i - 1);
-            }}>
-              {i}
-            </PaginationLink>
-          </PaginationItem>
-        );
-      }
-    }
+  //   // แสดงหน้าปัจจุบัน และรอบข้าง
+  //   for (let i = current_page - 2; i <= current_page + 2; i++) {
+  //     if (i > 1 && i < totalPages) {
+  //       paginationItems.push(
+  //         <PaginationItem key={i} className='hidden lg:block'>
+  //           <PaginationLink href="#" className={`${current_page === i && 'bg-gray-100'}`} isActive={current_page === i} onClick={(event) => {
+  //             event.preventDefault();
+  //             pageDirectHandler(i - 1);
+  //           }}>
+  //             {i}
+  //           </PaginationLink>
+  //         </PaginationItem>
+  //       );
+  //     }
+  //   }
 
-    // Ellipsis หลังเลขหน้าใกล้ currentPage
-    if (current_page < totalPages - 1) {
-      paginationItems.push(
-        <PaginationItem key="ellipsis-end" className='hidden lg:block'>
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
+  //   // Ellipsis หลังเลขหน้าใกล้ currentPage
+  //   if (current_page < totalPages - 1) {
+  //     paginationItems.push(
+  //       <PaginationItem key="ellipsis-end" className='hidden lg:block'>
+  //         <PaginationEllipsis />
+  //       </PaginationItem>
+  //     );
+  //   }
 
-    // หน้าสุดท้าย
-    if (totalPages > 1) {
-      paginationItems.push(
-        <PaginationItem key="last" className='hidden lg:block'>
-          <PaginationLink href="#" isActive={current_page === totalPages} onClick={(event) => {
-            event.preventDefault();
-            pageDirectHandler(totalPages - 1);
-          }}>
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
+  //   // หน้าสุดท้าย
+  //   if (totalPages > 1) {
+  //     paginationItems.push(
+  //       <PaginationItem key="last" className='hidden lg:block'>
+  //         <PaginationLink href="#" isActive={current_page === totalPages} onClick={(event) => {
+  //           event.preventDefault();
+  //           pageDirectHandler(totalPages - 1);
+  //         }}>
+  //           {totalPages}
+  //         </PaginationLink>
+  //       </PaginationItem>
+  //     );
+  //   }
 
-    return paginationItems;
-  };
+  //   return paginationItems;
+  // };
 
   return (
     <div className="flex items-center justify-between py-3 w-full">
