@@ -28,7 +28,7 @@ type Inputs = {
     borrowing_date: String
 }
 
-const ReportPage: React.FC = () => {
+const EquipmentBow: React.FC = () => {
     const {
         register,
         handleSubmit,
@@ -441,4 +441,4 @@ const ReportPage: React.FC = () => {
     );
 };
 
-export default ReportPage;
+export default EquipmentBow;

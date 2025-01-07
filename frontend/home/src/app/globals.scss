@@ -220,3 +220,38 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.my-scroll {
+  ::-webkit-scrollbar:horizontal {
+    height: 4px;
+    /* กำหนดความสูงของ scrollbar แนวนอน */
+  }
+
+  /* สำหรับ scrollbar แนวตั้ง */
+  ::-webkit-scrollbar {
+    width: 4px;
+    /* กำหนดความกว้างของ scrollbar แนวตั้ง */
+  }
+
+  /* ดีไซน์ของ scrollbar track (พื้นหลังของ scrollbar) */
+  ::-webkit-scrollbar-track {
+    background: #fff;
+    /* สีพื้นหลัง */
+    border-radius: 10px;
+    /* ขอบมน */
+  }
+
+  /* ดีไซน์ของ scrollbar thumb (ตัวเลื่อน) */
+  ::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    /* สีของ scrollbar */
+    border-radius: 10px;
+    /* ขอบมน */
+  }
+
+  /* เปลี่ยนสี scrollbar เมื่อมีการ hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #145A32;
+    /* เปลี่ยนสีเมื่อ hover */
+  }
+}
