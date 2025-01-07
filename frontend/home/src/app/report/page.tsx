@@ -18,9 +18,10 @@ import { FaCheck, FaXmark } from 'react-icons/fa6';
 import { useForm, SubmitHandler } from "react-hook-form"
 import { CheckIcon } from 'lucide-react';
 import ButtonPrimary from '@/components/button/buttonPrimary';
-import { FaRegEdit } from 'react-icons/fa';
+import { FaArrowAltCircleDown, FaRegEdit } from 'react-icons/fa';
 import { MdDelete, MdEditSquare } from "react-icons/md";
 import PaginationList from '@/components/pagination/PaginationList';
+import { IoIosArrowDown } from 'react-icons/io';
 
 type Inputs = {
     equipment: String,
@@ -162,7 +163,7 @@ const ReportPage: React.FC = () => {
                             <Listbox value={selectGroup}>
                                 <div className="relative z-10 my-scroll">
                                     <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-center gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                        <span className='text-sm'>กลุ่มครุภัณฑ์</span>
+                                        <span className='text-sm flex items-center justify-between gap-4'>กลุ่มครุภัณฑ์ <IoIosArrowDown /></span>
                                         {selectGroup.length != 0 && (
                                             <div className='flex gap-1 items-center border-l-2 pl-3'>
                                                 {selectGroup.length > 2 ? (
@@ -231,6 +232,7 @@ const ReportPage: React.FC = () => {
                                 <TableHead className=' whitespace-nowrap'>วันที่คืน</TableHead>
                                 <TableHead className=' whitespace-nowrap'>สถานที่ตั้ง/จัดเก็บ</TableHead>
                                 <TableHead className=' whitespace-nowrap'>เอกสารการยืม</TableHead>
+                                <TableHead className=' whitespace-nowrap'>เอกสารการคืน</TableHead>
                                 <TableHead className=' whitespace-nowrap'></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -247,6 +249,7 @@ const ReportPage: React.FC = () => {
                                     <TableCell>{item.borrowing_date}</TableCell>
                                     <TableCell>{item.return_date}</TableCell>
                                     <TableCell>{item.location}</TableCell>
+                                    <TableCell>Download</TableCell>
                                     <TableCell>Download</TableCell>
                                     <TableCell className='flex gap-2' >
                                         <MdEditSquare className='text-yellow-500 cursor-pointer' size={20} onClick={() => handleEdit(item)} />

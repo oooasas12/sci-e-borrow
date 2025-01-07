@@ -615,7 +615,7 @@ const ReportPage: React.FC = () => {
                             <div className='flex flex-col gap-4'>
                                 <div className='flex justify-between'>
                                     <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        เพิ่มรายการผู้ใช้
+                                        แก้ไขรายการผู้ใช้
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
                                 </div>
