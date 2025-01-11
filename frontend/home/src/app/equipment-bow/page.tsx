@@ -22,9 +22,16 @@ import { FaArrowAltCircleDown, FaRegEdit } from 'react-icons/fa';
 import { MdDelete, MdEditSquare } from "react-icons/md";
 import PaginationList from '@/components/pagination/PaginationList';
 import { IoIosArrowDown } from 'react-icons/io';
+import toast, { Toaster } from 'react-hot-toast';
+import ButtonSelectColor from '@/components/button/buttonSelectColor';
+import DialogDel from '@/components/dialog/DialogDel';
+import DialogEdit from '@/components/dialog/DialogEdit';
+import DialogInsert from '@/components/dialog/DialogInsert';
+import FilterListBox from '@/components/ListBox/FilterListBox';
+import ListBoxComponent from '@/components/ListBox/ListBox';
 
 type Inputs = {
-    equipment: String,
+    equipment_name: String,
     borrowing_date: String
 }
 
@@ -39,14 +46,14 @@ const EquipmentBow: React.FC = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [data, setData] = useState([
-        { id: 1, id_equipment: '1-asws', equipment: 'Laptop', borrowing_date: '2023-01-01', return_date: '2023-01-04', location: 'test Location', group: 'test Group 1' },
-        { id: 2, id_equipment: '2-asws', equipment: 'Laptop', borrowing_date: '2023-01-02', return_date: '2023-01-04', location: 'test Location', group: 'test Group 1' },
-        { id: 3, id_equipment: '3-asws', equipment: 'test 3', borrowing_date: '2023-01-01', return_date: '2023-01-04', location: 'test Location', group: 'test Group 2' },
-        { id: 4, id_equipment: '5-asws', equipment: 'test 4', borrowing_date: '2023-01-02', return_date: '2023-01-04', location: 'test Location', group: 'test Group 2' },
-        { id: 5, id_equipment: '4-asws', equipment: 'test 5', borrowing_date: '2023-01-01', return_date: '2023-01-04', location: 'test Location', group: 'test Group 1' },
-        { id: 6, id_equipment: '6-asws', equipment: 'test 6', borrowing_date: '2023-01-02', return_date: '2023-01-04', location: 'test Location', group: 'test Group 2' },
-        { id: 7, id_equipment: '7-asws', equipment: 'test 7', borrowing_date: '2023-01-01', return_date: '2023-01-04', location: 'test Location', group: 'test Group 2' },
-        { id: 8, id_equipment: '8-asws', equipment: 'test 8', borrowing_date: '2023-01-02', return_date: '2023-01-04', location: 'test Location', group: 'test Group 1' },
+        { id: 1, id_equipment: '1-asws', equipment_name: 'Laptop', borrowing_date: '2023-01-01', return_date: '2023-01-04', location: 'test Location', group: 'test Group 1' },
+        { id: 2, id_equipment: '2-asws', equipment_name: 'Laptop', borrowing_date: '2023-01-02', return_date: '2023-01-04', location: 'test Location', group: 'test Group 1' },
+        { id: 3, id_equipment: '3-asws', equipment_name: 'test 3', borrowing_date: '2023-01-01', return_date: '2023-01-04', location: 'test Location', group: 'test Group 2' },
+        { id: 4, id_equipment: '5-asws', equipment_name: 'test 4', borrowing_date: '2023-01-02', return_date: '2023-01-04', location: 'test Location', group: 'test Group 2' },
+        { id: 5, id_equipment: '4-asws', equipment_name: 'test 5', borrowing_date: '2023-01-01', return_date: '2023-01-04', location: 'test Location', group: 'test Group 1' },
+        { id: 6, id_equipment: '6-asws', equipment_name: 'test 6', borrowing_date: '2023-01-02', return_date: '2023-01-04', location: 'test Location', group: 'test Group 2' },
+        { id: 7, id_equipment: '7-asws', equipment_name: 'test 7', borrowing_date: '2023-01-01', return_date: '2023-01-04', location: 'test Location', group: 'test Group 2' },
+        { id: 8, id_equipment: '8-asws', equipment_name: 'test 8', borrowing_date: '2023-01-02', return_date: '2023-01-04', location: 'test Location', group: 'test Group 1' },
         // Add more data as needed
     ]);
     const [filteredData, setFilteredData] = useState(data);
@@ -70,7 +77,6 @@ const EquipmentBow: React.FC = () => {
         { id: '2', name: 'test group 2' }
     ];
 
-
     const equipment = [
         { id: 1, name: 'Laptop' },
         { id: 2, name: 'Projector' },
@@ -82,9 +88,9 @@ const EquipmentBow: React.FC = () => {
         if (selectGroup.length != 0) {
             results = results.filter(item => selectGroup.includes(item.group.toLowerCase()))
         }
-        results = results.filter(item => 
-            item.equipment.toLowerCase().includes(searchTerm.toLowerCase()) || 
-            item.id_equipment.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        results = results.filter(item =>
+            item.equipment_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.id_equipment.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.location.toLowerCase().includes(searchTerm.toLowerCase())
         )
         setFilteredData(results);
@@ -107,21 +113,93 @@ const EquipmentBow: React.FC = () => {
     }
 
     const onSubmit = (data: Inputs) => {
-        setSelectedEquipment('');
-        if (!data.equipment) {
-            setErrorInput(true);
+        console.log(data);
+        
+        if (!data.equipment_name) {
+            toast.error('โปรดเลือกครุภัณฑ์')
             return;
         }
         setErrorInput(false);
-        console.log(data);
-        console.log(equipment.find(item => item.name === data.equipment)?.id);
+        toast.promise(
+            (async () => {
+                // ดึงข้อมูลจาก API จริง
+                try {
+                    // const response = await fetch('https://api.example.com/save-settings', {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //     },
+                    //     body: JSON.stringify(settings),
+                    // });
+
+                    // if (!response.ok) {
+                    //     throw new Error('Failed to save settings');
+                    // }
+
+                    // const data = await response.json();
+                    const data = {
+                        id: '1',
+                        test_name: 'donut'
+                    }
+                    return false;
+                } catch (error) {
+                    throw error;
+                }
+            })(),
+            {
+                loading: 'กำลังเพิ่มข้อมูล...',
+                success: 'เพิ่มรายการยืม-คืนสำเร็จ',
+                error: 'เพิ่มรายการยืม-คืนล้มเหลว',
+            }
+        );
+        closeModalInsert()
     };
+
+    const onSubmitEdit = (data: Inputs) => {
+        if (!data.equipment_name) {
+            toast.error('โปรดเลือกครุภัณฑ์')
+            return;
+        }
+        toast.promise(
+            (async () => {
+                // ดึงข้อมูลจาก API จริง
+                try {
+                    // const response = await fetch('https://api.example.com/save-settings', {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //     },
+                    //     body: JSON.stringify(settings),
+                    // });
+
+                    // if (!response.ok) {
+                    //     throw new Error('Failed to save settings');
+                    // }
+
+                    // const data = await response.json();
+                    const data = {
+                        id: '1',
+                        test_name: 'donut'
+                    }
+                    return false;
+                } catch (error) {
+                    throw error;
+                }
+            })(),
+            {
+                loading: 'กำลังแก้ไขข้อมูล...',
+                success: 'แก้ไขรายการยืม-คืนสำเร็จ',
+                error: 'แก้ไขรายการยืม-คืนล้มเหลว',
+            }
+        );
+        closeModalEdit()
+    }
 
     const handleEdit = (data: any) => {
         console.log("Edit data: ", data);
         setEditData(data);
         setOpenEditData(true);
-        setSelectedEquipment(data.equipment)
+        setSelectedEquipment(data.equipment_name)
     }
 
     const handleDel = (index: number, id_equipment: string) => {
@@ -134,6 +212,7 @@ const EquipmentBow: React.FC = () => {
     }
 
     const closeModalDel = () => {
+
         setOpenDelData(false);
     }
 
@@ -146,9 +225,41 @@ const EquipmentBow: React.FC = () => {
         setCurrentPage(index + 1)
     }
 
+    useEffect(() => {
+        if (openInsertData) {
+            setSelectedEquipment('')
+            setValue('equipment_name', '')
+        }
+    }, [openInsertData]);
+
+    //dialog curd
+    const onDel = () => {
+        console.log(delData.index);
+        setFilteredData((prev) => prev.filter((item) => item.id !== delData.index))
+        closeModalDel()
+        toast.success('ลบสำเร็จ')
+    }
+
+    const closeModalEdit = () => {
+        setOpenEditData(false)
+    }
+
+    const closeModalInsert = () => {
+        setOpenInsertData(false)
+    }
+
+    const handleSelectEquipment = (value: string) => {
+        setSelectedEquipment(value);
+        setValue('equipment_name', value); // Update useForm state
+    }
+
     return (
         <Layout>
             <div className='container'>
+                <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                />
                 <h1 className='title lg text-font_color'>รายงานการยืม-คืน</h1>
                 <div className='flex flex-col gap-4 mt-8'>
                     <div className='flex justify-between'>
@@ -160,60 +271,7 @@ const EquipmentBow: React.FC = () => {
                                 value={searchTerm}
                                 onChange={handleSearch}
                             />
-                            <Listbox value={selectGroup}>
-                                <div className="relative z-10 my-scroll">
-                                    <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-center gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                        <span className='text-sm flex items-center justify-between gap-4'>กลุ่มครุภัณฑ์ <IoIosArrowDown /></span>
-                                        {selectGroup.length != 0 && (
-                                            <div className='flex gap-1 items-center border-l-2 pl-3'>
-                                                {selectGroup.length > 2 ? (
-                                                    <div className='px-1 text-sm text-gray-500 bg-gray-300 rounded' >3 ตัวเลือกขึ้นไป</div>
-                                                ) : (
-                                                    selectGroup.map((item, index) => (
-                                                        <div className='px-1 text-sm text-gray-500 bg-gray-300 rounded' key={index}>{item}</div>
-                                                    ))
-                                                )}
-                                            </div>
-                                        )}
-                                    </ListboxButton>
-                                    <ListboxOptions className="absolute mt-1 max-h-60 w-[160px] overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                        <ListboxOption
-                                            key="all"
-                                            value="all"
-                                            className={({ active }) =>
-                                                `cursor-pointer flex justify-between items-center select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                }`
-                                            }
-                                            onClick={() => filterGroup('all')}
-                                        >
-                                            ทั้งหมด
-                                            <div className='w-[10%]'>
-                                                {selectGroup.length == 0 && (
-                                                    <FaCheck />
-                                                )}
-                                            </div>
-                                        </ListboxOption>
-                                        {group.map((item, index) => (
-                                            <ListboxOption
-                                                key={index}
-                                                value={item}
-                                                className={({ active }) =>
-                                                    `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                    }`
-                                                }
-                                                onClick={(event) => { event.preventDefault(), filterGroup(item.name) }}
-                                            >
-                                                {item.name}
-                                                <div className='w-[10%]'>
-                                                    {selectGroup.includes(item.name) && (
-                                                        <FaCheck />
-                                                    )}
-                                                </div>
-                                            </ListboxOption>
-                                        ))}
-                                    </ListboxOptions>
-                                </div>
-                            </Listbox>
+                            <FilterListBox selected={selectGroup} item={group} filter={filterGroup} />
                         </div>
                         <div className='flex'>
                             <button onClick={() => setOpenInsertData(true)} className='bg-primary_1 hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>
@@ -244,7 +302,7 @@ const EquipmentBow: React.FC = () => {
                                 <TableRow key={item.id}>
                                     <TableCell>{item.id}</TableCell>
                                     <TableCell>{item.id_equipment}</TableCell>
-                                    <TableCell>{item.equipment}</TableCell>
+                                    <TableCell>{item.equipment_name}</TableCell>
                                     <TableCell>{item.group}</TableCell>
                                     <TableCell>{item.borrowing_date}</TableCell>
                                     <TableCell>{item.return_date}</TableCell>
@@ -269,174 +327,43 @@ const EquipmentBow: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <Dialog open={openInsertData} onClose={() => setOpenInsertData(false)} className="relative z-10">
-                <DialogBackdrop
-                    transition
-                    className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-                />
-
-                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:items-center text-center sm:p-0">
-                        <DialogPanel
-                            transition
-                            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-xl sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-                        >
-                            <div className='flex flex-col gap-4'>
-                                <div className='flex justify-between'>
-                                    <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        เพิ่มรายการยืม-คืน
-                                    </DialogTitle>
-                                    <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
-                                </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="equipment" className='text-sm text-font_color'>ครุภัณฑ์</label>
-                                        <Listbox value={selectedEquipment}
-                                            onChange={(value) => {
-                                                setSelectedEquipment(value);
-                                                setValue('equipment', value); // Update useForm state
-                                            }}>
-                                            <div className="relative z-10 my-scroll">
-                                                <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-start gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                                    <span className='text-sm'>{selectedEquipment || 'เลือกครุภัณฑ์'}</span>
-                                                </ListboxButton>
-                                                <ListboxOptions className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {equipment.map((item, index) => (
-                                                        <ListboxOption
-                                                            key={index}
-                                                            value={item.name}
-                                                            className={({ active }) =>
-                                                                `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                                }`
-                                                            }
-                                                        >
-                                                            {item.name}
-                                                            <div className='w-[10%]'>
-                                                                {selectedEquipment === item.name && <FaCheck className='ml-auto' />}
-                                                            </div>
-                                                        </ListboxOption>
-                                                    ))}
-                                                </ListboxOptions>
-                                                {errorInput && (
-                                                    <span className="text-red-500 text-sm">โปรดเลือกครุภัณฑ์</span>
-                                                )}
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ยืม</label>
-                                        <Input type="date" id='borrowing_date' defaultValue={new Date().toISOString().split('T')[0]} className='w-full' {...register('borrowing_date', { required: 'โปรดเลือกวันที่ยืม' })} />
-                                        {errors.borrowing_date && (
-                                            <span className="text-red-500 text-sm">{errors.borrowing_date.message}</span>
-                                        )}
-                                    </div>
-                                    <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
-                                </form>
-                            </div>
-                        </DialogPanel>
+            <DialogInsert title='เพิ่มรายการยืม-คืน' onClose={closeModalInsert} open={openInsertData}>
+                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="equipment" className='text-sm text-font_color'>ครุภัณฑ์</label>
+                        <ListBoxComponent placeholder='เลือกครุภัณฑ์' options={equipment} onChange={handleSelectEquipment} selectedValue={selectedEquipment} />
                     </div>
-                </div>
-            </Dialog>
-            <Dialog open={openEditData} onClose={() => setOpenEditData(false)} className="relative z-10">
-                <DialogBackdrop
-                    transition
-                    className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-                />
-
-                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:items-center text-center sm:p-0">
-                        <DialogPanel
-                            transition
-                            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-xl sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-                        >
-                            <div className='flex flex-col gap-4'>
-                                <div className='flex justify-between'>
-                                    <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        แก้ไขรายการยืม-คืน
-                                    </DialogTitle>
-                                    <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenEditData(false)} />
-                                </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="equipment" className='text-sm text-font_color'>ครุภัณฑ์</label>
-                                        <Listbox value={selectedEquipment}
-                                            onChange={(value) => {
-                                                setSelectedEquipment(value);
-                                                setValue('equipment', value); // Update useForm state
-                                            }}
-                                        >
-                                            <div className="relative z-10 my-scroll">
-                                                <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-start gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                                    <span className='text-sm'>{editData?.equipment || 'เลือกครุภัณฑ์'}</span>
-                                                </ListboxButton>
-                                                <ListboxOptions className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {equipment.map((item, index) => (
-                                                        <ListboxOption
-                                                            key={index}
-                                                            value={item.name}
-                                                            className={({ active }) =>
-                                                                `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                                }`
-                                                            }
-                                                        >
-                                                            {item.name}
-                                                            <div className='w-[10%]'>
-                                                                {editData?.equipment === item.name && <FaCheck className='ml-auto' />}
-                                                            </div>
-                                                        </ListboxOption>
-                                                    ))}
-                                                </ListboxOptions>
-                                                {errorInput && (
-                                                    <span className="text-red-500 text-sm">โปรดเลือกครุภัณฑ์</span>
-                                                )}
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ยืม</label>
-                                        <Input type="date" id='borrowing_date' defaultValue={new Date().toISOString().split('T')[0]} className='w-full' {...register('borrowing_date', { required: 'โปรดเลือกวันที่ยืม' })} />
-                                        {errors.borrowing_date && (
-                                            <span className="text-red-500 text-sm">{errors.borrowing_date.message}</span>
-                                        )}
-                                    </div>
-                                    <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
-                                </form>
-                            </div>
-                        </DialogPanel>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ยืม</label>
+                        <Input type="date" id='borrowing_date' defaultValue={new Date().toISOString().split('T')[0]} className='w-full' {...register('borrowing_date', { required: 'โปรดเลือกวันที่ยืม' })} />
+                        {errors.borrowing_date && (
+                            <span className="text-red-500 text-sm">{errors.borrowing_date.message}</span>
+                        )}
                     </div>
-                </div>
-            </Dialog>
-            <Dialog open={openDelData} onClose={() => setOpenDelData(false)} className="relative z-10">
-                <DialogBackdrop
-                    transition
-                    className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-                />
-
-                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:items-center text-center sm:p-0">
-                        <DialogPanel
-                            transition
-                            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-xl sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-                        >
-                            <div className='flex flex-col gap-4'>
-                                <div className='flex justify-between'>
-                                    <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        ลบรายการยืม-คืน
-                                    </DialogTitle>
-                                    <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenDelData(false)} />
-                                </div>
-                                <div className='flex flex-col gap-4'>
-                                    <span className='text-font_color'>คุณต้องการลบรายการยืม-คืน รหัสครุภัณฑ์: <b>{delData.id_equipment}</b> หรือไม่</span>
-                                    <div className='flex gap-4 justify-end'>
-                                        <ButtonPrimary data='ยืนยัน' size='small' className='bg-red-500 hover:bg-red-600' />
-                                        <ButtonPrimary onClick={closeModalDel} data='ยกเลิก' size='small' className='bg-gray-500 hover:bg-gray-600' />
-                                    </div>
-                                </div>
-                            </div>
-                        </DialogPanel>
+                    <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
+                </form>
+            </DialogInsert>
+            <DialogEdit title='แก้ไขรายการยืม-คืน' onClose={closeModalEdit} open={openEditData}>
+                <form onSubmit={handleSubmit(onSubmitEdit)} className='flex flex-col gap-4'>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="equipment" className='text-sm text-font_color'>ครุภัณฑ์</label>
+                        <ListBoxComponent placeholder='เลือกครุภัณฑ์' options={equipment} onChange={handleSelectEquipment} selectedValue={selectedEquipment} />
                     </div>
-                </div>
-            </Dialog>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ยืม</label>
+                        <Input type="date" id='borrowing_date' defaultValue={new Date().toISOString().split('T')[0]} className='w-full' {...register('borrowing_date', { required: 'โปรดเลือกวันที่ยืม' })} />
+                        {errors.borrowing_date && (
+                            <span className="text-red-500 text-sm">{errors.borrowing_date.message}</span>
+                        )}
+                    </div>
+                    <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
+                </form>
+            </DialogEdit>
+            <DialogDel title='ลบรายการยืม-คืน' detail={
+                <>
+                    คุณต้องการลบรายการยืม-คืน รหัสครุภัณฑ์: <b>{delData.id_equipment}</b> หรือไม่
+                </>
+            } onClose={closeModalDel} open={openDelData} idDel={delData.id_equipment} onDel={onDel} />
         </Layout>
     );
 };
