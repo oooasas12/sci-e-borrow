@@ -21,55 +21,144 @@ import ButtonPrimary from '@/components/button/buttonPrimary';
 import { FaRegEdit } from 'react-icons/fa';
 import { MdDelete, MdEditSquare } from "react-icons/md";
 import PaginationList from '@/components/pagination/PaginationList';
+import FilterListBox from '@/components/ListBox/FilterListBox';
+import ListBoxComponent from '@/components/ListBox/ListBox';
+import { User } from '@/types/user'
+import { Branch, Faculty, Group } from '@/types/general';
+import DialogInsert from '@/components/dialog/DialogInsert';
+import DialogEdit from '@/components/dialog/DialogEdit';
+import DialogDel from '@/components/dialog/DialogDel';
+import toast, { Toaster } from 'react-hot-toast';
 
-type Inputs = {
-    name: String,
-    username: String,
-    password: String,
-    fac: String,
-    group: String,
-    branch: String
+const defaultValueOption = {
+    id: 0,
+    name: ""
 }
 
-const ReportPage: React.FC = () => {
+const UserPage: React.FC = () => {
     const {
         register,
         handleSubmit,
         watch,
         setValue,
         formState: { errors },
-    } = useForm<Inputs>()
+        reset
+    } = useForm<User>()
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [data, setData] = useState([
-        { id: 1, name: 'name 1', username: 'username 1', password: 'password 1', fac: 'รองแผน', group: 'วิทยาการคอม', branch: 'อาจารย์ประจำสาขา' },
-        { id: 2, name: 'name 2', username: 'username 2', password: 'password 2', fac: 'อาจารย์', group: 'วิทยาการคอม', branch: 'ประธานหลักสูตร' },
-        { id: 3, name: 'name 3', username: 'username 3', password: 'password 3', fac: 'อาจารย์', group: 'มัลติ', branch: 'ประธานหลักสูตร' },
-        { id: 4, name: 'name 4', username: 'username 4', password: 'password 4', fac: 'เจ้าหน้าที่', group: 'มัลติ', branch: 'อาจารย์ประจำสาขา' },
-        { id: 5, name: 'name 5', username: 'username 5', password: 'password 5', fac: 'เจ้าหน้าที่', group: 'พยาบาล', branch: 'ประธานสาขา' },
-        { id: 6, name: 'name 6', username: 'username 6', password: 'password 6', fac: 'เจ้าหน้าที่', group: 'มัลติ', branch: 'ประธานสาขา' },
-        { id: 7, name: 'name 7', username: 'username 7', password: 'password 7', fac: 'อาจารย์', group: 'วิทยาการคอม', branch: 'อาจารย์ประจำสาขา' },
-        { id: 8, name: 'name 8', username: 'username 8', password: 'password 8', fac: 'อาจารย์', group: 'พยาบาล', branch: 'อาจารย์ประจำสาขา' },
+    const [data, setData] = useState<User[]>([
+        {
+            id: 1, name: 'name 1', username: 'username 1', password: 'password 1', fac: {
+                id: 1,
+                name: "fac 1"
+            }, group: {
+                id: 1,
+                name: "group 1"
+            }, branch: {
+                id: 1,
+                name: "branch 1"
+            }
+        },
+        {
+            id: 2, name: 'name 2', username: 'username 2', password: 'password 2', fac: {
+                id: 1,
+                name: "fac 1"
+            }, group: {
+                id: 1,
+                name: "group 1"
+            }, branch: {
+                id: 1,
+                name: "branch 1"
+            }
+        },
+        {
+            id: 3, name: 'name 3', username: 'username 3', password: 'password 3', fac: {
+                id: 1,
+                name: "fac 1"
+            }, group: {
+                id: 1,
+                name: "group 1"
+            }, branch: {
+                id: 1,
+                name: "branch 1"
+            }
+        },
+        {
+            id: 4, name: 'name 4', username: 'username 4', password: 'password 4', fac: {
+                id: 1,
+                name: "fac 1"
+            }, group: {
+                id: 1,
+                name: "group 1"
+            }, branch: {
+                id: 1,
+                name: "branch 1"
+            }
+        },
+        {
+            id: 5, name: 'name 5', username: 'username 5', password: 'password 5', fac: {
+                id: 1,
+                name: "fac 1"
+            }, group: {
+                id: 1,
+                name: "group 1"
+            }, branch: {
+                id: 1,
+                name: "branch 1"
+            }
+        },
+        {
+            id: 6, name: 'name 6', username: 'username 6', password: 'password 6', fac: {
+                id: 1,
+                name: "fac 1"
+            }, group: {
+                id: 1,
+                name: "group 1"
+            }, branch: {
+                id: 1,
+                name: "branch 1"
+            }
+        },
+        {
+            id: 7, name: 'name 7', username: 'username 7', password: 'password 7', fac: {
+                id: 1,
+                name: "fac 1"
+            }, group: {
+                id: 1,
+                name: "group 1"
+            }, branch: {
+                id: 1,
+                name: "branch 1"
+            }
+        },
+        {
+            id: 8, name: 'name 8', username: 'username 8', password: 'password 8', fac: {
+                id: 1,
+                name: "fac 1"
+            }, group: {
+                id: 1,
+                name: "group 1"
+            }, branch: {
+                id: 1,
+                name: "branch 1"
+            }
+        },
     ]);
-    const [filteredData, setFilteredData] = useState(data);
+    const [filteredData, setFilteredData] = useState<User[]>(data);
     const [openInsertData, setOpenInsertData] = useState(false);
     const [openEditData, setOpenEditData] = useState(false);
     const [openDelData, setOpenDelData] = useState(false);
-    const [selectGroup, setSelectGroup] = useState<string[]>([]);
-    const [selectFac, setSelectFac] = useState<string[]>([]);
-    const [selectBranch, setSelectBranch] = useState<string[]>([]);
     const [selectedFilterGroup, setSelectedFilterGroup] = useState<string[]>([]);
     const [selectedFilterFac, setSelectedFilterFac] = useState<string[]>([]);
     const [selectedFilterBranch, setSelectedFilterBranch] = useState<string[]>([]);
-    const [selectedGroup, setSelectedGroup] = useState('');
-    const [selectedFac, setSelectedFac] = useState('');
-    const [selectedBranch, setSelectedBranch] = useState('');
+    const [selectedGroup, setSelectedGroup] = useState<Group>(defaultValueOption);
+    const [selectedFac, setSelectedFac] = useState<Faculty>(defaultValueOption);
+    const [selectedBranch, setSelectedBranch] = useState<Branch>(defaultValueOption);
     const [errorInput, setErrorInput] = useState({
         fac: false,
         group: false,
         branch: false
     });
-    const [editData, setEditData] = useState<Inputs>();
     const [delData, setDelData] = useState({
         index: 0,
         name: ''
@@ -98,13 +187,13 @@ const ReportPage: React.FC = () => {
     useEffect(() => {
         let results = data
         if (selectedFilterGroup.length != 0) {
-            results = results.filter(item => selectedFilterGroup.includes(item.group.toLowerCase()))
+            results = results.filter(item => selectedFilterGroup.includes(item.group.name.toLowerCase()))
         }
         if (selectedFilterFac.length != 0) {
-            results = results.filter(item => selectedFilterFac.includes(item.fac.toLowerCase()))
+            results = results.filter(item => selectedFilterFac.includes(item.fac.name.toLowerCase()))
         }
         if (selectedFilterBranch.length != 0) {
-            results = results.filter(item => selectedFilterBranch.includes(item.branch.toLowerCase()))
+            results = results.filter(item => selectedFilterBranch.includes(item.branch.name.toLowerCase()))
         }
         results = results.filter(item =>
             item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,6 +202,10 @@ const ReportPage: React.FC = () => {
         )
         setFilteredData(results);
     }, [searchTerm, selectedFilterGroup, selectedFilterFac, selectedFilterBranch]);
+
+    useEffect(() => {
+        reset()
+    }, [openInsertData]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -154,17 +247,17 @@ const ReportPage: React.FC = () => {
         }
     }
 
-    const onSubmit = (data: Inputs) => {
+    const onSubmit = (data: User) => {
         console.log(data);
         if (!data.branch) {
             setErrorInput({ ...errorInput, branch: true });
             return;
         }
-        if (!data.fac) {
+        if (!data.branch) {
             setErrorInput({ ...errorInput, fac: true });
             return;
         }
-        if (!data.group) {
+        if (!data.branch) {
             setErrorInput({ ...errorInput, group: true });
             return;
         }
@@ -173,20 +266,27 @@ const ReportPage: React.FC = () => {
             fac: false,
             group: false
         });
-        setSelectedGroup('');
-        setSelectedFac('');
-        setSelectedBranch('');
+        setSelectedGroup(defaultValueOption);
+        setSelectedFac(defaultValueOption);
+        setSelectedBranch(defaultValueOption);
         setOpenInsertData(false)
+        reset()
         console.log(data);
     };
 
-    const handleEdit = (data: any) => {
+    const handleEdit = (data: User) => {
         console.log("Edit data: ", data);
-        setEditData(data);
+        setValue('name', data.name)
+        setValue('username', data.username)
+        setValue('password', data.password)
+        setValue('fac', data.fac)
+        setValue('branch', data.branch)
+        setValue('group', data.group)
+
         setOpenEditData(true);
-        setSelectBranch(data.branch)
-        setSelectFac(data.fac)
-        setSelectGroup(data.group)
+        setSelectedBranch(data.branch)
+        setSelectedFac(data.fac)
+        setSelectedGroup(data.group)
     }
 
     const handleDel = (index: number, name: string) => {
@@ -211,9 +311,36 @@ const ReportPage: React.FC = () => {
         setCurrentPage(index + 1)
     }
 
+    const handleSlectGroup = (value: Group) => {
+        setSelectedGroup(value);
+        setValue('group', value);
+
+    }
+
+    const handleSlectFac = (value: Faculty) => {
+        setSelectedFac(value);
+        setValue('fac', value);
+    }
+    const handleSlectBranch = (value: Branch) => {
+        setSelectedBranch(value);
+        setValue('branch', value);
+    }
+
+    //dialog curd
+    const onDel = () => {
+        console.log(delData.index);
+        setFilteredData((prev) => prev.filter((item) => item.id !== delData.index))
+        closeModalDel()
+        toast.success('ลบสำเร็จ')
+    }
+
     return (
         <Layout>
             <div className='container'>
+                <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                />
                 <h1 className='title lg text-font_color'>บัญชีผู้ใช้</h1>
                 <div className='flex flex-col gap-4 mt-8'>
                     <div className='flex justify-between'>
@@ -225,168 +352,9 @@ const ReportPage: React.FC = () => {
                                 value={searchTerm}
                                 onChange={handleSearch}
                             />
-                            <Listbox value={selectedFilterGroup}>
-                                <div className="relative z-10 my-scroll">
-                                    <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-center gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                        <span className='text-sm whitespace-nowrap'>กลุ่มงาน / สาขา</span>
-                                        {selectedFilterGroup.length != 0 && (
-                                            <div className='flex gap-1 items-center border-l-2 pl-3'>
-                                                {selectedFilterGroup.length > 2 ? (
-                                                    <div className='px-1 text-sm text-gray-500 bg-gray-300 rounded' >3 ตัวเลือกขึ้นไป</div>
-                                                ) : (
-                                                    selectedFilterGroup.map((item, index) => (
-                                                        <div className='px-1 text-sm text-gray-500 bg-gray-300 rounded line-clamp-1' key={index}>{item}</div>
-                                                    ))
-                                                )}
-                                            </div>
-                                        )}
-                                    </ListboxButton>
-                                    <ListboxOptions className="absolute mt-1 max-h-60 w-[160px] overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                        <ListboxOption
-                                            key="all"
-                                            value="all"
-                                            className={({ active }) =>
-                                                `cursor-pointer flex justify-between items-center select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                }`
-                                            }
-                                            onClick={() => filterGroup('all')}
-                                        >
-                                            ทั้งหมด
-                                            <div className='w-[10%]'>
-                                                {selectedFilterGroup.length == 0 && (
-                                                    <FaCheck />
-                                                )}
-                                            </div>
-                                        </ListboxOption>
-                                        {group.map((item, index) => (
-                                            <ListboxOption
-                                                key={index}
-                                                value={item}
-                                                className={({ active }) =>
-                                                    `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                    }`
-                                                }
-                                                onClick={(event) => { event.preventDefault(), filterGroup(item.name) }}
-                                            >
-                                                {item.name}
-                                                <div className='w-[10%]'>
-                                                    {selectedFilterGroup.includes(item.name) && (
-                                                        <FaCheck />
-                                                    )}
-                                                </div>
-                                            </ListboxOption>
-                                        ))}
-                                    </ListboxOptions>
-                                </div>
-                            </Listbox>
-                            <Listbox value={selectedFilterFac}>
-                                <div className="relative z-10 my-scroll">
-                                    <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-center gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                        <span className='text-sm whitespace-nowrap'>ตำแหน่งระดับคณะ</span>
-                                        {selectedFilterFac.length != 0 && (
-                                            <div className='flex gap-1 items-center border-l-2 pl-3'>
-                                                {selectedFilterFac.length > 2 ? (
-                                                    <div className='px-1 text-sm text-gray-500 bg-gray-300 rounded' >3 ตัวเลือกขึ้นไป</div>
-                                                ) : (
-                                                    selectedFilterFac.map((item, index) => (
-                                                        <div className='px-1 text-sm text-gray-500 bg-gray-300 rounded line-clamp-1' key={index}>{item}</div>
-                                                    ))
-                                                )}
-                                            </div>
-                                        )}
-                                    </ListboxButton>
-                                    <ListboxOptions className="absolute mt-1 max-h-60 w-[160px] overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                        <ListboxOption
-                                            key="all"
-                                            value="all"
-                                            className={({ active }) =>
-                                                `cursor-pointer flex justify-between items-center select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                }`
-                                            }
-                                            onClick={() => filterFac('all')}
-                                        >
-                                            ทั้งหมด
-                                            <div className='w-[10%]'>
-                                                {selectedFilterFac.length == 0 && (
-                                                    <FaCheck />
-                                                )}
-                                            </div>
-                                        </ListboxOption>
-                                        {fac.map((item, index) => (
-                                            <ListboxOption
-                                                key={index}
-                                                value={item}
-                                                className={({ active }) =>
-                                                    `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                    }`
-                                                }
-                                                onClick={(event) => { event.preventDefault(), filterFac(item.name) }}
-                                            >
-                                                {item.name}
-                                                <div className='w-[10%]'>
-                                                    {selectedFilterFac.includes(item.name) && (
-                                                        <FaCheck />
-                                                    )}
-                                                </div>
-                                            </ListboxOption>
-                                        ))}
-                                    </ListboxOptions>
-                                </div>
-                            </Listbox>
-                            <Listbox value={selectedFilterBranch}>
-                                <div className="relative z-10 my-scroll">
-                                    <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-center gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                        <span className='text-sm whitespace-nowrap'>ตำแหน่งระดับสาขา</span>
-                                        {selectedFilterBranch.length != 0 && (
-                                            <div className='flex gap-1 items-center border-l-2 pl-3'>
-                                                {selectedFilterBranch.length > 2 ? (
-                                                    <div className='px-1 text-sm text-gray-500 bg-gray-300 rounded' >3 ตัวเลือกขึ้นไป</div>
-                                                ) : (
-                                                    selectedFilterBranch.map((item, index) => (
-                                                        <div className='px-1 text-sm text-gray-500 bg-gray-300 rounded line-clamp-1' key={index}>{item}</div>
-                                                    ))
-                                                )}
-                                            </div>
-                                        )}
-                                    </ListboxButton>
-                                    <ListboxOptions className="absolute mt-1 max-h-60 w-[160px] overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                        <ListboxOption
-                                            key="all"
-                                            value="all"
-                                            className={({ active }) =>
-                                                `cursor-pointer flex justify-between items-center select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                }`
-                                            }
-                                            onClick={() => filterBranch('all')}
-                                        >
-                                            ทั้งหมด
-                                            <div className='w-[10%]'>
-                                                {selectedFilterBranch.length == 0 && (
-                                                    <FaCheck />
-                                                )}
-                                            </div>
-                                        </ListboxOption>
-                                        {branch.map((item, index) => (
-                                            <ListboxOption
-                                                key={index}
-                                                value={item}
-                                                className={({ active }) =>
-                                                    `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                    }`
-                                                }
-                                                onClick={(event) => { event.preventDefault(), filterBranch(item.name) }}
-                                            >
-                                                {item.name}
-                                                <div className='w-[10%]'>
-                                                    {selectedFilterBranch.includes(item.name) && (
-                                                        <FaCheck />
-                                                    )}
-                                                </div>
-                                            </ListboxOption>
-                                        ))}
-                                    </ListboxOptions>
-                                </div>
-                            </Listbox>
+                            <FilterListBox placeholder='กลุ่มงาน' selected={selectedFilterGroup} item={group} filter={filterGroup} />
+                            <FilterListBox placeholder='ตำแหน่งระดับคณะ' selected={selectedFilterFac} item={fac} filter={filterFac} />
+                            <FilterListBox placeholder='ตำแหน่งระดับสาขา' selected={selectedFilterBranch} item={branch} filter={filterBranch} />
                         </div>
                         <div className='flex'>
                             <button onClick={() => setOpenInsertData(true)} className='bg-primary_1 whitespace-nowrap hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>
@@ -417,12 +385,12 @@ const ReportPage: React.FC = () => {
                                     <TableCell>{item.name}</TableCell>
                                     <TableCell>{item.username}</TableCell>
                                     <TableCell>{item.password}</TableCell>
-                                    <TableCell>{item.group}</TableCell>
-                                    <TableCell>{item.fac}</TableCell>
-                                    <TableCell>{item.branch}</TableCell>
+                                    <TableCell>{item.group.name}</TableCell>
+                                    <TableCell>{item.fac.name}</TableCell>
+                                    <TableCell>{item.branch.name}</TableCell>
                                     <TableCell className='flex gap-2' >
                                         <MdEditSquare className='text-yellow-500 cursor-pointer' size={20} onClick={() => handleEdit(item)} />
-                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.name)} size={20} />
+                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id as number, item.name)} size={20} />
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -438,354 +406,104 @@ const ReportPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <Dialog open={openInsertData} onClose={() => setOpenInsertData(false)} className="relative z-10">
-                <DialogBackdrop
-                    transition
-                    className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-                />
-
-                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:items-center text-center sm:p-0">
-                        <DialogPanel
-                            transition
-                            className="relative transform overflow-visible rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-xl sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-                        >
-                            <div className='flex flex-col gap-4'>
-                                <div className='flex justify-between'>
-                                    <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        เพิ่มรายการผู้ใช้
-                                    </DialogTitle>
-                                    <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
-                                </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อ-สกุล</label>
-                                        <Input
-                                            type="text"
-                                            placeholder="ชื่อ-สกุล"
-                                            {...register('name', { required: 'โปรดกรอกชื่อ-สกุล' })}
-                                        />
-                                        {errors.name && (
-                                            <span className="text-red-500 text-sm">{errors.name.message}</span>
-                                        )}
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="username" className='text-sm text-font_color'>Username</label>
-                                        <Input
-                                            type="text"
-                                            placeholder="username"
-                                            {...register('username', { required: 'โปรดกรอก Username' })}
-                                        />
-                                        {errors.username && (
-                                            <span className="text-red-500 text-sm">{errors.username.message}</span>
-                                        )}
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="password" className='text-sm text-font_color'>Password</label>
-                                        <Input
-                                            type="text"
-                                            placeholder="password"
-                                            {...register('password', { required: 'โปรดกรอก Password' })}
-                                        />
-                                        {errors.password && (
-                                            <span className="text-red-500 text-sm">{errors.password.message}</span>
-                                        )}
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="group" className='text-sm text-font_color'>กลุ่มงาน / สาขา</label>
-                                        <Listbox value={selectedGroup}
-                                            onChange={(value) => {
-                                                setSelectedGroup(value);
-                                                setValue('group', value); // Update useForm state
-                                            }}>
-                                            <div className="relative z-auto my-scroll">
-                                                <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-start gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                                    <span className='text-sm'>{selectedGroup || 'เลือกครุภัณฑ์'}</span>
-                                                </ListboxButton>
-                                                <ListboxOptions className="absolute z-[100] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {group.map((item, index) => (
-                                                        <ListboxOption
-                                                            key={index}
-                                                            value={item.name}
-                                                            className={({ active }) =>
-                                                                `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                                }`
-                                                            }
-                                                        >
-                                                            {item.name}
-                                                            <div className='w-[10%]'>
-                                                                {selectedGroup === item.name && <FaCheck className='ml-auto' />}
-                                                            </div>
-                                                        </ListboxOption>
-                                                    ))}
-                                                </ListboxOptions>
-                                                {errorInput.group && (
-                                                    <span className="text-red-500 text-sm">โปรดเลือกกลุ่มงาน / สาขา</span>
-                                                )}
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="fac" className='text-sm text-font_color'>ตำแหน่งระดับคณะ</label>
-                                        <Listbox value={selectedFac}
-                                            onChange={(value) => {
-                                                setSelectedFac(value);
-                                                setValue('fac', value); // Update useForm state
-                                            }}>
-                                            <div className="relative z-auto my-scroll">
-                                                <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-start gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                                    <span className='text-sm'>{selectedFac || 'เลือกครุภัณฑ์'}</span>
-                                                </ListboxButton>
-                                                <ListboxOptions className="absolute z-[100] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {fac.map((item, index) => (
-                                                        <ListboxOption
-                                                            key={index}
-                                                            value={item.name}
-                                                            className={({ active }) =>
-                                                                `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                                }`
-                                                            }
-                                                        >
-                                                            {item.name}
-                                                            <div className='w-[10%]'>
-                                                                {selectedFac === item.name && <FaCheck className='ml-auto' />}
-                                                            </div>
-                                                        </ListboxOption>
-                                                    ))}
-                                                </ListboxOptions>
-                                                {errorInput.fac && (
-                                                    <span className="text-red-500 text-sm">โปรดเลือกตำแหน่งระดับคณะ</span>
-                                                )}
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="branch" className='text-sm text-font_color'>ตำแหน่งระดับสาขา</label>
-                                        <Listbox value={selectedBranch}
-                                            onChange={(value) => {
-                                                setSelectedBranch(value);
-                                                setValue('branch', value); // Update useForm state
-                                            }}>
-                                            <div className="relative z-auto my-scroll">
-                                                <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-start gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                                    <span className='text-sm'>{selectedBranch || 'เลือกครุภัณฑ์'}</span>
-                                                </ListboxButton>
-                                                <ListboxOptions className="absolute z-[100] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {branch.map((item, index) => (
-                                                        <ListboxOption
-                                                            key={index}
-                                                            value={item.name}
-                                                            className={({ active }) =>
-                                                                `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                                }`
-                                                            }
-                                                        >
-                                                            {item.name}
-                                                            <div className='w-[10%]'>
-                                                                {selectedBranch === item.name && <FaCheck className='ml-auto' />}
-                                                            </div>
-                                                        </ListboxOption>
-                                                    ))}
-                                                </ListboxOptions>
-                                                {errorInput.branch && (
-                                                    <span className="text-red-500 text-sm">โปรดเลือกตำแหน่งระดับสาขา</span>
-                                                )}
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                    <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
-                                </form>
-                            </div>
-                        </DialogPanel>
+            <DialogInsert title='เพิ่มรายการยืม-คืน' onClose={() => setOpenInsertData(false)} open={openInsertData}>
+                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อ-สกุล</label>
+                        <Input
+                            type="text"
+                            placeholder="ชื่อ-สกุล"
+                            {...register('name', { required: 'โปรดกรอกชื่อ-สกุล' })}
+                        />
+                        {errors.name && (
+                            <span className="text-red-500 text-sm">{errors.name.message}</span>
+                        )}
                     </div>
-                </div>
-            </Dialog>
-            <Dialog open={openEditData} onClose={() => setOpenEditData(false)} className="relative z-10">
-                <DialogBackdrop
-                    transition
-                    className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-                />
-
-                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:items-center text-center sm:p-0">
-                        <DialogPanel
-                            transition
-                            className="relative transform overflow-visible rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-xl sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-                        >
-                            <div className='flex flex-col gap-4'>
-                                <div className='flex justify-between'>
-                                    <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        แก้ไขรายการผู้ใช้
-                                    </DialogTitle>
-                                    <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
-                                </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อ-สกุล</label>
-                                        <Input
-                                            type="text"
-                                            placeholder="ชื่อ-สกุล"
-                                            onChange={(e) => setValue('name', e.target.value)}
-                                        />
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>Username</label>
-                                        <Input
-                                            type="text"
-                                            placeholder="username"
-                                            onChange={(e) => setValue('username', e.target.value)}
-                                        />
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>Password</label>
-                                        <Input
-                                            type="text"
-                                            placeholder="password"
-                                            onChange={(e) => setValue('password', e.target.value)}
-                                        />
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="group" className='text-sm text-font_color'>กลุ่มงาน / สาขา</label>
-                                        <Listbox value={selectedGroup}
-                                            onChange={(value) => {
-                                                setSelectedGroup(value);
-                                                setValue('group', value); // Update useForm state
-                                            }}>
-                                            <div className="relative z-auto my-scroll">
-                                                <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-start gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                                    <span className='text-sm'>{selectedGroup || 'เลือกครุภัณฑ์'}</span>
-                                                </ListboxButton>
-                                                <ListboxOptions className="absolute z-[100] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {group.map((item, index) => (
-                                                        <ListboxOption
-                                                            key={index}
-                                                            value={item.name}
-                                                            className={({ active }) =>
-                                                                `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                                }`
-                                                            }
-                                                        >
-                                                            {item.name}
-                                                            <div className='w-[10%]'>
-                                                                {selectedGroup === item.name && <FaCheck className='ml-auto' />}
-                                                            </div>
-                                                        </ListboxOption>
-                                                    ))}
-                                                </ListboxOptions>
-                                                {errorInput.group && (
-                                                    <span className="text-red-500 text-sm">โปรดเลือกกลุ่มงาน / สาขา</span>
-                                                )}
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="fac" className='text-sm text-font_color'>ตำแหน่งระดับคณะ</label>
-                                        <Listbox value={selectedFac}
-                                            onChange={(value) => {
-                                                setSelectedFac(value);
-                                                setValue('fac', value); // Update useForm state
-                                            }}>
-                                            <div className="relative z-auto my-scroll">
-                                                <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-start gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                                    <span className='text-sm'>{selectedFac || 'เลือกครุภัณฑ์'}</span>
-                                                </ListboxButton>
-                                                <ListboxOptions className="absolute z-[100] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {fac.map((item, index) => (
-                                                        <ListboxOption
-                                                            key={index}
-                                                            value={item.name}
-                                                            className={({ active }) =>
-                                                                `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                                }`
-                                                            }
-                                                        >
-                                                            {item.name}
-                                                            <div className='w-[10%]'>
-                                                                {selectedFac === item.name && <FaCheck className='ml-auto' />}
-                                                            </div>
-                                                        </ListboxOption>
-                                                    ))}
-                                                </ListboxOptions>
-                                                {errorInput.fac && (
-                                                    <span className="text-red-500 text-sm">โปรดเลือกตำแหน่งระดับคณะ</span>
-                                                )}
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="branch" className='text-sm text-font_color'>ตำแหน่งระดับสาขา</label>
-                                        <Listbox value={selectedBranch}
-                                            onChange={(value) => {
-                                                setSelectedBranch(value);
-                                                setValue('branch', value); // Update useForm state
-                                            }}>
-                                            <div className="relative z-auto my-scroll">
-                                                <ListboxButton className="w-full px-2 h-9  py-1 flex items-center  justify-start gap-3  rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                                                    <span className='text-sm'>{selectedBranch || 'เลือกครุภัณฑ์'}</span>
-                                                </ListboxButton>
-                                                <ListboxOptions className="absolute z-[100] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {branch.map((item, index) => (
-                                                        <ListboxOption
-                                                            key={index}
-                                                            value={item.name}
-                                                            className={({ active }) =>
-                                                                `cursor-pointer flex justify-between items-center gap-2 select-none py-2 px-4 ${active ? 'bg-gray-100 ' : 'text-gray-900'
-                                                                }`
-                                                            }
-                                                        >
-                                                            {item.name}
-                                                            <div className='w-[10%]'>
-                                                                {selectedBranch === item.name && <FaCheck className='ml-auto' />}
-                                                            </div>
-                                                        </ListboxOption>
-                                                    ))}
-                                                </ListboxOptions>
-                                                {errorInput.branch && (
-                                                    <span className="text-red-500 text-sm">โปรดเลือกตำแหน่งระดับสาขา</span>
-                                                )}
-                                            </div>
-                                        </Listbox>
-                                    </div>
-                                    <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
-                                </form>
-                            </div>
-                        </DialogPanel>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="username" className='text-sm text-font_color'>Username</label>
+                        <Input
+                            type="text"
+                            placeholder="username"
+                            {...register('username', { required: 'โปรดกรอก Username' })}
+                        />
+                        {errors.username && (
+                            <span className="text-red-500 text-sm">{errors.username.message}</span>
+                        )}
                     </div>
-                </div>
-            </Dialog>
-            <Dialog open={openDelData} onClose={() => setOpenDelData(false)} className="relative z-10">
-                <DialogBackdrop
-                    transition
-                    className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-                />
-
-                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex gap-4 min-h-full items-start justify-center p-4 sm:items-center text-center sm:p-0">
-                        <DialogPanel
-                            transition
-                            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-xl sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-                        >
-                            <div className='flex flex-col gap-4'>
-                                <div className='flex justify-between'>
-                                    <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        ลบรายการผู้ใช้
-                                    </DialogTitle>
-                                    <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenDelData(false)} />
-                                </div>
-                                <div className='flex flex-col gap-4'>
-                                    <span className='text-font_color'>คุณต้องการลบรายการผู้ใช้ ชื่อ: <b>{delData.name}</b> หรือไม่</span>
-                                    <div className='flex gap-4 justify-end'>
-                                        <ButtonPrimary data='ยืนยัน' size='small' className='bg-red-500 hover:bg-red-600' />
-                                        <ButtonPrimary onClick={closeModalDel} data='ยกเลิก' size='small' className='bg-gray-500 hover:bg-gray-600' />
-                                    </div>
-                                </div>
-                            </div>
-                        </DialogPanel>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="password" className='text-sm text-font_color'>Password</label>
+                        <Input
+                            type="text"
+                            placeholder="password"
+                            {...register('password', { required: 'โปรดกรอก Password' })}
+                        />
+                        {errors.password && (
+                            <span className="text-red-500 text-sm">{errors.password.message}</span>
+                        )}
                     </div>
-                </div>
-            </Dialog>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="group" className='text-sm text-font_color'>กลุ่มงาน / สาขา</label>
+                        <ListBoxComponent placeholder='กลุ่มงาน' selectedValue={selectedGroup} options={group} onChange={handleSlectGroup} />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="fac" className='text-sm text-font_color'>ตำแหน่งระดับคณะ</label>
+                        <ListBoxComponent placeholder='ตำแหน่งระดับคณะ' selectedValue={selectedFac} options={fac} onChange={handleSlectFac} />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="branch" className='text-sm text-font_color'>ตำแหน่งระดับสาขา</label>
+                        <ListBoxComponent placeholder='ตำแหน่งระดับสาขา' selectedValue={selectedBranch} options={branch} onChange={handleSlectBranch} />
+                    </div>
+                    <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
+                </form>
+            </DialogInsert>
+            <DialogEdit title='แก้ไขรายการยืม-คืน' onClose={() => setOpenEditData(false)} open={openEditData}>
+                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อ-สกุล</label>
+                        <Input
+                            type="text"
+                            placeholder="ชื่อ-สกุล"
+                            {...register('name', { required: 'โปรดกรอกชื่อ-สกุล' })}
+                        />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="username" className='text-sm text-font_color'>Username</label>
+                        <Input
+                            type="text"
+                            placeholder="username"
+                            {...register('username', { required: 'โปรดกรอก Username' })}
+                        />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="name" className='text-sm text-font_color'>Password</label>
+                        <Input
+                            type="text"
+                            placeholder="password"
+                            {...register('password', { required: 'โปรดกรอก Password' })}
+                        />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="group" className='text-sm text-font_color'>กลุ่มงาน / สาขา</label>
+                        <ListBoxComponent placeholder='กลุ่มงาน' selectedValue={selectedGroup} options={group} onChange={handleSlectGroup} />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="fac" className='text-sm text-font_color'>ตำแหน่งระดับคณะ</label>
+                        <ListBoxComponent placeholder='ตำแหน่งระดับคณะ' selectedValue={selectedFac} options={fac} onChange={handleSlectFac} />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <label htmlFor="branch" className='text-sm text-font_color'>ตำแหน่งระดับสาขา</label>
+                        <ListBoxComponent placeholder='ตำแหน่งระดับสาขา' selectedValue={selectedBranch} options={branch} onChange={handleSlectBranch} />
+                    </div>
+                    <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
+                </form>
+            </DialogEdit>
+            <DialogDel title='ลบรายการยืม-คืน' detail={
+                <>
+                    คุณต้องการลบรายการยืม-คืน รหัสครุภัณฑ์: <b>{delData.name}</b> หรือไม่
+                </>
+            } onClose={closeModalDel} open={openDelData} idDel={String(delData.index)} onDel={onDel} />
         </Layout>
     );
 };
 
-export default ReportPage;
+export default UserPage;

@@ -8,16 +8,17 @@ interface FilterListBoxProps {
     selected: string[]; // Selected items
     item: { name: string }[]; // List of all group items
     filter: (value: string) => void; // Function to filter selected group
+    placeholder: string;
 }
 
-const FilterListBox: React.FC<FilterListBoxProps> = ({ selected, item, filter }) => {
+const FilterListBox: React.FC<FilterListBoxProps> = ({ selected, item, filter, placeholder }) => {
     return (
         <Listbox value={selected}>
             <div className="relative z-10 my-scroll">
                 {/* Listbox Button */}
                 <ListboxButton className="w-full px-2 h-9 py-1 flex items-center justify-center gap-3 rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
                     <span className="text-sm flex items-center justify-between gap-4">
-                        กลุ่มครุภัณฑ์ <IoIosArrowDown />
+                        {placeholder} <IoIosArrowDown />
                     </span>
                     {selected.length !== 0 && (
                         <div className="flex gap-1 items-center border-l-2 pl-3">

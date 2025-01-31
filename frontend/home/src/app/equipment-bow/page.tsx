@@ -41,6 +41,7 @@ const EquipmentBow: React.FC = () => {
         handleSubmit,
         watch,
         setValue,
+        reset,
         formState: { errors },
     } = useForm<Inputs>()
 
@@ -156,7 +157,7 @@ const EquipmentBow: React.FC = () => {
     };
 
     const onSubmitEdit = (data: Inputs) => {
-        if (!data.equipment_name) {
+        if (!data.equipment_name && !selectedEquipment) {
             toast.error('โปรดเลือกครุภัณฑ์')
             return;
         }
@@ -198,6 +199,8 @@ const EquipmentBow: React.FC = () => {
     const handleEdit = (data: any) => {
         console.log("Edit data: ", data);
         setEditData(data);
+        setValue('equipment_name', data.equipment_name)
+        setValue('borrowing_date', data.borrowing_date);
         setOpenEditData(true);
         setSelectedEquipment(data.equipment_name)
     }
@@ -212,7 +215,6 @@ const EquipmentBow: React.FC = () => {
     }
 
     const closeModalDel = () => {
-
         setOpenDelData(false);
     }
 
@@ -228,7 +230,7 @@ const EquipmentBow: React.FC = () => {
     useEffect(() => {
         if (openInsertData) {
             setSelectedEquipment('')
-            setValue('equipment_name', '')
+            reset()
         }
     }, [openInsertData]);
 
@@ -271,7 +273,7 @@ const EquipmentBow: React.FC = () => {
                                 value={searchTerm}
                                 onChange={handleSearch}
                             />
-                            <FilterListBox selected={selectGroup} item={group} filter={filterGroup} />
+                            <FilterListBox placeholder='กลุ่มงาน' selected={selectGroup} item={group} filter={filterGroup} />
                         </div>
                         <div className='flex'>
                             <button onClick={() => setOpenInsertData(true)} className='bg-primary_1 hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>
@@ -351,7 +353,7 @@ const EquipmentBow: React.FC = () => {
                     </div>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ยืม</label>
-                        <Input type="date" id='borrowing_date' defaultValue={new Date().toISOString().split('T')[0]} className='w-full' {...register('borrowing_date', { required: 'โปรดเลือกวันที่ยืม' })} />
+                        <Input type="date" id='borrowing_date' value={watch("borrowing_date") as string || editData?.borrowing_date as string} className='w-full' {...register('borrowing_date', { required: 'โปรดเลือกวันที่ยืม' })} />
                         {errors.borrowing_date && (
                             <span className="text-red-500 text-sm">{errors.borrowing_date.message}</span>
                         )}

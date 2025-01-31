@@ -320,9 +320,9 @@ const EquipmentBrokenPage: React.FC = () => {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                            <FilterListBox selected={selectedFilterGroup} item={group} filter={filterGroup} />
-                            <FilterListBox selected={selectedFilterStatus} item={status} filter={filterStatus} />
-                            <FilterListBox selected={selectedFilterType} item={type} filter={filterType} />
+                            <FilterListBox placeholder='กลุ่มงาน' selected={selectedFilterGroup} item={group} filter={filterGroup} />
+                            <FilterListBox placeholder='สถานะ' selected={selectedFilterStatus} item={status} filter={filterStatus} />
+                            <FilterListBox placeholder='ประเภท' selected={selectedFilterType} item={type} filter={filterType} />
                         </div>
                         <div className='flex'>
                             <button onClick={() => setOpenInsertData(true)} className='bg-primary_1 whitespace-nowrap hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>
@@ -387,7 +387,7 @@ const EquipmentBrokenPage: React.FC = () => {
                         <ListBoxComponent placeholder='รายการครุภัณฑ์' selectedValue={selectedEquipment as string} options={equipment} onChange={handleSlectEquipment} />
                     </div>
                     <div className='flex flex-col gap-2'>
-                        <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ยืม</label>
+                        <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ชำรุด</label>
                         <Input type="date" id='borrowing_date' defaultValue={new Date().toISOString().split('T')[0]} className='w-full' {...register('date_start', { required: 'โปรดเลือกวันที่' })} />
                     </div>
                     <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
@@ -400,8 +400,8 @@ const EquipmentBrokenPage: React.FC = () => {
                         <ListBoxComponent placeholder='รายการครุภัณฑ์' selectedValue={selectedEquipment as string} options={equipment} onChange={handleSlectEquipment} />
                     </div>
                     <div className='flex flex-col gap-2'>
-                        <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ยืม</label>
-                        <Input type="date" id='borrowing_date' defaultValue={new Date().toISOString().split('T')[0]} className='w-full' {...register('date_start', { required: 'โปรดเลือกวันที่' })} />
+                        <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ชำรุด</label>
+                        <Input type="date" id='borrowing_date' value={watch("date_start") || editData?.date_start as string} className='w-full' {...register('date_start', { required: 'โปรดเลือกวันที่' })} />
                     </div>
                     <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
                 </form>
