@@ -20,23 +20,23 @@ type PositionCreateBranchForm struct {
 }
 
 func (b *PositionBranchs) FindAll(ctx *gin.Context) {
-	var branches []models.PositionBranch
-	b.DB.Find(&branches)
+	var positionbranches []models.PositionBranch
+	b.DB.Find(&positionbranches)
 
 	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &branches)
+	copier.Copy(&repornse, &positionbranches)
 	ctx.JSON(http.StatusOK, gin.H{"position_branch": repornse})
 }
 
 func (b *PositionBranchs) FindOne(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	var branches models.PositionBranch
-	if err := b.DB.First(&branches, id).Error; err != nil {
-		log.Fatal("Error findOne Branch :", err)
+	var positionbranches models.PositionBranch
+	if err := b.DB.First(&positionbranches, id).Error; err != nil {
+		log.Fatal("Error findOne positionbranches :", err)
 		return
 	}
 	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &branches)
+	copier.Copy(&repornse, &positionbranches)
 
 	ctx.JSON(http.StatusOK, gin.H{"position_branch": repornse})
 }
@@ -49,21 +49,21 @@ func (b *PositionBranchs) Update(ctx *gin.Context) {
 	}
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	var branches models.PositionBranch
-	if err := b.DB.First(&branches, id).Error; err != nil {
+	var positionbranches models.PositionBranch
+	if err := b.DB.First(&positionbranches, id).Error; err != nil {
 		log.Fatal("Error findOne Branch :", err)
 		return
 	}
 
-	copier.Copy(&branches, &form)
-	if err := b.DB.Save(&branches).Error; err != nil {
+	copier.Copy(&positionbranches, &form)
+	if err := b.DB.Save(&positionbranches).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
 
-	b.DB.Save(branches)
+	b.DB.Save(positionbranches)
 	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &branches)
+	copier.Copy(&repornse, &positionbranches)
 
 	ctx.JSON(http.StatusOK, gin.H{"position_branch": repornse})
 }
@@ -75,16 +75,16 @@ func (b *PositionBranchs) Create(ctx *gin.Context) {
 		return
 	}
 
-	var branch models.PositionBranch
-	copier.Copy(&branch, &form)
+	var positionbranch models.PositionBranch
+	copier.Copy(&positionbranch, &form)
 
-	if err := b.DB.Create(&branch).Error; err != nil {
+	if err := b.DB.Create(&positionbranch).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
 
 	repornse := models.GenaralRepornse{}
-	copier.Copy(&repornse, &branch)
+	copier.Copy(&repornse, &positionbranch)
 
 	ctx.JSON(http.StatusCreated, gin.H{"position_branch": repornse})
 }

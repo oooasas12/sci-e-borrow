@@ -15,6 +15,7 @@ func Server(r *gin.Engine) {
 	{
 		userGroup.GET("", userController.FindAll)
 		userGroup.GET("/:id", userController.FindOne)
+		userGroup.PUT("/:id", userController.Update)
 		userGroup.POST("", userController.Create)
 	}
 
