@@ -29,7 +29,7 @@ func (u *User) FindOne(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	var users models.User
 	if err := u.DB.Preload("PositionFac").Preload("PositionBranch").Preload("Branch").First(&users, id).Error; err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"users": nil})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
@@ -49,7 +49,7 @@ func (u *User) Update(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	var users models.User
 	if err := u.DB.First(&users, id).Error; err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"users": nil})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
