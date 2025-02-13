@@ -11,26 +11,26 @@ import (
 	"gorm.io/gorm"
 )
 
-type Branchs struct {
+type PositionBranchs struct {
 	DB *gorm.DB
 }
 
-type CreateBranchForm struct {
+type PositionCreateBranchForm struct {
 	Name string `form:"name" binding:"required"`
 }
 
-func (b *Branchs) FindAll(ctx *gin.Context) {
-	var branches []models.Branch
+func (b *PositionBranchs) FindAll(ctx *gin.Context) {
+	var branches []models.PositionBranch
 	b.DB.Find(&branches)
 
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &branches)
-	ctx.JSON(http.StatusOK, gin.H{"branchs": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"position_branch": repornse})
 }
 
-func (b *Branchs) FindOne(ctx *gin.Context) {
+func (b *PositionBranchs) FindOne(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	var branches models.Branch
+	var branches models.PositionBranch
 	if err := b.DB.First(&branches, id).Error; err != nil {
 		log.Fatal("Error findOne Branch :", err)
 		return
@@ -38,18 +38,18 @@ func (b *Branchs) FindOne(ctx *gin.Context) {
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &branches)
 
-	ctx.JSON(http.StatusOK, gin.H{"branchs": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"position_branch": repornse})
 }
 
-func (b *Branchs) Update(ctx *gin.Context) {
-	var form CreateBranchForm
+func (b *PositionBranchs) Update(ctx *gin.Context) {
+	var form PositionCreateBranchForm
 	if err := ctx.ShouldBind(&form); err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	var branches models.Branch
+	var branches models.PositionBranch
 	if err := b.DB.First(&branches, id).Error; err != nil {
 		log.Fatal("Error findOne Branch :", err)
 		return
@@ -65,17 +65,17 @@ func (b *Branchs) Update(ctx *gin.Context) {
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &branches)
 
-	ctx.JSON(http.StatusOK, gin.H{"branchs": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"position_branch": repornse})
 }
 
-func (b *Branchs) Create(ctx *gin.Context) {
-	var form CreateBranchForm
+func (b *PositionBranchs) Create(ctx *gin.Context) {
+	var form PositionCreateBranchForm
 	if err := ctx.ShouldBind(&form); err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
 
-	var branch models.Branch
+	var branch models.PositionBranch
 	copier.Copy(&branch, &form)
 
 	if err := b.DB.Create(&branch).Error; err != nil {
@@ -86,5 +86,5 @@ func (b *Branchs) Create(ctx *gin.Context) {
 	repornse := models.GenaralRepornse{}
 	copier.Copy(&repornse, &branch)
 
-	ctx.JSON(http.StatusCreated, gin.H{"branch": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"position_branch": repornse})
 }

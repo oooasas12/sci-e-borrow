@@ -27,4 +27,13 @@ func Server(r *gin.Engine) {
 		branchGroup.POST("", branchController.Create)
 	}
 
+	PositionBranchGroup := r.Group("/api/position-branch")
+	PositionBranchController := controllers.PositionBranchs{DB: db}
+	{
+		PositionBranchGroup.GET("", PositionBranchController.FindAll)
+		PositionBranchGroup.GET("/:id", PositionBranchController.FindOne)
+		PositionBranchGroup.PUT("/:id", PositionBranchController.Update)
+		PositionBranchGroup.POST("", PositionBranchController.Create)
+	}
+
 }

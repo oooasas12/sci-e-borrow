@@ -17,7 +17,7 @@ type Branch struct {
 	Name string `gorm:"unique;not null"`
 }
 
-type BranchRepornse struct {
+type GenaralRepornse struct {
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
