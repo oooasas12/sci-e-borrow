@@ -17,6 +17,7 @@ func Server(r *gin.Engine) {
 		userGroup.GET("/:id", userController.FindOne)
 		userGroup.PUT("/:id", userController.Update)
 		userGroup.POST("", userController.Create)
+		userGroup.DELETE("", userController.Delete)
 	}
 
 	branchGroup := r.Group("/api/branch")
@@ -26,6 +27,7 @@ func Server(r *gin.Engine) {
 		branchGroup.GET("/:id", branchController.FindOne)
 		branchGroup.PUT("/:id", branchController.Update)
 		branchGroup.POST("", branchController.Create)
+		branchGroup.DELETE("", branchController.Delete)
 	}
 
 	PositionBranchGroup := r.Group("/api/position-branch")
@@ -35,6 +37,7 @@ func Server(r *gin.Engine) {
 		PositionBranchGroup.GET("/:id", PositionBranchController.FindOne)
 		PositionBranchGroup.PUT("/:id", PositionBranchController.Update)
 		PositionBranchGroup.POST("", PositionBranchController.Create)
+		PositionBranchGroup.DELETE("", PositionBranchController.Delete)
 	}
 
 	PositionFacGroup := r.Group("/api/position-fac")
@@ -44,6 +47,7 @@ func Server(r *gin.Engine) {
 		PositionFacGroup.GET("/:id", PositionFacController.FindOne)
 		PositionFacGroup.PUT("/:id", PositionFacController.Update)
 		PositionFacGroup.POST("", PositionFacController.Create)
+		PositionFacGroup.DELETE("", PositionFacController.Delete)
 	}
 
 }

@@ -88,3 +88,27 @@ func (b *Branchs) Create(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"branch": repornse})
 }
+
+func (b *Branchs) Delete(ctx *gin.Context) {
+	// ดึงค่า ID จากพารามิเตอร์ใน URL
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	// ค้นหาผู้ใช้ตาม ID
+	var branch models.Branch
+	if err := b.DB.First(&branch, id).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "branch not found"})
+		return
+	}
+
+	// ลบข้อมูลผู้ใช้
+	if err := b.DB.Delete(&branch).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "branch deleted successfully"})
+}

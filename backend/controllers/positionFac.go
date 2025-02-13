@@ -88,3 +88,27 @@ func (b *PositionFac) Create(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"position_fac": repornse})
 }
+
+func (b *PositionFac) Delete(ctx *gin.Context) {
+	// ดึงค่า ID จากพารามิเตอร์ใน URL
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	// ค้นหาผู้ใช้ตาม ID
+	var positionFac models.PositionFac
+	if err := b.DB.First(&positionFac, id).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "positionFac not found"})
+		return
+	}
+
+	// ลบข้อมูลผู้ใช้
+	if err := b.DB.Delete(&positionFac).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "positionFac deleted successfully"})
+}
