@@ -27,7 +27,18 @@ func InitDB() {
 	db = database
 
 	// ตรวจสอบการ Migrate ฐานข้อมูล
-	if err := db.AutoMigrate(&models.User{}, &models.Branch{}, &models.PositionBranch{}, &models.PositionFac{}); err != nil {
+	if err := db.AutoMigrate(
+		&models.User{},
+		&models.Branch{},
+		&models.PositionBranch{},
+		&models.PositionFac{},
+		&models.EquipmentGroup{},
+		&models.ApprovalStatus{},
+		&models.BorrowStatus{},
+		&models.EquipmentStatus{},
+		&models.EquipmentName{},
+		&models.Unit{},
+		&models.BudgetSource{}); err != nil {
 		log.Fatal("❌ AutoMigrate failed:", err)
 	}
 }
