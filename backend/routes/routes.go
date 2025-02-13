@@ -120,4 +120,14 @@ func Server(r *gin.Engine) {
 		BudgetSourceGroup.DELETE("/:id", BudgetSourceController.Delete)
 	}
 
+	SetTimeGroup := r.Group("/api/set-time")
+	SetTimeController := controllers.SetTime{DB: db}
+	{
+		SetTimeGroup.GET("", SetTimeController.FindAll)
+		SetTimeGroup.GET("/:id", SetTimeController.FindOne)
+		SetTimeGroup.PUT("/:id", SetTimeController.Update)
+		SetTimeGroup.POST("", SetTimeController.Create)
+		SetTimeGroup.DELETE("/:id", SetTimeController.Delete)
+	}
+
 }

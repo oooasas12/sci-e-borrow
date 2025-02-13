@@ -38,7 +38,8 @@ func InitDB() {
 		&models.EquipmentStatus{},
 		&models.EquipmentName{},
 		&models.Unit{},
-		&models.BudgetSource{}); err != nil {
+		&models.BudgetSource{},
+		&models.SetTime{}); err != nil {
 		log.Fatal("❌ AutoMigrate failed:", err)
 	}
 }
