@@ -6,7 +6,7 @@ import (
 
 type User struct {
 	gorm.Model
-	Name             string `gorm:"unique;not null"`
+	Name             string `gorm:"type:varchar(255);not null"`
 	Username         string `gorm:"unique;not null"`
 	Password         string `gorm:"type:varchar(255);not null"`
 	PositionFacID    uint
@@ -24,6 +24,15 @@ type CreateUserForm struct {
 	PositionFacID    uint   `form:"position_fac_id" binding:"required"`
 	PositionBranchID uint   `form:"position_branch_id" binding:"required"`
 	BranchID         uint   `form:"branch_id" binding:"required"`
+}
+
+type UpdateByNameUserForm struct {
+	Name             string `form:"name" binding:"omitempty"`
+	Username         string `form:"username" binding:"omitempty"`
+	Password         string `form:"password" binding:"omitempty"`
+	PositionFacID    uint   `form:"position_fac_id" binding:"omitempty"`
+	PositionBranchID uint   `form:"position_branch_id" binding:"omitempty"`
+	BranchID         uint   `form:"branch_id" binding:"omitempty"`
 }
 
 type UserResponse struct {

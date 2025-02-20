@@ -16,6 +16,7 @@ func Server(r *gin.Engine) {
 		userGroup.GET("", userController.FindAll)
 		userGroup.GET("/:id", userController.FindOne)
 		userGroup.PUT("/:id", userController.Update)
+		userGroup.PATCH("/:id", userController.UpdateByName)
 		userGroup.POST("", userController.Create)
 		userGroup.DELETE("/:id", userController.Delete)
 	}
@@ -128,6 +129,17 @@ func Server(r *gin.Engine) {
 		SetTimeGroup.PUT("/:id", SetTimeController.Update)
 		SetTimeGroup.POST("", SetTimeController.Create)
 		SetTimeGroup.DELETE("/:id", SetTimeController.Delete)
+	}
+
+	EquipmentGroup := r.Group("/api/equipment")
+	EquipmentController := controllers.Equipment{DB: db}
+	{
+		EquipmentGroup.GET("", EquipmentController.FindAll)
+		EquipmentGroup.GET("/:id", EquipmentController.FindOne)
+		EquipmentGroup.PUT("/:id", EquipmentController.Update)
+		EquipmentGroup.PATCH("/:id", EquipmentController.UpdateByName)
+		EquipmentGroup.POST("", EquipmentController.Create)
+		EquipmentGroup.DELETE("/:id", EquipmentController.Delete)
 	}
 
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 	"sci-e-borrow-backend/models"
 	"strconv"
 
@@ -63,7 +64,7 @@ func (u *User) Update(ctx *gin.Context) {
 	var repornse []models.UserResponse
 	copier.Copy(&repornse, &users)
 
-	ctx.JSON(http.StatusOK, gin.H{"users": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
 func (u *User) Create(ctx *gin.Context) {
@@ -109,4 +110,52 @@ func (u *User) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+}
+
+func (db *User) UpdateByName(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	// ดึงข้อมูลเดิมจากฐานข้อมูล
+	var user models.User
+	if err := db.DB.First(&user, id).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	// อ่านค่าจาก form-data และบันทึกลง struct
+	var form models.UpdateByNameUserForm
+	if err := ctx.ShouldBind(&form); err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error form": err.Error()})
+		return
+	}
+
+	// ใช้ reflect เพื่อตรวจสอบค่าที่ถูกส่งมา และอัปเดตเฉพาะค่าที่ไม่เป็นค่าเริ่มต้น (zero value)
+	userValue := reflect.ValueOf(&user).Elem()
+	formValue := reflect.ValueOf(form)
+	formType := reflect.TypeOf(form)
+
+	for i := 0; i < formValue.NumField(); i++ {
+		fieldValue := formValue.Field(i)
+		fieldType := formType.Field(i)
+
+		// ตรวจสอบว่าเป็นค่าศูนย์หรือไม่ (ถ้าไม่ใช่ แสดงว่าผู้ใช้ส่งค่าเข้ามา)
+		if !fieldValue.IsZero() {
+			userValue.FieldByName(fieldType.Name).Set(fieldValue)
+		}
+	}
+
+	// บันทึกข้อมูลที่อัปเดตลงฐานข้อมูล
+	if err := db.DB.Save(&user).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+		return
+	}
+
+	repornse := models.UserResponse{}
+	copier.Copy(&repornse, &user)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "User updated Select Name successfully"})
 }
