@@ -163,6 +163,8 @@ func Server(r *gin.Engine) {
 	BorrowListController := controllers.BorrowList{DB: db}
 	{
 		BorrowListGroup.GET("", BorrowListController.FindAll)
+		BorrowListGroup.PATCH("/update-date-return/:id", BorrowListController.UpdateDateReturn)
+		BorrowListGroup.PATCH("/update-status-borrow/:id", BorrowListController.UpdateStatusBorrow)
 		BorrowListGroup.GET("/:id", BorrowListController.FindOne)
 		BorrowListGroup.PUT("/:id", BorrowListController.Update)
 		BorrowListGroup.PATCH("/:id", BorrowListController.UpdateByName)

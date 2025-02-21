@@ -8,10 +8,10 @@ import (
 
 type BorrowList struct {
 	gorm.Model
-	DateBorrow             time.Time `gorm:"type:DATE;not null"`
-	DateReturn             time.Time `gorm:"type:DATE"`
-	DocBorrow              string    `gorm:"type:varchar(255)"`
-	DocReturn              string    `gorm:"type:varchar(255)"`
+	DateBorrow             time.Time  `gorm:"type:DATE;not null"`
+	DateReturn             *time.Time `gorm:"type:DATE"`
+	DocBorrow              string     `gorm:"type:varchar(255)"`
+	DocReturn              string     `gorm:"type:varchar(255)"`
 	ApprovalStatusBorrowID uint
 	ApprovalStatusBorrow   ApprovalStatus
 	ApprovalStatusReturnID uint
@@ -28,6 +28,15 @@ type CreateBorrowListForm struct {
 	ApprovalStatusBorrowID uint       `form:"approval_status_borrow_id" `
 	ApprovalStatusReturnID uint       `form:"approval_status_return_id" `
 	UserID                 uint       `form:"user_id" binding:"required"`
+	EquipmentID            []string   `form:"equipment_id[]" binding:"required"`
+}
+
+type UpdateStatusBorrow struct {
+	ApprovalStatusBorrowID uint `form:"approval_status_borrow_id" binding:"required"`
+}
+
+type UpdateStatusReturn struct {
+	ApprovalStatusReturnID uint `form:"approval_status_return_id" binding:"required"`
 }
 
 type UpdateByNameBorrowListForm struct {
@@ -37,16 +46,15 @@ type UpdateByNameBorrowListForm struct {
 	DocReturn              string     `form:"doc_return" binding:"omitempty"`
 	ApprovalStatusBorrowID uint       `form:"approval_status_borrow_id" binding:"omitempty"`
 	ApprovalStatusReturnID uint       `form:"approval_status_return_id" binding:"omitempty"`
-	UserID                 uint       `form:"user_id" binding:"omitempty"`
 }
 
 type BorrowListResponse struct {
-	ID                     uint       `json:"id"`
-	DateBorrow             *time.Time `json:"date_borrow"`
-	DateReturn             *time.Time `json:"date_return"`
-	DocBorrow              string     `json:"doc_borrow"`
-	DocReturn              string     `json:"doc_return"`
-	ApprovalStatusBorrowID uint       `json:"approval_status_borrow_id"`
-	ApprovalStatusReturnID uint       `json:"approval_status_return_id"`
-	UserID                 uint       `json:"user_id"`
+	ID                   uint           `json:"id"`
+	DateBorrow           *time.Time     `json:"date_borrow"`
+	DateReturn           *time.Time     `json:"date_return"`
+	DocBorrow            string         `json:"doc_borrow"`
+	DocReturn            string         `json:"doc_return"`
+	ApprovalStatusBorrow ApprovalStatus `json:"approval_status_borrow"`
+	ApprovalStatusReturn ApprovalStatus `json:"approval_status_return"`
+	User                 User           `json:"user"`
 }
