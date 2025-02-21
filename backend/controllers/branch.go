@@ -23,9 +23,9 @@ func (b *Branchs) FindAll(ctx *gin.Context) {
 	var branches []models.Branch
 	b.DB.Find(&branches)
 
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &branches)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.GenaralResponse
+	copier.Copy(&response, &branches)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (b *Branchs) FindOne(ctx *gin.Context) {
@@ -35,10 +35,10 @@ func (b *Branchs) FindOne(ctx *gin.Context) {
 		log.Fatal("Error findOne Branch :", err)
 		return
 	}
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &branches)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &branches)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (b *Branchs) Update(ctx *gin.Context) {
@@ -62,10 +62,10 @@ func (b *Branchs) Update(ctx *gin.Context) {
 	}
 
 	b.DB.Save(branches)
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &branches)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &branches)
 
-	ctx.JSON(http.StatusOK, gin.H{"branchs": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"branchs": response})
 }
 
 func (b *Branchs) Create(ctx *gin.Context) {
@@ -83,10 +83,10 @@ func (b *Branchs) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.GenaralRepornse{}
-	copier.Copy(&repornse, &branch)
+	response := models.GenaralResponse{}
+	copier.Copy(&response, &branch)
 
-	ctx.JSON(http.StatusCreated, gin.H{"branch": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"branch": response})
 }
 
 func (b *Branchs) Delete(ctx *gin.Context) {

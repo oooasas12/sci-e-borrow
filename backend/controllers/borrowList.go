@@ -21,9 +21,9 @@ func (db *BorrowList) FindAll(ctx *gin.Context) {
 	var borrowLists []models.BorrowList
 	db.DB.Preload("User").Preload("User.PositionFac").Preload("User.PositionBranch").Preload("User.Branch").Preload("ApprovalStatusBorrow").Preload("ApprovalStatusReturn").Find(&borrowLists)
 
-	var repornse []models.BorrowListResponse
-	copier.Copy(&repornse, &borrowLists)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.BorrowListResponse
+	copier.Copy(&response, &borrowLists)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *BorrowList) FindOne(ctx *gin.Context) {
@@ -34,10 +34,10 @@ func (db *BorrowList) FindOne(ctx *gin.Context) {
 		return
 	}
 
-	var repornse models.BorrowListResponse
-	copier.Copy(&repornse, &borrowLists)
+	var response models.BorrowListResponse
+	copier.Copy(&response, &borrowLists)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *BorrowList) Update(ctx *gin.Context) {
@@ -61,10 +61,10 @@ func (db *BorrowList) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(borrowLists)
-	var repornse []models.BorrowListResponse
-	copier.Copy(&repornse, &borrowLists)
+	var response []models.BorrowListResponse
+	copier.Copy(&response, &borrowLists)
 
-	ctx.JSON(http.StatusOK, gin.H{"borrowLists": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"borrowLists": response})
 }
 
 func (db *BorrowList) Create(ctx *gin.Context) {

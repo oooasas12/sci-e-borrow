@@ -23,9 +23,9 @@ func (db *BudgetSource) FindAll(ctx *gin.Context) {
 	var data []models.BudgetSource
 	db.DB.Find(&data)
 
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &data)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.GenaralResponse
+	copier.Copy(&response, &data)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *BudgetSource) FindOne(ctx *gin.Context) {
@@ -35,10 +35,10 @@ func (db *BudgetSource) FindOne(ctx *gin.Context) {
 		log.Fatal("Error findOne BudgetSource :", err)
 		return
 	}
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &data)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *BudgetSource) Update(ctx *gin.Context) {
@@ -62,10 +62,10 @@ func (db *BudgetSource) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(data)
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &data)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusOK, gin.H{"budget_source": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"budget_source": response})
 }
 
 func (db *BudgetSource) Create(ctx *gin.Context) {
@@ -83,10 +83,10 @@ func (db *BudgetSource) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.GenaralRepornse{}
-	copier.Copy(&repornse, &data)
+	response := models.GenaralResponse{}
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusCreated, gin.H{"budget_source": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"budget_source": response})
 }
 
 func (db *BudgetSource) Delete(ctx *gin.Context) {

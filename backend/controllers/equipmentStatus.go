@@ -23,9 +23,9 @@ func (db *EquipmentStatus) FindAll(ctx *gin.Context) {
 	var status []models.EquipmentStatus
 	db.DB.Find(&status)
 
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &status)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.GenaralResponse
+	copier.Copy(&response, &status)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *EquipmentStatus) FindOne(ctx *gin.Context) {
@@ -35,10 +35,10 @@ func (db *EquipmentStatus) FindOne(ctx *gin.Context) {
 		log.Fatal("Error findOne EquipmentStatus :", err)
 		return
 	}
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &status)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &status)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *EquipmentStatus) Update(ctx *gin.Context) {
@@ -62,10 +62,10 @@ func (db *EquipmentStatus) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(status)
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &status)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &status)
 
-	ctx.JSON(http.StatusOK, gin.H{"equipment_status": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"equipment_status": response})
 }
 
 func (db *EquipmentStatus) Create(ctx *gin.Context) {
@@ -83,10 +83,10 @@ func (db *EquipmentStatus) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.GenaralRepornse{}
-	copier.Copy(&repornse, &status)
+	response := models.GenaralResponse{}
+	copier.Copy(&response, &status)
 
-	ctx.JSON(http.StatusCreated, gin.H{"equipment_status": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"equipment_status": response})
 }
 
 func (db *EquipmentStatus) Delete(ctx *gin.Context) {

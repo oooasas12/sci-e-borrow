@@ -23,9 +23,9 @@ func (db *Unit) FindAll(ctx *gin.Context) {
 	var data []models.Unit
 	db.DB.Find(&data)
 
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &data)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.GenaralResponse
+	copier.Copy(&response, &data)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *Unit) FindOne(ctx *gin.Context) {
@@ -35,10 +35,10 @@ func (db *Unit) FindOne(ctx *gin.Context) {
 		log.Fatal("Error findOne Unit :", err)
 		return
 	}
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &data)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *Unit) Update(ctx *gin.Context) {
@@ -62,10 +62,10 @@ func (db *Unit) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(data)
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &data)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusOK, gin.H{"unit": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"unit": response})
 }
 
 func (db *Unit) Create(ctx *gin.Context) {
@@ -83,10 +83,10 @@ func (db *Unit) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.GenaralRepornse{}
-	copier.Copy(&repornse, &data)
+	response := models.GenaralResponse{}
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusCreated, gin.H{"unit": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"unit": response})
 }
 
 func (db *Unit) Delete(ctx *gin.Context) {

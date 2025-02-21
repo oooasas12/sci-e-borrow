@@ -19,9 +19,9 @@ func (db *EquipmentBroken) FindAll(ctx *gin.Context) {
 	var equipmentBrokens []models.EquipmentBroken
 	db.DB.Preload("Equipment").Preload("Equipment.EquipmentName").Preload("EquipmentStatus").Find(&equipmentBrokens)
 
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipmentBrokens)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipmentBrokens)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *EquipmentBroken) FindOne(ctx *gin.Context) {
@@ -32,10 +32,10 @@ func (db *EquipmentBroken) FindOne(ctx *gin.Context) {
 		return
 	}
 
-	var repornse []models.EquipmentBrokenResponse
-	copier.Copy(&repornse, &equipmentBroken)
+	var response []models.EquipmentBrokenResponse
+	copier.Copy(&response, &equipmentBroken)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *EquipmentBroken) Update(ctx *gin.Context) {
@@ -59,10 +59,10 @@ func (db *EquipmentBroken) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(equipmentBroken)
-	var repornse []models.EquipmentBrokenResponse
-	copier.Copy(&repornse, &equipmentBroken)
+	var response []models.EquipmentBrokenResponse
+	copier.Copy(&response, &equipmentBroken)
 
-	ctx.JSON(http.StatusOK, gin.H{"equipmentBroken": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"equipmentBroken": response})
 }
 
 func (db *EquipmentBroken) Create(ctx *gin.Context) {
@@ -90,10 +90,10 @@ func (db *EquipmentBroken) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.EquipmentBrokenResponse{}
-	copier.Copy(&repornse, &equipmentBroken)
+	response := models.EquipmentBrokenResponse{}
+	copier.Copy(&response, &equipmentBroken)
 
-	ctx.JSON(http.StatusCreated, gin.H{"equipmentBroken": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"equipmentBroken": response})
 }
 
 func (db *EquipmentBroken) Delete(ctx *gin.Context) {

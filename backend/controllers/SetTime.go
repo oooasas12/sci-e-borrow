@@ -20,9 +20,9 @@ func (db *SetTime) FindAll(ctx *gin.Context) {
 	var data []models.SetTime
 	db.DB.Preload("User").Preload("User.PositionFac").Preload("User.PositionBranch").Preload("User.Branch").Find(&data)
 
-	var repornse []models.SetTimeResponse
-	copier.Copy(&repornse, &data)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.SetTimeResponse
+	copier.Copy(&response, &data)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *SetTime) FindOne(ctx *gin.Context) {
@@ -32,10 +32,10 @@ func (db *SetTime) FindOne(ctx *gin.Context) {
 		log.Fatal("Error findOne SetTime :", err)
 		return
 	}
-	var repornse []models.SetTimeResponse
-	copier.Copy(&repornse, &data)
+	var response []models.SetTimeResponse
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *SetTime) Update(ctx *gin.Context) {
@@ -59,10 +59,10 @@ func (db *SetTime) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(data)
-	var repornse []models.SetTimeResponse
-	copier.Copy(&repornse, &data)
+	var response []models.SetTimeResponse
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusOK, gin.H{"set_time": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"set_time": response})
 }
 
 func (db *SetTime) Create(ctx *gin.Context) {
@@ -82,10 +82,10 @@ func (db *SetTime) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.SetTimeResponse{}
-	copier.Copy(&repornse, &data)
+	response := models.SetTimeResponse{}
+	copier.Copy(&response, &data)
 
-	ctx.JSON(http.StatusCreated, gin.H{"set_time": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"set_time": response})
 }
 
 func (db *SetTime) Delete(ctx *gin.Context) {

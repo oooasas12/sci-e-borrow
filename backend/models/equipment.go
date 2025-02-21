@@ -58,9 +58,9 @@ type EquipmentResponse struct {
 	DateCome        *time.Time             `json:"date_come"`
 	Feature         string                 `json:"feature"`
 	Location        string                 `json:"location"`
-	EquipmentStatus GenaralRepornse        `json:"equipment_status"`
-	BudgetSource    GenaralRepornse        `json:"budget_source"`
-	Unit            GenaralRepornse        `json:"unit"`
-	EquipmentGroup  EquipmentGroupRepornse `json:"equipment_group"`
-	EquipmentName   GenaralRepornse        `json:"equipment_name"`
+	EquipmentStatus GenaralResponse        `json:"equipment_status"`
+	BudgetSource    GenaralResponse        `json:"budget_source"`
+	Unit            GenaralResponse        `json:"unit"`
+	EquipmentGroup  EquipmentGroupResponse `json:"equipment_group"`
+	EquipmentName   GenaralResponse        `json:"equipment_name"`
 }

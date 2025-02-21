@@ -18,7 +18,7 @@ type CreateBorrowListDetailForm struct {
 }
 
 type BorrowListDetailResponse struct {
-	ID           uint `json:"id"`
-	BorrowListID uint `json:"borrow_list_id"`
-	EquipmentID  uint `json:"equipment_id"`
+	ID         uint       `json:"id"`
+	BorrowList BorrowList `json:"borrow_list"`
+	Equipment  Equipment  `json:"equipment"`
 }

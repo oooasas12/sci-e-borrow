@@ -44,5 +44,5 @@ type EquipmentBrokenResponse struct {
 	DateEndRepair   *time.Time        `json:"date_end_repair"`
 	Detail          string            `json:"detail"`
 	Equipment       EquipmentResponse `json:"equipment"`
-	EquipmentStatus GenaralRepornse   `json:"equipment_status"`
+	EquipmentStatus GenaralResponse   `json:"equipment_status"`
 }

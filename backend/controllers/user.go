@@ -21,9 +21,9 @@ func (u *User) FindAll(ctx *gin.Context) {
 	u.DB.Preload("PositionFac").Preload("PositionBranch").Preload("Branch").Find(&users)
 
 	fmt.Println("users :: ", users)
-	var repornse []models.UserResponse
-	copier.Copy(&repornse, &users)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.UserResponse
+	copier.Copy(&response, &users)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (u *User) FindOne(ctx *gin.Context) {
@@ -34,10 +34,10 @@ func (u *User) FindOne(ctx *gin.Context) {
 		return
 	}
 
-	var repornse []models.UserResponse
-	copier.Copy(&repornse, &users)
+	var response []models.UserResponse
+	copier.Copy(&response, &users)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (u *User) Update(ctx *gin.Context) {
@@ -61,8 +61,8 @@ func (u *User) Update(ctx *gin.Context) {
 	}
 
 	u.DB.Save(users)
-	var repornse []models.UserResponse
-	copier.Copy(&repornse, &users)
+	var response []models.UserResponse
+	copier.Copy(&response, &users)
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
@@ -82,10 +82,10 @@ func (u *User) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.UserResponse{}
-	copier.Copy(&repornse, &user)
+	response := models.UserResponse{}
+	copier.Copy(&response, &user)
 
-	ctx.JSON(http.StatusCreated, gin.H{"user": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"user": response})
 }
 
 func (u *User) Delete(ctx *gin.Context) {
@@ -154,8 +154,8 @@ func (db *User) UpdateByName(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.UserResponse{}
-	copier.Copy(&repornse, &user)
+	response := models.UserResponse{}
+	copier.Copy(&response, &user)
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User updated Select Name successfully"})
 }

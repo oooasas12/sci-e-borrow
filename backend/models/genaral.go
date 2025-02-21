@@ -55,12 +55,12 @@ type BudgetSource struct {
 }
 
 // type Reponse
-type GenaralRepornse struct {
+type GenaralResponse struct {
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
-type EquipmentGroupRepornse struct {
+type EquipmentGroupResponse struct {
 	ID   uint   `json:"id"`
 	Code string `json:"code"`
 	Name string `json:"name"`

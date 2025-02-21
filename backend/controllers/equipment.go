@@ -21,9 +21,9 @@ func (db *Equipment) FindAll(ctx *gin.Context) {
 	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Find(&equipments)
 
 	fmt.Println("equipments :: ", equipments)
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipments)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *Equipment) FindOne(ctx *gin.Context) {
@@ -34,10 +34,10 @@ func (db *Equipment) FindOne(ctx *gin.Context) {
 		return
 	}
 
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipments)
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *Equipment) Update(ctx *gin.Context) {
@@ -61,10 +61,10 @@ func (db *Equipment) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(equipments)
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipments)
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
 
-	ctx.JSON(http.StatusOK, gin.H{"equipments": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"equipments": response})
 }
 
 func (db *Equipment) Create(ctx *gin.Context) {
@@ -82,10 +82,10 @@ func (db *Equipment) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.EquipmentResponse{}
-	copier.Copy(&repornse, &equipment)
+	response := models.EquipmentResponse{}
+	copier.Copy(&response, &equipment)
 
-	ctx.JSON(http.StatusCreated, gin.H{"equipment": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"equipment": response})
 }
 
 func (db *Equipment) Delete(ctx *gin.Context) {
@@ -161,43 +161,43 @@ func (db *Equipment) FindDatafree(ctx *gin.Context) {
 	var equipments []models.Equipment
 	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 1).Find(&equipments)
 
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipments)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *Equipment) FindDataBorrow(ctx *gin.Context) {
 	var equipments []models.Equipment
 	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 2).Find(&equipments)
 
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipments)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *Equipment) FindDataEquipmentBroken(ctx *gin.Context) {
 	var equipments []models.Equipment
 	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 3).Find(&equipments)
 
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipments)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *Equipment) FindDataEquipmentLost(ctx *gin.Context) {
 	var equipments []models.Equipment
 	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 4).Find(&equipments)
 
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipments)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *Equipment) FindDataEquipmentUnableUse(ctx *gin.Context) {
 	var equipments []models.Equipment
 	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 6).Find(&equipments)
 
-	var repornse []models.EquipmentResponse
-	copier.Copy(&repornse, &equipments)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }

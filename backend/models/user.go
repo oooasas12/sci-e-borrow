@@ -39,7 +39,7 @@ type UserResponse struct {
 	ID             uint            `json:"id"`
 	Name           string          `json:"name"`
 	Username       string          `json:"username"`
-	PositionFac    GenaralRepornse `json:"position_fac"`
-	PositionBranch GenaralRepornse `json:"position_branch"`
-	Branch         GenaralRepornse `json:"branch"`
+	PositionFac    GenaralResponse `json:"position_fac"`
+	PositionBranch GenaralResponse `json:"position_branch"`
+	Branch         GenaralResponse `json:"branch"`
 }

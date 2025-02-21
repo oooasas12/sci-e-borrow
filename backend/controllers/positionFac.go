@@ -23,9 +23,9 @@ func (b *PositionFac) FindAll(ctx *gin.Context) {
 	var positionFacs []models.PositionFac
 	b.DB.Find(&positionFacs)
 
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &positionFacs)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.GenaralResponse
+	copier.Copy(&response, &positionFacs)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (b *PositionFac) FindOne(ctx *gin.Context) {
@@ -35,10 +35,10 @@ func (b *PositionFac) FindOne(ctx *gin.Context) {
 		log.Fatal("Error findOne PositionFac :", err)
 		return
 	}
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &positionFacs)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &positionFacs)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (b *PositionFac) Update(ctx *gin.Context) {
@@ -62,10 +62,10 @@ func (b *PositionFac) Update(ctx *gin.Context) {
 	}
 
 	b.DB.Save(positionFacs)
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &positionFacs)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &positionFacs)
 
-	ctx.JSON(http.StatusOK, gin.H{"position_fac": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"position_fac": response})
 }
 
 func (b *PositionFac) Create(ctx *gin.Context) {
@@ -83,10 +83,10 @@ func (b *PositionFac) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.GenaralRepornse{}
-	copier.Copy(&repornse, &positionFac)
+	response := models.GenaralResponse{}
+	copier.Copy(&response, &positionFac)
 
-	ctx.JSON(http.StatusCreated, gin.H{"position_fac": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"position_fac": response})
 }
 
 func (b *PositionFac) Delete(ctx *gin.Context) {

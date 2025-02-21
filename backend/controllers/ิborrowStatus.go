@@ -23,9 +23,9 @@ func (db *BorrowStatus) FindAll(ctx *gin.Context) {
 	var status []models.BorrowStatus
 	db.DB.Find(&status)
 
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &status)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.GenaralResponse
+	copier.Copy(&response, &status)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *BorrowStatus) FindOne(ctx *gin.Context) {
@@ -35,10 +35,10 @@ func (db *BorrowStatus) FindOne(ctx *gin.Context) {
 		log.Fatal("Error findOne BorrowStatus :", err)
 		return
 	}
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &status)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &status)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *BorrowStatus) Update(ctx *gin.Context) {
@@ -62,10 +62,10 @@ func (db *BorrowStatus) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(status)
-	var repornse []models.GenaralRepornse
-	copier.Copy(&repornse, &status)
+	var response []models.GenaralResponse
+	copier.Copy(&response, &status)
 
-	ctx.JSON(http.StatusOK, gin.H{"borrow_status": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"borrow_status": response})
 }
 
 func (db *BorrowStatus) Create(ctx *gin.Context) {
@@ -83,10 +83,10 @@ func (db *BorrowStatus) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.GenaralRepornse{}
-	copier.Copy(&repornse, &status)
+	response := models.GenaralResponse{}
+	copier.Copy(&response, &status)
 
-	ctx.JSON(http.StatusCreated, gin.H{"borrow_status": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"borrow_status": response})
 }
 
 func (db *BorrowStatus) Delete(ctx *gin.Context) {

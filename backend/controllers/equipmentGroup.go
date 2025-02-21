@@ -24,9 +24,9 @@ func (db *EquipmentGroup) FindAll(ctx *gin.Context) {
 	var groups []models.EquipmentGroup
 	db.DB.Find(&groups)
 
-	var repornse []models.EquipmentGroupRepornse
-	copier.Copy(&repornse, &groups)
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	var response []models.EquipmentGroupResponse
+	copier.Copy(&response, &groups)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *EquipmentGroup) FindOne(ctx *gin.Context) {
@@ -36,10 +36,10 @@ func (db *EquipmentGroup) FindOne(ctx *gin.Context) {
 		log.Fatal("Error findOne EquipmentGroup :", err)
 		return
 	}
-	var repornse []models.EquipmentGroupRepornse
-	copier.Copy(&repornse, &groups)
+	var response []models.EquipmentGroupResponse
+	copier.Copy(&response, &groups)
 
-	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
 func (db *EquipmentGroup) Update(ctx *gin.Context) {
@@ -63,10 +63,10 @@ func (db *EquipmentGroup) Update(ctx *gin.Context) {
 	}
 
 	db.DB.Save(groups)
-	var repornse []models.EquipmentGroupRepornse
-	copier.Copy(&repornse, &groups)
+	var response []models.EquipmentGroupResponse
+	copier.Copy(&response, &groups)
 
-	ctx.JSON(http.StatusOK, gin.H{"equipment_group": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"equipment_group": response})
 }
 
 func (db *EquipmentGroup) Create(ctx *gin.Context) {
@@ -84,10 +84,10 @@ func (db *EquipmentGroup) Create(ctx *gin.Context) {
 		return
 	}
 
-	repornse := models.EquipmentGroupRepornse{}
-	copier.Copy(&repornse, &group)
+	response := models.EquipmentGroupResponse{}
+	copier.Copy(&response, &group)
 
-	ctx.JSON(http.StatusCreated, gin.H{"equipment_group": repornse})
+	ctx.JSON(http.StatusCreated, gin.H{"equipment_group": response})
 }
 
 func (db *EquipmentGroup) Delete(ctx *gin.Context) {
