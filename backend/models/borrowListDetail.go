@@ -13,8 +13,12 @@ type BorrowListDetail struct {
 }
 
 type CreateBorrowListDetailForm struct {
-	BorrowListID uint `form:"borrow_list_id" binding:"required"`
-	EquipmentID  uint `form:"equipment_id" binding:"required"`
+	BorrowListID uint     `form:"borrow_list_id" binding:"required"`
+	EquipmentID  []string `form:"equipment_id[]" binding:"required"`
+}
+
+type DeleteBorrowListDetailForm struct {
+	ID []string `form:"id[]" binding:"required"`
 }
 
 type BorrowListDetailResponse struct {

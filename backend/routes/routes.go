@@ -71,15 +71,15 @@ func Server(r *gin.Engine) {
 		EquipmentStatusGroup.DELETE("/:id", EquipmentStatusController.Delete)
 	}
 
-	BorrowStatusGroup := r.Group("/api/borrow-status")
-	BorrowStatusController := controllers.BorrowStatus{DB: db}
-	{
-		BorrowStatusGroup.GET("", BorrowStatusController.FindAll)
-		BorrowStatusGroup.GET("/:id", BorrowStatusController.FindOne)
-		BorrowStatusGroup.PUT("/:id", BorrowStatusController.Update)
-		BorrowStatusGroup.POST("", BorrowStatusController.Create)
-		BorrowStatusGroup.DELETE("/:id", BorrowStatusController.Delete)
-	}
+	// BorrowStatusGroup := r.Group("/api/borrow-status")
+	// BorrowStatusController := controllers.BorrowStatus{DB: db}
+	// {
+	// 	BorrowStatusGroup.GET("", BorrowStatusController.FindAll)
+	// 	BorrowStatusGroup.GET("/:id", BorrowStatusController.FindOne)
+	// 	BorrowStatusGroup.PUT("/:id", BorrowStatusController.Update)
+	// 	BorrowStatusGroup.POST("", BorrowStatusController.Create)
+	// 	BorrowStatusGroup.DELETE("/:id", BorrowStatusController.Delete)
+	// }
 
 	ApprovalStatusGroup := r.Group("/api/approval-status")
 	ApprovalStatusController := controllers.ApprovalStatus{DB: db}
@@ -170,6 +170,14 @@ func Server(r *gin.Engine) {
 		BorrowListGroup.PATCH("/:id", BorrowListController.UpdateByName)
 		BorrowListGroup.POST("", BorrowListController.Create)
 		BorrowListGroup.DELETE("/:id", BorrowListController.Delete)
+	}
+
+	BorrowListDetailGroup := r.Group("/api/borrow-list-detail")
+	BorrowListDetailController := controllers.BorrowListDetail{DB: db}
+	{
+		BorrowListDetailGroup.GET("/:id", BorrowListDetailController.FindByBorrowListID)
+		BorrowListDetailGroup.POST("", BorrowListDetailController.Create)
+		BorrowListDetailGroup.DELETE("", BorrowListDetailController.Delete)
 	}
 
 }

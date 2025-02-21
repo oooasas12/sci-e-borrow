@@ -34,7 +34,6 @@ func InitDB() {
 		&models.PositionFac{},
 		&models.EquipmentGroup{},
 		&models.ApprovalStatus{},
-		&models.BorrowStatus{},
 		&models.EquipmentStatus{},
 		&models.EquipmentName{},
 		&models.Unit{},
@@ -46,6 +45,7 @@ func InitDB() {
 		&models.BorrowListDetail{}); err != nil {
 		log.Fatal("❌ AutoMigrate failed:", err)
 	}
+	// &models.BorrowStatus{},
 }
 
 func GetDB() *gorm.DB {

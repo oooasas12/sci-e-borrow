@@ -18,7 +18,7 @@ type Equipment struct {
 
 func (db *Equipment) FindAll(ctx *gin.Context) {
 	var equipments []models.Equipment
-	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Find(&equipments)
+	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Find(&equipments)
 
 	fmt.Println("equipments :: ", equipments)
 	var response []models.EquipmentResponse
@@ -29,7 +29,7 @@ func (db *Equipment) FindAll(ctx *gin.Context) {
 func (db *Equipment) FindOne(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	var equipments models.Equipment
-	if err := db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").First(&equipments, id).Error; err != nil {
+	if err := db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").First(&equipments, id).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid equipment ID"})
 		return
 	}
@@ -159,7 +159,7 @@ func (db *Equipment) UpdateByName(ctx *gin.Context) {
 
 func (db *Equipment) FindDatafree(ctx *gin.Context) {
 	var equipments []models.Equipment
-	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 1).Find(&equipments)
+	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 1).Find(&equipments)
 
 	var response []models.EquipmentResponse
 	copier.Copy(&response, &equipments)
@@ -168,7 +168,7 @@ func (db *Equipment) FindDatafree(ctx *gin.Context) {
 
 func (db *Equipment) FindDataBorrow(ctx *gin.Context) {
 	var equipments []models.Equipment
-	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 2).Find(&equipments)
+	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 2).Find(&equipments)
 
 	var response []models.EquipmentResponse
 	copier.Copy(&response, &equipments)
@@ -177,7 +177,7 @@ func (db *Equipment) FindDataBorrow(ctx *gin.Context) {
 
 func (db *Equipment) FindDataEquipmentBroken(ctx *gin.Context) {
 	var equipments []models.Equipment
-	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 3).Find(&equipments)
+	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 3).Find(&equipments)
 
 	var response []models.EquipmentResponse
 	copier.Copy(&response, &equipments)
@@ -186,7 +186,7 @@ func (db *Equipment) FindDataEquipmentBroken(ctx *gin.Context) {
 
 func (db *Equipment) FindDataEquipmentLost(ctx *gin.Context) {
 	var equipments []models.Equipment
-	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 4).Find(&equipments)
+	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 4).Find(&equipments)
 
 	var response []models.EquipmentResponse
 	copier.Copy(&response, &equipments)
@@ -195,7 +195,7 @@ func (db *Equipment) FindDataEquipmentLost(ctx *gin.Context) {
 
 func (db *Equipment) FindDataEquipmentUnableUse(ctx *gin.Context) {
 	var equipments []models.Equipment
-	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 6).Find(&equipments)
+	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 6).Find(&equipments)
 
 	var response []models.EquipmentResponse
 	copier.Copy(&response, &equipments)
