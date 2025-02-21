@@ -25,7 +25,7 @@ func (db *Unit) FindAll(ctx *gin.Context) {
 
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &data)
-	ctx.JSON(http.StatusOK, gin.H{"unit": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *Unit) FindOne(ctx *gin.Context) {
@@ -38,7 +38,7 @@ func (db *Unit) FindOne(ctx *gin.Context) {
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &data)
 
-	ctx.JSON(http.StatusOK, gin.H{"unit": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *Unit) Update(ctx *gin.Context) {

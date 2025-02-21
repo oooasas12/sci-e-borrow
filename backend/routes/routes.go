@@ -142,4 +142,27 @@ func Server(r *gin.Engine) {
 		EquipmentGroup.DELETE("/:id", EquipmentController.Delete)
 	}
 
+	EquipmentBrokenGroup := r.Group("/api/equipment-broken")
+	EquipmentBrokenController := controllers.EquipmentBroken{DB: db}
+	{
+		EquipmentBrokenGroup.GET("", EquipmentBrokenController.FindAll)
+		EquipmentBrokenGroup.GET("/:id", EquipmentBrokenController.FindOne)
+		EquipmentBrokenGroup.PUT("/:id", EquipmentBrokenController.Update)
+		EquipmentBrokenGroup.PATCH("/:id", EquipmentBrokenController.UpdateByName)
+		EquipmentBrokenGroup.PATCH("/update-status", EquipmentBrokenController.UpdateStatus)
+		EquipmentBrokenGroup.POST("", EquipmentBrokenController.Create)
+		EquipmentBrokenGroup.DELETE("/:id", EquipmentBrokenController.Delete)
+	}
+
+	BorrowListGroup := r.Group("/api/borrow-list")
+	BorrowListController := controllers.BorrowList{DB: db}
+	{
+		BorrowListGroup.GET("", BorrowListController.FindAll)
+		BorrowListGroup.GET("/:id", BorrowListController.FindOne)
+		BorrowListGroup.PUT("/:id", BorrowListController.Update)
+		BorrowListGroup.PATCH("/:id", BorrowListController.UpdateByName)
+		BorrowListGroup.POST("", BorrowListController.Create)
+		BorrowListGroup.DELETE("/:id", BorrowListController.Delete)
+	}
+
 }

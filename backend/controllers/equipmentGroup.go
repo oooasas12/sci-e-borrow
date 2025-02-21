@@ -26,7 +26,7 @@ func (db *EquipmentGroup) FindAll(ctx *gin.Context) {
 
 	var repornse []models.EquipmentGroupRepornse
 	copier.Copy(&repornse, &groups)
-	ctx.JSON(http.StatusOK, gin.H{"equipment_group": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *EquipmentGroup) FindOne(ctx *gin.Context) {
@@ -39,7 +39,7 @@ func (db *EquipmentGroup) FindOne(ctx *gin.Context) {
 	var repornse []models.EquipmentGroupRepornse
 	copier.Copy(&repornse, &groups)
 
-	ctx.JSON(http.StatusOK, gin.H{"equipment_group": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *EquipmentGroup) Update(ctx *gin.Context) {

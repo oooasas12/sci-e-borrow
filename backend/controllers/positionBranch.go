@@ -25,7 +25,7 @@ func (b *PositionBranchs) FindAll(ctx *gin.Context) {
 
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &positionbranches)
-	ctx.JSON(http.StatusOK, gin.H{"position_branch": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (b *PositionBranchs) FindOne(ctx *gin.Context) {
@@ -38,7 +38,7 @@ func (b *PositionBranchs) FindOne(ctx *gin.Context) {
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &positionbranches)
 
-	ctx.JSON(http.StatusOK, gin.H{"position_branch": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (b *PositionBranchs) Update(ctx *gin.Context) {

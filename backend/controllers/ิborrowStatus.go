@@ -25,7 +25,7 @@ func (db *BorrowStatus) FindAll(ctx *gin.Context) {
 
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &status)
-	ctx.JSON(http.StatusOK, gin.H{"borrow_status": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *BorrowStatus) FindOne(ctx *gin.Context) {
@@ -38,7 +38,7 @@ func (db *BorrowStatus) FindOne(ctx *gin.Context) {
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &status)
 
-	ctx.JSON(http.StatusOK, gin.H{"borrow_status": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *BorrowStatus) Update(ctx *gin.Context) {

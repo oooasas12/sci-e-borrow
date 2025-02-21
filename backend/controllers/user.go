@@ -23,7 +23,7 @@ func (u *User) FindAll(ctx *gin.Context) {
 	fmt.Println("users :: ", users)
 	var repornse []models.UserResponse
 	copier.Copy(&repornse, &users)
-	ctx.JSON(http.StatusOK, gin.H{"users": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (u *User) FindOne(ctx *gin.Context) {
@@ -37,7 +37,7 @@ func (u *User) FindOne(ctx *gin.Context) {
 	var repornse []models.UserResponse
 	copier.Copy(&repornse, &users)
 
-	ctx.JSON(http.StatusOK, gin.H{"users": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (u *User) Update(ctx *gin.Context) {

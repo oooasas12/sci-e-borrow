@@ -23,21 +23,21 @@ func (db *Equipment) FindAll(ctx *gin.Context) {
 	fmt.Println("equipments :: ", equipments)
 	var repornse []models.EquipmentResponse
 	copier.Copy(&repornse, &equipments)
-	ctx.JSON(http.StatusOK, gin.H{"equipments": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *Equipment) FindOne(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	var equipments models.Equipment
 	if err := db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").First(&equipments, id).Error; err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid equipment ID"})
 		return
 	}
 
 	var repornse []models.EquipmentResponse
 	copier.Copy(&repornse, &equipments)
 
-	ctx.JSON(http.StatusOK, gin.H{"equipments": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *Equipment) Update(ctx *gin.Context) {
@@ -50,7 +50,7 @@ func (db *Equipment) Update(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	var equipments models.Equipment
 	if err := db.DB.First(&equipments, id).Error; err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid equipment ID"})
 		return
 	}
 
@@ -92,20 +92,20 @@ func (db *Equipment) Delete(ctx *gin.Context) {
 	// ดึงค่า ID จากพารามิเตอร์ใน URL
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid equipment ID"})
 		return
 	}
 
 	// ค้นหาผู้ใช้ตาม ID
-	var user models.Equipment
-	if err := db.DB.First(&user, id).Error; err != nil {
+	var equipment models.Equipment
+	if err := db.DB.First(&equipment, id).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Equipment not found"})
 		return
 	}
 
 	// ลบข้อมูลผู้ใช้
-	if err := db.DB.Delete(&user).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+	if err := db.DB.Delete(&equipment).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete equipment"})
 		return
 	}
 

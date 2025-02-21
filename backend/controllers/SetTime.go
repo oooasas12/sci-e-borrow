@@ -22,7 +22,7 @@ func (db *SetTime) FindAll(ctx *gin.Context) {
 
 	var repornse []models.SetTimeResponse
 	copier.Copy(&repornse, &data)
-	ctx.JSON(http.StatusOK, gin.H{"set_time": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *SetTime) FindOne(ctx *gin.Context) {
@@ -35,7 +35,7 @@ func (db *SetTime) FindOne(ctx *gin.Context) {
 	var repornse []models.SetTimeResponse
 	copier.Copy(&repornse, &data)
 
-	ctx.JSON(http.StatusOK, gin.H{"set_time": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (db *SetTime) Update(ctx *gin.Context) {

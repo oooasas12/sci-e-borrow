@@ -25,7 +25,7 @@ func (b *PositionFac) FindAll(ctx *gin.Context) {
 
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &positionFacs)
-	ctx.JSON(http.StatusOK, gin.H{"position_fac": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (b *PositionFac) FindOne(ctx *gin.Context) {
@@ -38,7 +38,7 @@ func (b *PositionFac) FindOne(ctx *gin.Context) {
 	var repornse []models.GenaralRepornse
 	copier.Copy(&repornse, &positionFacs)
 
-	ctx.JSON(http.StatusOK, gin.H{"position_fac": repornse})
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
 }
 
 func (b *PositionFac) Update(ctx *gin.Context) {
