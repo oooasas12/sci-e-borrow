@@ -136,6 +136,11 @@ func Server(r *gin.Engine) {
 	{
 		EquipmentGroup.GET("", EquipmentController.FindAll)
 		EquipmentGroup.GET("/:id", EquipmentController.FindOne)
+		EquipmentGroup.GET("/find-data-free", EquipmentController.FindDatafree)
+		EquipmentGroup.GET("/find-data-borrow", EquipmentController.FindDataBorrow)
+		EquipmentGroup.GET("/find-data-broken", EquipmentController.FindDataEquipmentBroken)
+		EquipmentGroup.GET("/find-data-lost", EquipmentController.FindDataEquipmentLost)
+		EquipmentGroup.GET("/find-data-unable", EquipmentController.FindDataEquipmentUnableUse)
 		EquipmentGroup.PUT("/:id", EquipmentController.Update)
 		EquipmentGroup.PATCH("/:id", EquipmentController.UpdateByName)
 		EquipmentGroup.POST("", EquipmentController.Create)

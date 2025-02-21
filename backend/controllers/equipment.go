@@ -156,3 +156,48 @@ func (db *Equipment) UpdateByName(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Equipment updated successfully", "equipment": equipment})
 }
+
+func (db *Equipment) FindDatafree(ctx *gin.Context) {
+	var equipments []models.Equipment
+	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 1).Find(&equipments)
+
+	var repornse []models.EquipmentResponse
+	copier.Copy(&repornse, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+}
+
+func (db *Equipment) FindDataBorrow(ctx *gin.Context) {
+	var equipments []models.Equipment
+	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 2).Find(&equipments)
+
+	var repornse []models.EquipmentResponse
+	copier.Copy(&repornse, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+}
+
+func (db *Equipment) FindDataEquipmentBroken(ctx *gin.Context) {
+	var equipments []models.Equipment
+	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 3).Find(&equipments)
+
+	var repornse []models.EquipmentResponse
+	copier.Copy(&repornse, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+}
+
+func (db *Equipment) FindDataEquipmentLost(ctx *gin.Context) {
+	var equipments []models.Equipment
+	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 4).Find(&equipments)
+
+	var repornse []models.EquipmentResponse
+	copier.Copy(&repornse, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+}
+
+func (db *Equipment) FindDataEquipmentUnableUse(ctx *gin.Context) {
+	var equipments []models.Equipment
+	db.DB.Preload("EquipmentStatus").Preload("BorrowStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 6).Find(&equipments)
+
+	var repornse []models.EquipmentResponse
+	copier.Copy(&repornse, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": repornse})
+}
