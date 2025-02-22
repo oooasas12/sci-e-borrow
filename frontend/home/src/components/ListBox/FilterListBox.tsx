@@ -6,7 +6,7 @@ import { FaCheck } from 'react-icons/fa';
 // Define props type
 interface FilterListBoxProps {
     selected: string[]; // Selected items
-    item: { name: string }[]; // List of all group items
+    item: {id: number, name: string }[]; // List of all group items
     filter: (value: string) => void; // Function to filter selected group
     placeholder: string;
 }

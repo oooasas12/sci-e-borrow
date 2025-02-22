@@ -1,6 +1,6 @@
 export interface Group {
-    id: string | number,
-    name: String,
+    id: number,
+    name: string,
 }
 
 export interface Branch {
@@ -10,13 +10,12 @@ export interface Branch {
 
 export interface Faculty {
     id: string | number,
-    name: String,
+    name: string,
 }
 
 export interface PositionBranch {
     id: number;
     name: string;
-    branch_id: number;
 }
 
 export interface PositionFac {

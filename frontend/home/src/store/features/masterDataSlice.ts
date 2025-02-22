@@ -71,4 +71,4 @@ export const {
   setBudgetSource,
 } = masterDataSlice.actions;
 
-export default masterDataSlice.reducer; 
+export default masterDataSlice.reducer;

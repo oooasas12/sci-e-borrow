@@ -37,65 +37,65 @@ export default function Login() {
           dispatch(setUser(userData.data));
 
           // ดึงข้อมูลพื้นฐานทั้งหมด
-          try {
-            const [
-              branchRes,
-              positionBranchRes,
-              positionFacRes,
-              equipmentGroupRes,
-              equipmentStatusRes,
-              approvalStatusRes,
-              equipmentNameRes,
-              unitRes,
-              budgetSourceRes
-            ] = await Promise.all([
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch`),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-branch`),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-fac`),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-group`),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-status`),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/approval-status`),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-name`),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/unit`),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/budget-source`)
-            ]);
+          // try {
+          //   const [
+          //     branchRes,
+          //     positionBranchRes,
+          //     positionFacRes,
+          //     equipmentGroupRes,
+          //     equipmentStatusRes,
+          //     approvalStatusRes,
+          //     equipmentNameRes,
+          //     unitRes,
+          //     budgetSourceRes
+          //   ] = await Promise.all([
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch`),
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-branch`),
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-fac`),
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-group`),
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-status`),
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/approval-status`),
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-name`),
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/unit`),
+          //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/budget-source`)
+          //   ]);
 
-            const [
-              branchData,
-              positionBranchData,
-              positionFacData,
-              equipmentGroupData,
-              equipmentStatusData,
-              approvalStatusData,
-              equipmentNameData,
-              unitData,
-              budgetSourceData
-            ] = await Promise.all([
-              branchRes.json(),
-              positionBranchRes.json(),
-              positionFacRes.json(),
-              equipmentGroupRes.json(),
-              equipmentStatusRes.json(),
-              approvalStatusRes.json(),
-              equipmentNameRes.json(),
-              unitRes.json(),
-              budgetSourceRes.json()
-            ]);
+          //   const [
+          //     branchData,
+          //     positionBranchData,
+          //     positionFacData,
+          //     equipmentGroupData,
+          //     equipmentStatusData,
+          //     approvalStatusData,
+          //     equipmentNameData,
+          //     unitData,
+          //     budgetSourceData
+          //   ] = await Promise.all([
+          //     branchRes.json(),
+          //     positionBranchRes.json(),
+          //     positionFacRes.json(),
+          //     equipmentGroupRes.json(),
+          //     equipmentStatusRes.json(),
+          //     approvalStatusRes.json(),
+          //     equipmentNameRes.json(),
+          //     unitRes.json(),
+          //     budgetSourceRes.json()
+          //   ]);
 
-            // เก็บข้อมูลทั้งหมดลง Redux
-            dispatch(setBranch(branchData));
-            dispatch(setPositionBranch(positionBranchData));
-            dispatch(setPositionFac(positionFacData));
-            dispatch(setEquipmentGroup(equipmentGroupData));
-            dispatch(setEquipmentStatus(equipmentStatusData));
-            dispatch(setApprovalStatus(approvalStatusData));
-            dispatch(setEquipmentName(equipmentNameData));
-            dispatch(setUnit(unitData));
-            dispatch(setBudgetSource(budgetSourceData));
+          //   // เก็บข้อมูลทั้งหมดลง Redux
+          //   dispatch(setBranch(branchData));
+          //   dispatch(setPositionBranch(positionBranchData));
+          //   dispatch(setPositionFac(positionFacData));
+          //   dispatch(setEquipmentGroup(equipmentGroupData));
+          //   dispatch(setEquipmentStatus(equipmentStatusData));
+          //   dispatch(setApprovalStatus(approvalStatusData));
+          //   dispatch(setEquipmentName(equipmentNameData));
+          //   dispatch(setUnit(unitData));
+          //   dispatch(setBudgetSource(budgetSourceData));
 
-          } catch (error) {
-            console.error('เกิดข้อผิดพลาดในการดึงข้อมูลพื้นฐาน:', error);
-          }
+          // } catch (error) {
+          //   console.error('เกิดข้อผิดพลาดในการดึงข้อมูลพื้นฐาน:', error);
+          // }
 
           toast.success('กำลังเข้าสู่ระบบ', {
             duration: 3000

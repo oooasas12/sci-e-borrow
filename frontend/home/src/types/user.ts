@@ -1,11 +1,11 @@
-import { Branch, Faculty, Group } from "./general";
+import { Branch, PositionFac, PositionBranch } from "./general";
 
 export interface User {
     id: string | number,
     name: string,
     username: string,
     password: string,
-    fac: Faculty,
-    group: Group,
-    branch: Branch
+    position_fac: PositionFac,
+    branch: Branch,
+    position_branch: PositionBranch
 }
