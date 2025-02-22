@@ -7,32 +7,118 @@ import { FaUser } from "react-icons/fa6";
 import { FiLogIn } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { setBranch, setPositionBranch, setPositionFac, setEquipmentGroup, setEquipmentStatus, setApprovalStatus, setEquipmentName, setUnit, setBudgetSource } from '@/store/features/masterDataSlice';
+import { setUser } from '@/store/features/authSlice';
 
 export default function Login() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errorLogin, setErrorLogin] = useState(false)
 
-  const user = [
-    { username: 'donut', password: '1234' },
-    { username: 'CD', password: 'cd1234' }
-  ]
+  const handleClick = async () => {
+    if (username && password) {
+      try {
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
 
-  const handleClick = () => {
-    if (username && password && user.filter(item => item.username == username && item.password == password).length != 0) {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+          method: 'POST',
+          body: formData
+        });
+  
+        if (response.ok) {
+          const userData = await response.json();
+          
+          // เก็บข้อมูลผู้ใช้ลง Redux
+          dispatch(setUser(userData.data));
 
-      toast.success('กำลังเข้าสู่ระบบ', {
-        duration: 3000
-      })
-      setTimeout(() => {
-        router.push('/equipment-bow');
-      }, 3000); // 3000ms = 3 วินาที
+          // ดึงข้อมูลพื้นฐานทั้งหมด
+          try {
+            const [
+              branchRes,
+              positionBranchRes,
+              positionFacRes,
+              equipmentGroupRes,
+              equipmentStatusRes,
+              approvalStatusRes,
+              equipmentNameRes,
+              unitRes,
+              budgetSourceRes
+            ] = await Promise.all([
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-branch`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-fac`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-group`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-status`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/approval-status`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-name`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/unit`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/budget-source`)
+            ]);
+
+            const [
+              branchData,
+              positionBranchData,
+              positionFacData,
+              equipmentGroupData,
+              equipmentStatusData,
+              approvalStatusData,
+              equipmentNameData,
+              unitData,
+              budgetSourceData
+            ] = await Promise.all([
+              branchRes.json(),
+              positionBranchRes.json(),
+              positionFacRes.json(),
+              equipmentGroupRes.json(),
+              equipmentStatusRes.json(),
+              approvalStatusRes.json(),
+              equipmentNameRes.json(),
+              unitRes.json(),
+              budgetSourceRes.json()
+            ]);
+
+            // เก็บข้อมูลทั้งหมดลง Redux
+            dispatch(setBranch(branchData));
+            dispatch(setPositionBranch(positionBranchData));
+            dispatch(setPositionFac(positionFacData));
+            dispatch(setEquipmentGroup(equipmentGroupData));
+            dispatch(setEquipmentStatus(equipmentStatusData));
+            dispatch(setApprovalStatus(approvalStatusData));
+            dispatch(setEquipmentName(equipmentNameData));
+            dispatch(setUnit(unitData));
+            dispatch(setBudgetSource(budgetSourceData));
+
+          } catch (error) {
+            console.error('เกิดข้อผิดพลาดในการดึงข้อมูลพื้นฐาน:', error);
+          }
+
+          toast.success('กำลังเข้าสู่ระบบ', {
+            duration: 3000
+          });
+          setTimeout(() => {
+            router.push('/equipment-bow');
+          }, 3000);
+        } else {
+          toast.error('Username หรือ Password ไม่ถูกต้อง', {
+            duration: 3000
+          });
+          setErrorLogin(true);
+        }
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการเชื่อมต่อ:', error);
+        toast.error('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง', {
+          duration: 3000
+        });
+      }
     } else {
-      toast.error('Username หรือ Password ไม่ถูกต้อง', {
+      toast.error('กรุณากรอกข้อมูลให้ครบถ้วน', {
         duration: 3000
-      })
-      console.log("กรุณากรอกข้อมูลให้ครบถ้วน")
+      });
     }
   }
 

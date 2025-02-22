@@ -180,4 +180,7 @@ func Server(r *gin.Engine) {
 		BorrowListDetailGroup.DELETE("", BorrowListDetailController.Delete)
 	}
 
+	loginController := controllers.Login{DB: db}
+	r.POST("/api/login", loginController.Login)
+
 }

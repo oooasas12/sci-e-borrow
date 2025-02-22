@@ -65,3 +65,9 @@ type EquipmentGroupResponse struct {
 	Code string `json:"code"`
 	Name string `json:"name"`
 }
+
+// login
+type Login struct {
+	Username string `form:"username" binding:"required"`
+	Password string `form:"password" binding:"required"`
+}
