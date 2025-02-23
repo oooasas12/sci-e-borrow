@@ -26,6 +26,7 @@ export interface PositionFac {
 export interface EquipmentGroup {
     id: number;
     name: string;
+    code: string;
 }
 
 export interface EquipmentStatus {

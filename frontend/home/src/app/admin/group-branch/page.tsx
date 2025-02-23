@@ -23,55 +23,34 @@ import { MdDelete, MdEditSquare } from "react-icons/md";
 import PaginationList from '@/components/pagination/PaginationList';
 import { IoIosArrowDown } from 'react-icons/io';
 import ListBoxComponent from '@/components/ListBox/ListBox';
-
-type Inputs = {
-    name: String,
-    username: String,
-    password: String,
-    fac: String,
-    group: String,
-    branch: String
-}
+import { Branch } from '@/types/general';
+import toast, { Toaster } from 'react-hot-toast';
 
 const GroupBranchPage: React.FC = () => {
+    // แยก useForm สำหรับการเพิ่มข้อมูล
     const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors },
-    } = useForm<Inputs>()
+        register: registerInsert,
+        handleSubmit: handleSubmitInsert,
+        formState: { errors: errorsInsert },
+        reset: resetInsert,
+    } = useForm<Branch>();
+
+    // แยก useForm สำหรับการแก้ไขข้อมูล
+    const {
+        register: registerEdit,
+        handleSubmit: handleSubmitEdit,
+        setValue: setValueEdit,
+        formState: { errors: errorsEdit },
+        reset: resetEdit,
+    } = useForm<Branch>();
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [data, setData] = useState([
-        { id: 1, group_name: 'group_name 1' },
-        { id: 2, group_name: 'group_name 2' },
-        { id: 3, group_name: 'group_name 3' },
-        { id: 4, group_name: 'group_name 4' },
-        { id: 5, group_name: 'group_name 5' },
-        { id: 6, group_name: 'group_name 6' },
-        { id: 7, group_name: 'group_name 7' },
-        { id: 8, group_name: 'group_name 8' },
-    ]);
+    const [data, setData] = useState<Branch[]>([]);
     const [filteredData, setFilteredData] = useState(data);
     const [openInsertData, setOpenInsertData] = useState(false);
     const [openEditData, setOpenEditData] = useState(false);
     const [openDelData, setOpenDelData] = useState(false);
-    const [selectGroup, setSelectGroup] = useState<string[]>([]);
-    const [selectFac, setSelectFac] = useState<string[]>([]);
-    const [selectBranch, setSelectBranch] = useState<string[]>([]);
-    const [selectedFilterGroup, setSelectedFilterGroup] = useState<string[]>([]);
-    const [selectedFilterFac, setSelectedFilterFac] = useState<string[]>([]);
-    const [selectedFilterBranch, setSelectedFilterBranch] = useState<string[]>([]);
-    const [selectedGroup, setSelectedGroup] = useState('');
-    const [selectedFac, setSelectedFac] = useState('');
-    const [selectedBranch, setSelectedBranch] = useState('');
-    const [errorInput, setErrorInput] = useState({
-        fac: false,
-        group: false,
-        branch: false
-    });
-    const [editData, setEditData] = useState<Inputs>();
+    const [editData, setEditData] = useState<Branch>();
     const [delData, setDelData] = useState({
         index: 0,
         name: ''
@@ -79,8 +58,98 @@ const GroupBranchPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [perPage, setPerPage] = useState(10)
 
-    const onSubmit = (data: Inputs) => {
-        console.log(data);
+    // เพิ่ม function สำหรับดึงข้อมูล
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch`);
+            const result = await response.json();
+            setData(result.data);
+            setFilteredData(result.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    // เรียกใช้ fetchData เมื่อ component mount
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        let results = data
+        
+        results = results.filter((item) => 
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.id.toString().includes(searchTerm)
+        )
+        setFilteredData(results);
+    }, [searchTerm, data]);
+
+    // แก้ไข onSubmit function สำหรับเพิ่มข้อมูล
+    const onSubmit = async (data: Branch) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch`, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenInsertData(false);
+                fetchData(); // รีเฟรชข้อมูล
+                toast.success('เพิ่มข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error adding branch:', error);
+            toast.error('เพิ่มข้อมูลไม่สำเร็จ');
+        }
+    };
+
+     // แก้ไข onSubmit function สำหรับเพิ่มข้อมูล
+     const onSubmitEdit = async (data: Branch) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/${data.id}`, {
+                method: 'PUT',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenEditData(false);
+                fetchData(); // รีเฟรชข้อมูล
+                toast.success('แก้ไขข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error adding branch:', error);
+            toast.error('แก้ไขข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    // เพิ่ม function สำหรับแก้ไขข้อมูล
+    const handleEdit = (data: Branch) => {
+        setEditData(data);
+        setValueEdit('id', data.id);
+        setValueEdit('name', data.name);
+        setOpenEditData(true);
+    };
+
+    // แก้ไข function สำหรับลบข้อมูล
+    const confirmDelete = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/${delData.index}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setOpenDelData(false);
+                fetchData(); // รีเฟรชข้อมูล
+                toast.success('ลบข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error deleting branch:', error);
+            toast.error('ลบข้อมูลไม่สำเร็จ');
+        }
     };
 
     const perPageSelectorHandler = (perPage: number) => {
@@ -98,6 +167,10 @@ const GroupBranchPage: React.FC = () => {
     return (
         <Layout>
             <div className='container'>
+                <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                />
                 <h1 className='title lg text-font_color'>รายการสาขา</h1>
                 <div className='flex flex-col gap-4 mt-8'>
                     <div className='flex justify-between'>
@@ -131,10 +204,10 @@ const GroupBranchPage: React.FC = () => {
                             ).map((item, index) => (
                                 <TableRow key={item.id}>
                                     <TableCell>{item.id}</TableCell>
-                                    <TableCell>{item.group_name}</TableCell>
+                                    <TableCell>{item.name}</TableCell>
                                     <TableCell className='flex gap-2 justify-end' >
-                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => setOpenEditData(true)} size={20} />
-                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.group_name)} size={20} />
+                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)} size={20} />
+                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.name)} size={20} />
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -169,13 +242,17 @@ const GroupBranchPage: React.FC = () => {
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitInsert(onSubmit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
                                         <label htmlFor="name" className='text-sm text-font_color'>ชื่อสาขา</label>
                                         <Input
                                             type="text"
                                             placeholder="ชื่อสาขา"
+                                            {...registerInsert('name', { required: 'โปรดกรอก ชื่อสาขา' })}
                                         />
+                                        {errorsInsert.name && (
+                                            <span className="text-red-500 text-sm">{errorsInsert.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -203,13 +280,17 @@ const GroupBranchPage: React.FC = () => {
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenEditData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitEdit(onSubmitEdit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
                                         <label htmlFor="name" className='text-sm text-font_color'>ชื่อสาขา</label>
                                         <Input
                                             type="text"
                                             placeholder="ชื่อสาขา"
+                                            {...registerEdit('name', { required: 'โปรดกรอก ชื่อสาขา' })}
                                         />
+                                        {errorsEdit.name && (
+                                            <span className="text-red-500 text-sm">{errorsEdit.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -240,8 +321,18 @@ const GroupBranchPage: React.FC = () => {
                                 <div className='flex flex-col gap-4'>
                                     <span className='text-font_color'>คุณต้องการลบรายการสาขา ชื่อ: <b>{delData.name}</b> หรือไม่</span>
                                     <div className='flex gap-4 justify-end'>
-                                        <ButtonPrimary data='ยืนยัน' size='small' className='bg-red-500 hover:bg-red-600' />
-                                        <ButtonPrimary data='ยกเลิก' size='small' className='bg-gray-500 hover:bg-gray-600' />
+                                        <ButtonPrimary
+                                            data='ยืนยัน'
+                                            size='small'
+                                            className='bg-red-500 hover:bg-red-600'
+                                            onClick={confirmDelete}
+                                        />
+                                        <ButtonPrimary
+                                            data='ยกเลิก'
+                                            size='small'
+                                            className='bg-gray-500 hover:bg-gray-600'
+                                            onClick={() => setOpenDelData(false)}
+                                        />
                                     </div>
                                 </div>
                             </div>

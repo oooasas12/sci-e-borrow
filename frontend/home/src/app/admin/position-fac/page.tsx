@@ -23,36 +23,29 @@ import { MdDelete, MdEditSquare } from "react-icons/md";
 import PaginationList from '@/components/pagination/PaginationList';
 import { IoIosArrowDown } from 'react-icons/io';
 import ListBoxComponent from '@/components/ListBox/ListBox';
-
-type Inputs = {
-    name: String,
-    username: String,
-    password: String,
-    fac: String,
-    group: String,
-    branch: String
-}
+import { Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
+import { PositionFac } from '@/types/general';
 
 const PositionFacPage: React.FC = () => {
+    // แยก useForm สำหรับการเพิ่มและแก้ไขข้อมูล
     const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors },
-    } = useForm<Inputs>()
+        register: registerInsert,
+        handleSubmit: handleSubmitInsert,
+        formState: { errors: errorsInsert },
+        reset: resetInsert,
+    } = useForm<PositionFac>();
+
+    const {
+        register: registerEdit,
+        handleSubmit: handleSubmitEdit,
+        setValue: setValueEdit,
+        formState: { errors: errorsEdit },
+        reset: resetEdit,
+    } = useForm<PositionFac>();
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [data, setData] = useState([
-        { id: 1, position: 'position 1' },
-        { id: 2, position: 'position 2' },
-        { id: 3, position: 'position 3' },
-        { id: 4, position: 'position 4' },
-        { id: 5, position: 'position 5' },
-        { id: 6, position: 'position 6' },
-        { id: 7, position: 'position 7' },
-        { id: 8, position: 'position 8' },
-    ]);
+    const [data, setData] = useState<PositionFac[]>([]);
     const [filteredData, setFilteredData] = useState(data);
     const [openInsertData, setOpenInsertData] = useState(false);
     const [openEditData, setOpenEditData] = useState(false);
@@ -71,7 +64,7 @@ const PositionFacPage: React.FC = () => {
         group: false,
         branch: false
     });
-    const [editData, setEditData] = useState<Inputs>();
+    const [editData, setEditData] = useState<PositionFac>();
     const [delData, setDelData] = useState({
         index: 0,
         name: ''
@@ -79,8 +72,95 @@ const PositionFacPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [perPage, setPerPage] = useState(10)
 
-    const onSubmit = (data: Inputs) => {
-        console.log(data);
+    // เพิ่ม function สำหรับดึงข้อมูล
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-fac`);
+            const result = await response.json();
+            setData(result.data);
+            setFilteredData(result.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        let results = data;
+        results = results.filter((item) => 
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.id.toString().includes(searchTerm)
+        );
+        setFilteredData(results);
+    }, [searchTerm, data]);
+
+    // แก้ไข onSubmit function สำหรับเพิ่มข้อมูล
+    const onSubmit = async (data: PositionFac) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-fac`, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenInsertData(false);
+                fetchData();
+                toast.success('เพิ่มข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error adding position:', error);
+            toast.error('เพิ่มข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    // เพิ่ม function สำหรับแก้ไขข้อมูล
+    const onSubmitEdit = async (data: PositionFac) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-fac/${data.id}`, {
+                method: 'PUT',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenEditData(false);
+                fetchData();
+                toast.success('แก้ไขข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error editing position:', error);
+            toast.error('แก้ไขข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    const handleEdit = (data: PositionFac) => {
+        setEditData(data);
+        setValueEdit('id', data.id);
+        setValueEdit('name', data.name);
+        setOpenEditData(true);
+    };
+
+    // แก้ไข function สำหรับลบข้อมูล
+    const confirmDelete = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/position-fac/${delData.index}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setOpenDelData(false);
+                fetchData();
+                toast.success('ลบข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error deleting position:', error);
+            toast.error('ลบข้อมูลไม่สำเร็จ');
+        }
     };
 
     const perPageSelectorHandler = (perPage: number) => {
@@ -98,6 +178,10 @@ const PositionFacPage: React.FC = () => {
     return (
         <Layout>
             <div className='container'>
+                <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                />
                 <h1 className='title lg text-font_color'>รายการตำแหน่งระดับคณะ</h1>
                 <div className='flex flex-col gap-4 mt-8'>
                     <div className='flex justify-between'>
@@ -131,10 +215,10 @@ const PositionFacPage: React.FC = () => {
                             ).map((item, index) => (
                                 <TableRow key={item.id}>
                                     <TableCell>{item.id}</TableCell>
-                                    <TableCell>{item.position}</TableCell>
+                                    <TableCell>{item.name}</TableCell>
                                     <TableCell className='flex gap-2 justify-end' >
-                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => setOpenEditData(true)} size={20} />
-                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.position)} size={20} />
+                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)} size={20} />
+                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.name)} size={20} />
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -169,13 +253,17 @@ const PositionFacPage: React.FC = () => {
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitInsert(onSubmit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
                                         <label htmlFor="name" className='text-sm text-font_color'>ชื่อตำแหน่งระดับคณะ</label>
                                         <Input
                                             type="text"
                                             placeholder="ชื่อตำแหน่งระดับคณะ"
+                                            {...registerInsert('name', { required: 'โปรดกรอก ชื่อตำแหน่งระดับคณะ' })}
                                         />
+                                        {errorsInsert.name && (
+                                            <span className="text-red-500 text-sm">{errorsInsert.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -203,13 +291,17 @@ const PositionFacPage: React.FC = () => {
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenEditData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitEdit(onSubmitEdit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
                                         <label htmlFor="name" className='text-sm text-font_color'>ชื่อตำแหน่งระดับคณะ</label>
                                         <Input
                                             type="text"
                                             placeholder="ชื่อตำแหน่งระดับคณะ"
+                                            {...registerEdit('name', { required: 'โปรดกรอก ชื่อตำแหน่งระดับคณะ' })}
                                         />
+                                        {errorsEdit.name && (
+                                            <span className="text-red-500 text-sm">{errorsEdit.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -240,8 +332,18 @@ const PositionFacPage: React.FC = () => {
                                 <div className='flex flex-col gap-4'>
                                     <span className='text-font_color'>คุณต้องการลบรายการตำแหน่งระดับคณะ ชื่อ: <b>{delData.name}</b> หรือไม่</span>
                                     <div className='flex gap-4 justify-end'>
-                                        <ButtonPrimary data='ยืนยัน' size='small' className='bg-red-500 hover:bg-red-600' />
-                                        <ButtonPrimary data='ยกเลิก' size='small' className='bg-gray-500 hover:bg-gray-600' />
+                                        <ButtonPrimary
+                                            data='ยืนยัน'
+                                            size='small'
+                                            className='bg-red-500 hover:bg-red-600'
+                                            onClick={confirmDelete}
+                                        />
+                                        <ButtonPrimary
+                                            data='ยกเลิก'
+                                            size='small'
+                                            className='bg-gray-500 hover:bg-gray-600'
+                                            onClick={() => setOpenDelData(false)}
+                                        />
                                     </div>
                                 </div>
                             </div>
