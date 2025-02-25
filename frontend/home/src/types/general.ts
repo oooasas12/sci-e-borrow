@@ -42,7 +42,6 @@ export interface ApprovalStatus {
 export interface EquipmentName {
     id: number;
     name: string;
-    group_id: number;
 }
 
 export interface Unit {

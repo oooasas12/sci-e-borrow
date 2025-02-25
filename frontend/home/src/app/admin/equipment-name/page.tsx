@@ -23,6 +23,9 @@ import { MdDelete, MdEditSquare } from "react-icons/md";
 import PaginationList from '@/components/pagination/PaginationList';
 import { IoIosArrowDown } from 'react-icons/io';
 import ListBoxComponent from '@/components/ListBox/ListBox';
+import { toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import { EquipmentName } from '@/types/general';
 
 type Inputs = {
     name: String,
@@ -35,24 +38,22 @@ type Inputs = {
 
 const EquipmentNamePage: React.FC = () => {
     const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors },
-    } = useForm<Inputs>()
+        register: registerInsert,
+        handleSubmit: handleSubmitInsert,
+        formState: { errors: errorsInsert },
+        reset: resetInsert,
+    } = useForm<EquipmentName>();
+
+    const {
+        register: registerEdit,
+        handleSubmit: handleSubmitEdit,
+        setValue: setValueEdit,
+        formState: { errors: errorsEdit },
+        reset: resetEdit,
+    } = useForm<EquipmentName>();
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [data, setData] = useState([
-        { id: 1, equipment_name: 'equipment_name 1' },
-        { id: 2, equipment_name: 'equipment_name 2' },
-        { id: 3, equipment_name: 'equipment_name 3' },
-        { id: 4, equipment_name: 'equipment_name 4' },
-        { id: 5, equipment_name: 'equipment_name 5' },
-        { id: 6, equipment_name: 'equipment_name 6' },
-        { id: 7, equipment_name: 'equipment_name 7' },
-        { id: 8, equipment_name: 'equipment_name 8' },
-    ]);
+    const [data, setData] = useState<EquipmentName[]>([]);
     const [filteredData, setFilteredData] = useState(data);
     const [openInsertData, setOpenInsertData] = useState(false);
     const [openEditData, setOpenEditData] = useState(false);
@@ -71,7 +72,7 @@ const EquipmentNamePage: React.FC = () => {
         group: false,
         branch: false
     });
-    const [editData, setEditData] = useState<Inputs>();
+    const [editData, setEditData] = useState<EquipmentName>();
     const [delData, setDelData] = useState({
         index: 0,
         name: ''
@@ -79,15 +80,94 @@ const EquipmentNamePage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [perPage, setPerPage] = useState(10)
 
-    const onSubmit = (data: Inputs) => {
-        console.log(data);
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-name`);
+            const result = await response.json();
+            setData(result.data);
+            setFilteredData(result.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     };
 
-    const perPageSelectorHandler = (perPage: number) => {
-    }
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-    const pageDirectHandler = (index: number) => {
-    }
+    useEffect(() => {
+        let results = data;
+        results = results.filter((item) =>
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.id.toString().includes(searchTerm)
+        );
+        setFilteredData(results);
+    }, [searchTerm, data]);
+
+    const onSubmit = async (data: EquipmentName) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-name`, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenInsertData(false);
+                fetchData();
+                toast.success('เพิ่มข้อมูลสำเร็จ');
+                resetInsert();
+            }
+        } catch (error) {
+            console.error('Error adding equipment name:', error);
+            toast.error('เพิ่มข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    const onSubmitEdit = async (data: EquipmentName) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-name/${data.id}`, {
+                method: 'PUT',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenEditData(false);
+                fetchData();
+                toast.success('แก้ไขข้อมูลสำเร็จ');
+                resetEdit();
+            }
+        } catch (error) {
+            console.error('Error editing equipment name:', error);
+            toast.error('แก้ไขข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    const handleEdit = (data: EquipmentName) => {
+        setEditData(data);
+        setValueEdit('id', data.id);
+        setValueEdit('name', data.name);
+        setOpenEditData(true);
+    };
+
+    const confirmDelete = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-name/${delData.index}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setOpenDelData(false);
+                fetchData();
+                toast.success('ลบข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error deleting equipment name:', error);
+            toast.error('ลบข้อมูลไม่สำเร็จ');
+        }
+    };
+
     const handleDel = (index: number, name: string) => {
         setDelData({
             index: index,
@@ -95,9 +175,20 @@ const EquipmentNamePage: React.FC = () => {
         });
         setOpenDelData(true);
     }
+
+    const perPageSelectorHandler = (perPage: number) => {
+    }
+
+    const pageDirectHandler = (index: number) => {
+    }
+
     return (
         <Layout>
             <div className='container'>
+                <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                />
                 <h1 className='title lg text-font_color'>รายการชื่อครุภัณฑ์</h1>
                 <div className='flex flex-col gap-4 mt-8'>
                     <div className='flex justify-between'>
@@ -128,13 +219,21 @@ const EquipmentNamePage: React.FC = () => {
                             {filteredData?.slice(
                                 currentPage * perPage - perPage,
                                 currentPage * perPage
-                            ).map((item, index) => (
+                            ).map((item) => (
                                 <TableRow key={item.id}>
                                     <TableCell>{item.id}</TableCell>
-                                    <TableCell>{item.equipment_name}</TableCell>
+                                    <TableCell>{item.name}</TableCell>
                                     <TableCell className='flex gap-2 justify-end' >
-                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => setOpenEditData(true)} size={20} />
-                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.equipment_name)} size={20} />
+                                        <MdEditSquare
+                                            className='text-yellow-500 cursor-pointer'
+                                            onClick={() => handleEdit(item)}
+                                            size={20}
+                                        />
+                                        <MdDelete
+                                            className='text-red-600 cursor-pointer'
+                                            onClick={() => handleDel(item.id, item.name)}
+                                            size={20}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -169,13 +268,17 @@ const EquipmentNamePage: React.FC = () => {
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitInsert(onSubmit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อชื่อครุภัณฑ์</label>
+                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อครุภัณฑ์</label>
                                         <Input
                                             type="text"
-                                            placeholder="ชื่อชื่อครุภัณฑ์"
+                                            placeholder="ชื่อครุภัณฑ์"
+                                            {...registerInsert('name', { required: 'โปรดกรอก ชื่อครุภัณฑ์' })}
                                         />
+                                        {errorsInsert.name && (
+                                            <span className="text-red-500 text-sm">{errorsInsert.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -203,13 +306,17 @@ const EquipmentNamePage: React.FC = () => {
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenEditData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitEdit(onSubmitEdit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อชื่อครุภัณฑ์</label>
+                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อครุภัณฑ์</label>
                                         <Input
                                             type="text"
-                                            placeholder="ชื่อชื่อครุภัณฑ์"
+                                            placeholder="ชื่อครุภัณฑ์"
+                                            {...registerEdit('name', { required: 'โปรดกรอก ชื่อครุภัณฑ์' })}
                                         />
+                                        {errorsEdit.name && (
+                                            <span className="text-red-500 text-sm">{errorsEdit.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -240,8 +347,18 @@ const EquipmentNamePage: React.FC = () => {
                                 <div className='flex flex-col gap-4'>
                                     <span className='text-font_color'>คุณต้องการลบรายการชื่อครุภัณฑ์ ชื่อ: <b>{delData.name}</b> หรือไม่</span>
                                     <div className='flex gap-4 justify-end'>
-                                        <ButtonPrimary data='ยืนยัน' size='small' className='bg-red-500 hover:bg-red-600' />
-                                        <ButtonPrimary data='ยกเลิก' size='small' className='bg-gray-500 hover:bg-gray-600' />
+                                        <ButtonPrimary
+                                            data='ยืนยัน'
+                                            size='small'
+                                            className='bg-red-500 hover:bg-red-600'
+                                            onClick={confirmDelete}
+                                        />
+                                        <ButtonPrimary
+                                            data='ยกเลิก'
+                                            size='small'
+                                            className='bg-gray-500 hover:bg-gray-600'
+                                            onClick={() => setOpenDelData(false)}
+                                        />
                                     </div>
                                 </div>
                             </div>

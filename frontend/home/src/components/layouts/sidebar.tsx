@@ -71,18 +71,6 @@ export const Sidebar = () => {
                     link: '/admin/source-money'
                 },
                 {
-                    name: 'สถานะครุภัณฑ์',
-                    link: '/admin/equipment-status'
-                },
-                {
-                    name: 'สถานะครุภัณฑ์ชำรุด',
-                    link: '/admin/equipment-status-broken'
-                },
-                {
-                    name: 'สถานะอนุมัติ',
-                    link: '/admin/status-approve'
-                },
-                {
                     name: 'ตำแหน่งระดับคณะ',
                     link: '/admin/position-fac'
                 },
