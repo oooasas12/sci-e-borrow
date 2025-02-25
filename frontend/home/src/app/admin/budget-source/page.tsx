@@ -23,36 +23,29 @@ import { MdDelete, MdEditSquare } from "react-icons/md";
 import PaginationList from '@/components/pagination/PaginationList';
 import { IoIosArrowDown } from 'react-icons/io';
 import ListBoxComponent from '@/components/ListBox/ListBox';
+import { toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import { BudgetSource } from '@/types/general';
 
-type Inputs = {
-    name: String,
-    username: String,
-    password: String,
-    fac: String,
-    group: String,
-    branch: String
-}
-
-const CountingUnit: React.FC = () => {
+const SourceMoney: React.FC = () => {
+    // แยก useForm สำหรับการเพิ่มและแก้ไขข้อมูล
     const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors },
-    } = useForm<Inputs>()
+        register: registerInsert,
+        handleSubmit: handleSubmitInsert,
+        formState: { errors: errorsInsert },
+        reset: resetInsert,
+    } = useForm<BudgetSource>();
+
+    const {
+        register: registerEdit,
+        handleSubmit: handleSubmitEdit,
+        setValue: setValueEdit,
+        formState: { errors: errorsEdit },
+        reset: resetEdit,
+    } = useForm<BudgetSource>();
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [data, setData] = useState([
-        { id: 1, counting_unit: 'counting_unit 1' },
-        { id: 2, counting_unit: 'counting_unit 2' },
-        { id: 3, counting_unit: 'counting_unit 3' },
-        { id: 4, counting_unit: 'counting_unit 4' },
-        { id: 5, counting_unit: 'counting_unit 5' },
-        { id: 6, counting_unit: 'counting_unit 6' },
-        { id: 7, counting_unit: 'counting_unit 7' },
-        { id: 8, counting_unit: 'counting_unit 8' },
-    ]);
+    const [data, setData] = useState<BudgetSource[]>([]);
     const [filteredData, setFilteredData] = useState(data);
     const [openInsertData, setOpenInsertData] = useState(false);
     const [openEditData, setOpenEditData] = useState(false);
@@ -71,7 +64,7 @@ const CountingUnit: React.FC = () => {
         group: false,
         branch: false
     });
-    const [editData, setEditData] = useState<Inputs>();
+    const [editData, setEditData] = useState<BudgetSource>();
     const [delData, setDelData] = useState({
         index: 0,
         name: ''
@@ -79,15 +72,98 @@ const CountingUnit: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [perPage, setPerPage] = useState(10)
 
-    const onSubmit = (data: Inputs) => {
-        console.log(data);
+    // เพิ่ม function สำหรับดึงข้อมูล
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/budget-source`);
+            const result = await response.json();
+            setData(result.data);
+            setFilteredData(result.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     };
 
-    const perPageSelectorHandler = (perPage: number) => {
-    }
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-    const pageDirectHandler = (index: number) => {
-    }
+    useEffect(() => {
+        let results = data;
+        results = results.filter((item) =>
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.id.toString().includes(searchTerm)
+        );
+        setFilteredData(results);
+    }, [searchTerm, data]);
+
+    // แก้ไข onSubmit function สำหรับเพิ่มข้อมูล
+    const onSubmit = async (data: BudgetSource) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/budget-source`, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenInsertData(false);
+                fetchData();
+                toast.success('เพิ่มข้อมูลสำเร็จ');
+                resetInsert();
+            }
+        } catch (error) {
+            console.error('Error adding budget source:', error);
+            toast.error('เพิ่มข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    // เพิ่ม function สำหรับแก้ไขข้อมูล
+    const onSubmitEdit = async (data: BudgetSource) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/budget-source/${data.id}`, {
+                method: 'PUT',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenEditData(false);
+                fetchData();
+                toast.success('แก้ไขข้อมูลสำเร็จ');
+                resetEdit();
+            }
+        } catch (error) {
+            console.error('Error editing budget source:', error);
+            toast.error('แก้ไขข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    const handleEdit = (data: BudgetSource) => {
+        setEditData(data);
+        setValueEdit('id', data.id);
+        setValueEdit('name', data.name);
+        setOpenEditData(true);
+    };
+
+    // แก้ไข function สำหรับลบข้อมูล
+    const confirmDelete = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/budget-source/${delData.index}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setOpenDelData(false);
+                fetchData();
+                toast.success('ลบข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error deleting budget source:', error);
+            toast.error('ลบข้อมูลไม่สำเร็จ');
+        }
+    };
+
     const handleDel = (index: number, name: string) => {
         setDelData({
             index: index,
@@ -95,10 +171,21 @@ const CountingUnit: React.FC = () => {
         });
         setOpenDelData(true);
     }
+
+    const perPageSelectorHandler = (perPage: number) => {
+    }
+
+    const pageDirectHandler = (index: number) => {
+    }
+
     return (
         <Layout>
             <div className='container'>
-                <h1 className='title lg text-font_color'>รายการหน่วยนับ</h1>
+                <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                />
+                <h1 className='title lg text-font_color'>รายการแหล่งเงิน</h1>
                 <div className='flex flex-col gap-4 mt-8'>
                     <div className='flex justify-between'>
                         <div className='flex gap-2 '>
@@ -120,7 +207,7 @@ const CountingUnit: React.FC = () => {
                         <TableHeader>
                             <TableRow className=''>
                                 <TableHead className=' whitespace-nowrap'>#</TableHead>
-                                <TableHead className=' whitespace-nowrap'>หน่วยนับ</TableHead>
+                                <TableHead className=' whitespace-nowrap'>แหล่งเงิน</TableHead>
                                 <TableHead className=' whitespace-nowrap'></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -131,10 +218,10 @@ const CountingUnit: React.FC = () => {
                             ).map((item, index) => (
                                 <TableRow key={item.id}>
                                     <TableCell>{item.id}</TableCell>
-                                    <TableCell>{item.counting_unit}</TableCell>
+                                    <TableCell>{item.name}</TableCell>
                                     <TableCell className='flex gap-2 justify-end' >
-                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => setOpenEditData(true)} size={20} />
-                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.counting_unit)} size={20} />
+                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)} size={20} />
+                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.name)} size={20} />
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -165,17 +252,21 @@ const CountingUnit: React.FC = () => {
                             <div className='flex flex-col gap-4'>
                                 <div className='flex justify-between'>
                                     <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        เพิ่มรายการหน่วยนับ
+                                        เพิ่มรายการแหล่งเงิน
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitInsert(onSubmit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อหน่วยนับ</label>
+                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อแหล่งเงิน</label>
                                         <Input
                                             type="text"
-                                            placeholder="ชื่อหน่วยนับ"
+                                            placeholder="ชื่อแหล่งเงิน"
+                                            {...registerInsert('name', { required: 'โปรดกรอก ชื่อแหล่งเงิน' })}
                                         />
+                                        {errorsInsert.name && (
+                                            <span className="text-red-500 text-sm">{errorsInsert.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -199,17 +290,21 @@ const CountingUnit: React.FC = () => {
                             <div className='flex flex-col gap-4'>
                                 <div className='flex justify-between'>
                                     <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        แก้ไขรายการหน่วยนับ
+                                        แก้ไขรายการแหล่งเงิน
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenEditData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitEdit(onSubmitEdit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อหน่วยนับ</label>
+                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อแหล่งเงิน</label>
                                         <Input
                                             type="text"
-                                            placeholder="ชื่อหน่วยนับ"
+                                            placeholder="ชื่อแหล่งเงิน"
+                                            {...registerEdit('name', { required: 'โปรดกรอก ชื่อแหล่งเงิน' })}
                                         />
+                                        {errorsEdit.name && (
+                                            <span className="text-red-500 text-sm">{errorsEdit.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -233,15 +328,20 @@ const CountingUnit: React.FC = () => {
                             <div className='flex flex-col gap-4'>
                                 <div className='flex justify-between'>
                                     <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        ลบรายการหน่วยนับ
+                                        ลบรายการแหล่งเงิน
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenDelData(false)} />
                                 </div>
                                 <div className='flex flex-col gap-4'>
-                                    <span className='text-font_color'>คุณต้องการลบรายการหน่วยนับ ชื่อ: <b>{delData.name}</b> หรือไม่</span>
+                                    <span className='text-font_color'>คุณต้องการลบรายการแหล่งเงิน ชื่อ: <b>{delData.name}</b> หรือไม่</span>
                                     <div className='flex gap-4 justify-end'>
-                                        <ButtonPrimary data='ยืนยัน' size='small' className='bg-red-500 hover:bg-red-600' />
-                                        <ButtonPrimary data='ยกเลิก' size='small' className='bg-gray-500 hover:bg-gray-600' />
+                                        <ButtonPrimary data='ยืนยัน' size='small' className='bg-red-500 hover:bg-red-600' onClick={confirmDelete} />
+                                        <ButtonPrimary
+                                            data='ยกเลิก'
+                                            size='small'
+                                            className='bg-gray-500 hover:bg-gray-600'
+                                            onClick={() => setOpenDelData(false)}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -253,4 +353,4 @@ const CountingUnit: React.FC = () => {
     );
 };
 
-export default CountingUnit;
+export default SourceMoney;

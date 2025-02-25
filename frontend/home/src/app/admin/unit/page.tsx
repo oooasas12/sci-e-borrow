@@ -23,6 +23,9 @@ import { MdDelete, MdEditSquare } from "react-icons/md";
 import PaginationList from '@/components/pagination/PaginationList';
 import { IoIosArrowDown } from 'react-icons/io';
 import ListBoxComponent from '@/components/ListBox/ListBox';
+import { toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import { Unit } from '@/types/general';
 
 type Inputs = {
     name: String,
@@ -33,45 +36,29 @@ type Inputs = {
     branch: String
 }
 
-const Settime: React.FC = () => {
+const CountingUnit: React.FC = () => {
     const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors },
-    } = useForm<Inputs>()
+        register: registerInsert,
+        handleSubmit: handleSubmitInsert,
+        formState: { errors: errorsInsert },
+        reset: resetInsert,
+    } = useForm<Unit>();
+
+    const {
+        register: registerEdit,
+        handleSubmit: handleSubmitEdit,
+        setValue: setValueEdit,
+        formState: { errors: errorsEdit },
+        reset: resetEdit,
+    } = useForm<Unit>();
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [data, setData] = useState([
-        { id: 1, date: 'date 1', time_start: 'time start 1', time_stop: 'time stop 1', user_name: 'user 1', note: 'note 1', },
-        { id: 2, date: 'date 2', time_start: 'time start 2', time_stop: 'time stop 2', user_name: 'user 2', note: 'note 2', },
-        { id: 3, date: 'date 3', time_start: 'time start 3', time_stop: 'time stop 3', user_name: 'user 3', note: 'note 3', },
-        { id: 4, date: 'date 4', time_start: 'time start 4', time_stop: 'time stop 4', user_name: 'user 4', note: 'note 4', },
-        { id: 5, date: 'date 5', time_start: 'time start 5', time_stop: 'time stop 5', user_name: 'user 5', note: 'note 5', },
-        { id: 6, date: 'date 6', time_start: 'time start 6', time_stop: 'time stop 6', user_name: 'user 6', note: 'note 6', },
-        { id: 7, date: 'date 7', time_start: 'time start 7', time_stop: 'time stop 7', user_name: 'user 7', note: 'note 7', },
-        { id: 8, date: 'date 8', time_start: 'time start 8', time_stop: 'time stop 8', user_name: 'user 8', note: 'note 8', },
-    ]);
+    const [data, setData] = useState<Unit[]>([]);
     const [filteredData, setFilteredData] = useState(data);
     const [openInsertData, setOpenInsertData] = useState(false);
     const [openEditData, setOpenEditData] = useState(false);
     const [openDelData, setOpenDelData] = useState(false);
-    const [selectGroup, setSelectGroup] = useState<string[]>([]);
-    const [selectFac, setSelectFac] = useState<string[]>([]);
-    const [selectBranch, setSelectBranch] = useState<string[]>([]);
-    const [selectedFilterGroup, setSelectedFilterGroup] = useState<string[]>([]);
-    const [selectedFilterFac, setSelectedFilterFac] = useState<string[]>([]);
-    const [selectedFilterBranch, setSelectedFilterBranch] = useState<string[]>([]);
-    const [selectedGroup, setSelectedGroup] = useState('');
-    const [selectedFac, setSelectedFac] = useState('');
-    const [selectedBranch, setSelectedBranch] = useState('');
-    const [errorInput, setErrorInput] = useState({
-        fac: false,
-        group: false,
-        branch: false
-    });
-    const [editData, setEditData] = useState<Inputs>();
+    const [editData, setEditData] = useState<Unit>();
     const [delData, setDelData] = useState({
         index: 0,
         name: ''
@@ -79,15 +66,94 @@ const Settime: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [perPage, setPerPage] = useState(10)
 
-    const onSubmit = (data: Inputs) => {
-        console.log(data);
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/unit`);
+            const result = await response.json();
+            setData(result.data);
+            setFilteredData(result.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     };
 
-    const perPageSelectorHandler = (perPage: number) => {
-    }
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-    const pageDirectHandler = (index: number) => {
-    }
+    useEffect(() => {
+        let results = data;
+        results = results.filter((item) =>
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.id.toString().includes(searchTerm)
+        );
+        setFilteredData(results);
+    }, [searchTerm, data]);
+
+    const onSubmit = async (data: Unit) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/unit`, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenInsertData(false);
+                fetchData();
+                toast.success('เพิ่มข้อมูลสำเร็จ');
+                resetInsert();
+            }
+        } catch (error) {
+            console.error('Error adding unit:', error);
+            toast.error('เพิ่มข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    const onSubmitEdit = async (data: Unit) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', data.name);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/unit/${data.id}`, {
+                method: 'PUT',
+                body: formData
+            });
+            if (response.ok) {
+                setOpenEditData(false);
+                fetchData();
+                toast.success('แก้ไขข้อมูลสำเร็จ');
+                resetEdit();
+            }
+        } catch (error) {
+            console.error('Error editing unit:', error);
+            toast.error('แก้ไขข้อมูลไม่สำเร็จ');
+        }
+    };
+
+    const handleEdit = (data: Unit) => {
+        setEditData(data);
+        setValueEdit('id', data.id);
+        setValueEdit('name', data.name);
+        setOpenEditData(true);
+    };
+
+    const confirmDelete = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/unit/${delData.index}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setOpenDelData(false);
+                fetchData();
+                toast.success('ลบข้อมูลสำเร็จ');
+            }
+        } catch (error) {
+            console.error('Error deleting unit:', error);
+            toast.error('ลบข้อมูลไม่สำเร็จ');
+        }
+    };
+
     const handleDel = (index: number, name: string) => {
         setDelData({
             index: index,
@@ -95,10 +161,20 @@ const Settime: React.FC = () => {
         });
         setOpenDelData(true);
     }
+
+    const perPageSelectorHandler = (perPage: number) => {
+    }
+
+    const pageDirectHandler = (index: number) => {
+    }
     return (
         <Layout>
             <div className='container'>
-                <h1 className='title lg text-font_color'>รายการตั้งเวลารักษาการแทนอธิการบดี</h1>
+                <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                />
+                <h1 className='title lg text-font_color'>รายการหน่วยนับ</h1>
                 <div className='flex flex-col gap-4 mt-8'>
                     <div className='flex justify-between'>
                         <div className='flex gap-2 '>
@@ -120,11 +196,7 @@ const Settime: React.FC = () => {
                         <TableHeader>
                             <TableRow className=''>
                                 <TableHead className=' whitespace-nowrap'>#</TableHead>
-                                <TableHead className=' whitespace-nowrap'>วันที่</TableHead>
-                                <TableHead className=' whitespace-nowrap'>เวลาเริ่มต้น</TableHead>
-                                <TableHead className=' whitespace-nowrap'>เวลาสิ้นสุด</TableHead>
-                                <TableHead className=' whitespace-nowrap'>ตั้งโดย</TableHead>
-                                <TableHead className=' whitespace-nowrap'>หมายเหตุ</TableHead>
+                                <TableHead className=' whitespace-nowrap'>หน่วยนับ</TableHead>
                                 <TableHead className=' whitespace-nowrap'></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -132,17 +204,21 @@ const Settime: React.FC = () => {
                             {filteredData?.slice(
                                 currentPage * perPage - perPage,
                                 currentPage * perPage
-                            ).map((item, index) => (
+                            ).map((item) => (
                                 <TableRow key={item.id}>
                                     <TableCell>{item.id}</TableCell>
-                                    <TableCell>{item.date}</TableCell>
-                                    <TableCell>{item.time_start}</TableCell>
-                                    <TableCell>{item.time_stop}</TableCell>
-                                    <TableCell>{item.user_name}</TableCell>
-                                    <TableCell>{item.note}</TableCell>
+                                    <TableCell>{item.name}</TableCell>
                                     <TableCell className='flex gap-2 justify-end' >
-                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => setOpenEditData(true)} size={20} />
-                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.id.toString() as string)} size={20} />
+                                        <MdEditSquare
+                                            className='text-yellow-500 cursor-pointer'
+                                            onClick={() => handleEdit(item)}
+                                            size={20}
+                                        />
+                                        <MdDelete
+                                            className='text-red-600 cursor-pointer'
+                                            onClick={() => handleDel(item.id, item.name)}
+                                            size={20}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -173,38 +249,21 @@ const Settime: React.FC = () => {
                             <div className='flex flex-col gap-4'>
                                 <div className='flex justify-between'>
                                     <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        เพิ่มรายการตั้งเวลารักษาการแทน
+                                        เพิ่มรายการหน่วยนับ
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenInsertData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitInsert(onSubmit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>วันที่</label>
-                                        <Input
-                                            type="date"
-                                            placeholder="วันที่"
-                                        />
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>เวลาเริ่มต้น</label>
-                                        <Input
-                                            type="time"
-                                            placeholder="เวลาเริ่มต้น"
-                                        />
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>เวลาสิ้นสุด</label>
-                                        <Input
-                                            type="time"
-                                            placeholder="เวลาสิ้นสุด"
-                                        />
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>หมายเหตุ</label>
+                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อหน่วยนับ</label>
                                         <Input
                                             type="text"
-                                            placeholder="หมายเหตุ"
+                                            placeholder="ชื่อหน่วยนับ"
+                                            {...registerInsert('name', { required: 'โปรดกรอก ชื่อหน่วยนับ' })}
                                         />
+                                        {errorsInsert.name && (
+                                            <span className="text-red-500 text-sm">{errorsInsert.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -228,17 +287,21 @@ const Settime: React.FC = () => {
                             <div className='flex flex-col gap-4'>
                                 <div className='flex justify-between'>
                                     <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        แก้ไขรายการตั้งเวลารักษาการแทน
+                                        แก้ไขรายการหน่วยนับ
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenEditData(false)} />
                                 </div>
-                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+                                <form onSubmit={handleSubmitEdit(onSubmitEdit)} className='flex flex-col gap-4'>
                                     <div className='flex flex-col gap-2'>
-                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อตั้งเวลารักษาการแทน</label>
+                                        <label htmlFor="name" className='text-sm text-font_color'>ชื่อหน่วยนับ</label>
                                         <Input
                                             type="text"
-                                            placeholder="ชื่อตั้งเวลารักษาการแทน"
+                                            placeholder="ชื่อหน่วยนับ"
+                                            {...registerEdit('name', { required: 'โปรดกรอก ชื่อหน่วยนับ' })}
                                         />
+                                        {errorsEdit.name && (
+                                            <span className="text-red-500 text-sm">{errorsEdit.name.message}</span>
+                                        )}
                                     </div>
                                     <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
                                 </form>
@@ -262,15 +325,25 @@ const Settime: React.FC = () => {
                             <div className='flex flex-col gap-4'>
                                 <div className='flex justify-between'>
                                     <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
-                                        ลบรายการตั้งเวลารักษาการแทน
+                                        ลบรายการหน่วยนับ
                                     </DialogTitle>
                                     <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={() => setOpenDelData(false)} />
                                 </div>
                                 <div className='flex flex-col gap-4'>
-                                    <span className='text-font_color'>คุณต้องการลบรายการตั้งเวลารักษาการแทน ชื่อ: <b>{delData.name}</b> หรือไม่</span>
+                                    <span className='text-font_color'>คุณต้องการลบรายการหน่วยนับ ชื่อ: <b>{delData.name}</b> หรือไม่</span>
                                     <div className='flex gap-4 justify-end'>
-                                        <ButtonPrimary data='ยืนยัน' size='small' className='bg-red-500 hover:bg-red-600' />
-                                        <ButtonPrimary data='ยกเลิก' size='small' className='bg-gray-500 hover:bg-gray-600' />
+                                        <ButtonPrimary
+                                            data='ยืนยัน'
+                                            size='small'
+                                            className='bg-red-500 hover:bg-red-600'
+                                            onClick={confirmDelete}
+                                        />
+                                        <ButtonPrimary
+                                            data='ยกเลิก'
+                                            size='small'
+                                            className='bg-gray-500 hover:bg-gray-600'
+                                            onClick={() => setOpenDelData(false)}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -282,4 +355,4 @@ const Settime: React.FC = () => {
     );
 };
 
-export default Settime;
+export default CountingUnit;

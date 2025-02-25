@@ -60,15 +60,15 @@ export const Sidebar = () => {
                 },
                 {
                     name: 'ตั้งเวลารักษาการแทน',
-                    link: '/admin/settime'
+                    link: '/admin/set-time'
                 },
                 {
                     name: 'หน่วยนับ',
-                    link: '/admin/counting-unit'
+                    link: '/admin/unit'
                 },
                 {
                     name: 'แหล่งเงิน',
-                    link: '/admin/source-money'
+                    link: '/admin/budget-source'
                 },
                 {
                     name: 'ตำแหน่งระดับคณะ',

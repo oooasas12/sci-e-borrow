@@ -411,7 +411,7 @@ const UserPage: React.FC = () => {
                                     <TableCell>{item.branch.name}</TableCell>
                                     <TableCell>{item.position_fac.name}</TableCell>
                                     <TableCell>{item.position_branch.name}</TableCell>
-                                    <TableCell className='flex gap-2' >
+                                    <TableCell className='flex gap-2 justify-end' >
                                         <MdEditSquare className='text-yellow-500 cursor-pointer' size={20} onClick={() => handleEdit(item)} />
                                         <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id as number, item.name)} size={20} />
                                     </TableCell>
@@ -512,7 +512,7 @@ const UserPage: React.FC = () => {
                         <label htmlFor="branch" className='text-sm text-font_color'>ตำแหน่งระดับสาขา</label>
                         <ListBoxComponent placeholder='ตำแหน่งระดับสาขา' selectedValue={selectedBranch} options={[{id: 0, name: "เลือกตำแหน่งระดับสาขา"}, ...positionBranch]} onChange={handleSlectBranch} />
                     </div>
-                    <ButtonPrimary data='แก้ไขรายการผู้ใช้' type='submit' size='small' className='ml-auto' />
+                    <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
                 </form>
             </DialogEdit>
             <DialogDel title='ลบรายการผู้ใช้' detail={
