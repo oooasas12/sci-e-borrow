@@ -8,11 +8,12 @@ import (
 
 type Equipment struct {
 	gorm.Model
-	Code              string `gorm:"unique;not null"`
-	Value             string `gorm:"type:varchar(10);not null"`
-	DateCome          string `gorm:"type:DATE"`
-	Feature           string `gorm:"type:varchar(150)"`
-	Location          string `gorm:"type:varchar(150)"`
+	Code              string    `gorm:"unique;not null"`
+	Value             string    `gorm:"type:varchar(10);not null"`
+	DateCome          time.Time `gorm:"type:DATE"`
+	Feature           string    `gorm:"type:varchar(150)"`
+	Location          string    `gorm:"type:varchar(150)"`
+	Code_old          string    `gorm:"type:varchar(150)"`
 	EquipmentStatusID uint
 	EquipmentStatus   EquipmentStatus
 	BudgetSourceID    uint
@@ -36,26 +37,28 @@ type CreateEquipmentForm struct {
 	UnitID            uint      `form:"unit_id" binding:"required"`
 	EquipmentGroupID  uint      `form:"equipment_group_id" binding:"required"`
 	EquipmentNameID   uint      `form:"equipment_name_id" binding:"required"`
+	Code_old          string    `form:"code_old"`
 }
 
 type UpdateByNameEquipmentForm struct {
-	Code              string     `form:"code" binding:"omitempty"`
-	Value             string     `form:"value" binding:"omitempty"`
-	DateCome          *time.Time `form:"date_come" binding:"omitempty" time_format:"2006-01-02"`
-	Feature           string     `form:"feature" binding:"omitempty"`
-	Location          string     `form:"location" binding:"omitempty"`
-	EquipmentStatusID uint       `form:"equipment_status_id" binding:"omitempty"`
-	BudgetSourceID    uint       `form:"budget_source_id" binding:"omitempty"`
-	UnitID            uint       `form:"unit_id" binding:"omitempty"`
-	EquipmentGroupID  uint       `form:"equipment_group_id" binding:"omitempty"`
-	EquipmentNameID   uint       `form:"equipment_name_id" binding:"omitempty"`
+	Code              string    `form:"code" binding:"omitempty"`
+	Value             string    `form:"value" binding:"omitempty"`
+	DateCome          time.Time `form:"date_come" binding:"omitempty" time_format:"2006-01-02"`
+	Feature           string    `form:"feature" binding:"omitempty"`
+	Location          string    `form:"location" binding:"omitempty"`
+	EquipmentStatusID uint      `form:"equipment_status_id" binding:"omitempty"`
+	BudgetSourceID    uint      `form:"budget_source_id" binding:"omitempty"`
+	UnitID            uint      `form:"unit_id" binding:"omitempty"`
+	EquipmentGroupID  uint      `form:"equipment_group_id" binding:"omitempty"`
+	EquipmentNameID   uint      `form:"equipment_name_id" binding:"omitempty"`
+	Code_old          string    `form:"code_old" binding:"omitempty"`
 }
 
 type EquipmentResponse struct {
 	ID              uint                   `json:"id"`
 	Code            string                 `json:"code"`
 	Value           string                 `json:"value"`
-	DateCome        *time.Time             `json:"date_come"`
+	DateCome        time.Time              `json:"date_come"`
 	Feature         string                 `json:"feature"`
 	Location        string                 `json:"location"`
 	EquipmentStatus GenaralResponse        `json:"equipment_status"`
@@ -63,4 +66,5 @@ type EquipmentResponse struct {
 	Unit            GenaralResponse        `json:"unit"`
 	EquipmentGroup  EquipmentGroupResponse `json:"equipment_group"`
 	EquipmentName   GenaralResponse        `json:"equipment_name"`
+	Code_old        string                 `json:"code_old"`
 }

@@ -19,7 +19,7 @@ func (db *EquipmentBroken) FindAll(ctx *gin.Context) {
 	var equipmentBrokens []models.EquipmentBroken
 	db.DB.Preload("Equipment").Preload("Equipment.EquipmentName").Preload("EquipmentStatus").Find(&equipmentBrokens)
 
-	var response []models.EquipmentResponse
+	var response []models.EquipmentBrokenResponse
 	copier.Copy(&response, &equipmentBrokens)
 	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }

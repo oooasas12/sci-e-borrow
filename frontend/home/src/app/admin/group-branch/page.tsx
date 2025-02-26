@@ -153,9 +153,12 @@ const GroupBranchPage: React.FC = () => {
     };
 
     const perPageSelectorHandler = (perPage: number) => {
+        setCurrentPage(1)
+        setPerPage(perPage)
     }
 
     const pageDirectHandler = (index: number) => {
+        setCurrentPage(index + 1)
     }
     const handleDel = (index: number, name: string) => {
         setDelData({

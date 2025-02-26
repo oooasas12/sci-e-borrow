@@ -19,14 +19,14 @@ type EquipmentBroken struct {
 
 type CreateEquipmentBrokenForm struct {
 	DateBroken        time.Time  `form:"date_broken" binding:"required" time_format:"2006-01-02"`
-	DateEndRepair     *time.Time `form:"date_end_repair" binding:"omitempty" time_format:"2006-01-02"`
+	DateEndRepair     *time.Time `form:"date_end_repair" time_format:"2006-01-02"`
 	Detail            string     `form:"detail"`
 	EquipmentID       uint       `form:"equipment_id" binding:"required"`
 	EquipmentStatusID uint       `form:"equipment_status_id"`
 }
 
 type UpdateByNameEquipmentBrokenForm struct {
-	DateBroken        *time.Time `form:"date_broken" binding:"omitempty" time_format:"2006-01-02"`
+	DateBroken        time.Time  `form:"date_broken" binding:"omitempty" time_format:"2006-01-02"`
 	DateEndRepair     *time.Time `form:"date_end_repair" binding:"omitempty" time_format:"2006-01-02"`
 	Detail            string     `form:"detail" binding:"omitempty"`
 	EquipmentID       uint       `form:"equipment_id" binding:"omitempty"`
@@ -40,7 +40,7 @@ type UpdateStatusBrokenForm struct {
 
 type EquipmentBrokenResponse struct {
 	ID              uint              `json:"id"`
-	DateBroken      *time.Time        `json:"date_broken"`
+	DateBroken      time.Time         `json:"date_broken"`
 	DateEndRepair   *time.Time        `json:"date_end_repair"`
 	Detail          string            `json:"detail"`
 	Equipment       EquipmentResponse `json:"equipment"`

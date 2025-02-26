@@ -161,9 +161,12 @@ const EquipmentTypePage: React.FC = () => {
         setOpenDelData(true);
     }
     const perPageSelectorHandler = (perPage: number) => {
+        setCurrentPage(1)
+        setPerPage(perPage)
     }
 
     const pageDirectHandler = (index: number) => {
+        setCurrentPage(index + 1)
     }
     return (
         <Layout>

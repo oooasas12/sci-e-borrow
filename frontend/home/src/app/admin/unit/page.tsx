@@ -27,15 +27,6 @@ import { toast } from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
 import { Unit } from '@/types/general';
 
-type Inputs = {
-    name: String,
-    username: String,
-    password: String,
-    fac: String,
-    group: String,
-    branch: String
-}
-
 const CountingUnit: React.FC = () => {
     const {
         register: registerInsert,
@@ -163,9 +154,12 @@ const CountingUnit: React.FC = () => {
     }
 
     const perPageSelectorHandler = (perPage: number) => {
+        setCurrentPage(1)
+        setPerPage(perPage)
     }
 
     const pageDirectHandler = (index: number) => {
+        setCurrentPage(index + 1)
     }
     return (
         <Layout>

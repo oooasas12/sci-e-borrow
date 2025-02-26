@@ -467,14 +467,17 @@ const UserPage: React.FC = () => {
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="group" className='text-sm text-font_color'>กลุ่มงาน / สาขา</label>
                         <ListBoxComponent placeholder='กลุ่มงาน' selectedValue={selectedGroup} options={[{id: 0, name: "เลือกกลุ่มงาน"}, ...branch]} onChange={handleSlectGroup} />
+                        {errorInput.group && <p className='text-red-500 text-sm'>**โปรดเลือกกลุ่มงาน</p>}
                     </div>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="fac" className='text-sm text-font_color'>ตำแหน่งระดับคณะ</label>
                         <ListBoxComponent placeholder='ตำแหน่งระดับคณะ' selectedValue={selectedFac} options={[{id: 0, name: "เลือกตำแหน่งระดับคณะ"}, ...positionFac]} onChange={handleSlectFac} />
+                        {errorInput.fac && <p className='text-red-500 text-sm'>**โปรดเลือกตำแหน่งระดับคณะ</p>}
                     </div>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="branch" className='text-sm text-font_color'>ตำแหน่งระดับสาขา</label>
                         <ListBoxComponent placeholder='ตำแหน่งระดับสาขา' selectedValue={selectedBranch} options={[{id: 0, name: "เลือกตำแหน่งระดับสาขา"}, ...positionBranch]} onChange={handleSlectBranch} />
+                        {errorInput.branch && <p className='text-red-500 text-sm'>**โปรดเลือกตำแหน่งระดับสาขา</p>}
                     </div>
                     <ButtonPrimary data='เพิ่มรายการ' type='submit' size='small' className='ml-auto' />
                 </form>
@@ -499,18 +502,24 @@ const UserPage: React.FC = () => {
                             placeholder="username"
                             {...registerEdit('username', { required: 'โปรดกรอก Username' })}
                         />
+                        {errorsEdit.username && (
+                            <span className="text-red-500 text-sm">{errorsEdit.username.message}</span>
+                        )}
                     </div>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="group" className='text-sm text-font_color'>กลุ่มงาน / สาขา</label>
                         <ListBoxComponent placeholder='กลุ่มงาน' selectedValue={selectedGroup} options={[{id: 0, name: "เลือกกลุ่มงาน"}, ...branch]} onChange={handleSlectGroup} />
+                        {errorInput.group && <p className='text-red-500 text-sm'>**โปรดเลือกกลุ่มงาน</p>}
                     </div>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="fac" className='text-sm text-font_color'>ตำแหน่งระดับคณะ</label>
                         <ListBoxComponent placeholder='ตำแหน่งระดับคณะ' selectedValue={selectedFac} options={[{id: 0, name: "เลือกตำแหน่งระดับคณะ"}, ...positionFac]} onChange={handleSlectFac} />
+                        {errorInput.fac && <p className='text-red-500 text-sm'>**โปรดเลือกตำแหน่งระดับคณะ</p>}
                     </div>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="branch" className='text-sm text-font_color'>ตำแหน่งระดับสาขา</label>
                         <ListBoxComponent placeholder='ตำแหน่งระดับสาขา' selectedValue={selectedBranch} options={[{id: 0, name: "เลือกตำแหน่งระดับสาขา"}, ...positionBranch]} onChange={handleSlectBranch} />
+                        {errorInput.branch && <p className='text-red-500 text-sm'>**โปรดเลือกตำแหน่งระดับสาขา</p>}
                     </div>
                     <ButtonPrimary data='ยืนยัน' type='submit' size='small' className='ml-auto' />
                 </form>
