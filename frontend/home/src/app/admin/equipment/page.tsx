@@ -341,6 +341,7 @@ const EquipmentPage: React.FC = () => {
     const handleEdit = (data: Equipment) => {
         
         const dateCome = data.date_come instanceof Date ? data.date_come : new Date(data.date_come);
+        dateCome.setDate(dateCome.getDate() + 1);
         resetEdit()
         setValue('id', data.id)
         setValue('code', data.code)

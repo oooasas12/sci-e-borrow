@@ -179,15 +179,15 @@ const UserPage: React.FC = () => {
     }
 
     const onSubmit = async (data: User) => {
-        if (!data.position_branch) {
+        if (!selectedBranch) {
             setErrorInput({ ...errorInput, branch: true });
             return;
         }
-        if (!data.position_fac) {
+        if (!selectedFac) {
             setErrorInput({ ...errorInput, fac: true });
             return;
         }
-        if (!data.branch) {
+        if (!selectedGroup) {
             setErrorInput({ ...errorInput, group: true });
             return;
         }
@@ -197,9 +197,9 @@ const UserPage: React.FC = () => {
             formData.append('name', data.name);
             formData.append('username', data.username);
             formData.append('password', data.password);
-            formData.append('position_fac_id', String(data.position_fac.id));
-            formData.append('position_branch_id', String(data.position_branch.id));
-            formData.append('branch_id', String(data.branch.id));
+            formData.append('position_fac_id', String(selectedFac.id));
+            formData.append('position_branch_id', String(selectedBranch.id));
+            formData.append('branch_id', String(selectedGroup.id));
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
                 method: 'POST',
@@ -234,15 +234,15 @@ const UserPage: React.FC = () => {
     const onSubmitEdit = async (data: User) => {
         console.log("test data :: ", data);
         
-        if (!data.position_branch) {
+        if (!selectedBranch) {
             setErrorInput({ ...errorInput, branch: true });
             return;
         }
-        if (!data.position_fac) {
+        if (!selectedFac) {
             setErrorInput({ ...errorInput, fac: true });
             return;
         }
-        if (!data.branch) {
+        if (!selectedGroup) {
             setErrorInput({ ...errorInput, group: true });
             return;
         }
@@ -252,9 +252,9 @@ const UserPage: React.FC = () => {
             formData.append('id', String(data.id));
             formData.append('name', data.name);
             formData.append('username', data.username);
-            formData.append('position_fac_id', String(data.position_fac.id));
-            formData.append('position_branch_id', String(data.position_branch.id)); 
-            formData.append('branch_id', String(data.branch.id));
+            formData.append('position_fac_id', String(selectedFac.id));
+            formData.append('position_branch_id', String(selectedBranch.id)); 
+            formData.append('branch_id', String(selectedGroup.id));
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${data.id}`, {
                 method: 'PATCH',

@@ -15,6 +15,8 @@ type EquipmentBroken struct {
 	Equipment         Equipment
 	EquipmentStatusID uint
 	EquipmentStatus   EquipmentStatus
+	UserID            uint
+	User              User
 }
 
 type CreateEquipmentBrokenForm struct {
@@ -23,6 +25,7 @@ type CreateEquipmentBrokenForm struct {
 	Detail            string     `form:"detail"`
 	EquipmentID       uint       `form:"equipment_id" binding:"required"`
 	EquipmentStatusID uint       `form:"equipment_status_id"`
+	UserID            uint       `form:"user_id" binding:"required"`
 }
 
 type UpdateByNameEquipmentBrokenForm struct {
@@ -31,6 +34,7 @@ type UpdateByNameEquipmentBrokenForm struct {
 	Detail            string     `form:"detail" binding:"omitempty"`
 	EquipmentID       uint       `form:"equipment_id" binding:"omitempty"`
 	EquipmentStatusID uint       `form:"equipment_status_id" binding:"omitempty"`
+	UserID            uint       `form:"user_id" binding:"omitempty"`
 }
 
 type UpdateStatusBrokenForm struct {
@@ -45,4 +49,5 @@ type EquipmentBrokenResponse struct {
 	Detail          string            `json:"detail"`
 	Equipment       EquipmentResponse `json:"equipment"`
 	EquipmentStatus GenaralResponse   `json:"equipment_status"`
+	User            UserResponse      `json:"user"`
 }

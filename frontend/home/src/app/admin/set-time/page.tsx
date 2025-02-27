@@ -198,6 +198,9 @@ const Settime: React.FC = () => {
         const dateStart = data.date_start instanceof Date ? data.date_start : new Date(data.date_start);
         const dateStop = data.date_stop instanceof Date ? data.date_stop : new Date(data.date_stop);
         
+        dateStart.setDate(dateStart.getDate() + 1);
+        dateStop.setDate(dateStop.getDate() + 1);
+        
         // กำหนดค่าให้กับฟอร์มแก้ไข โดยแปลงวันที่เป็นรูปแบบ YYYY-MM-DD สำหรับ input type="date"
         setValueEdit('date_start', dateStart.toISOString().split('T')[0]); // แปลงเป็น YYYY-MM-DD
         setValueEdit('date_stop', dateStop.toISOString().split('T')[0]); // แปลงเป็น YYYY-MM-DD

@@ -21,12 +21,12 @@ const ListBoxComponent: React.FC<ListBoxComponentProps> = ({
 }) => {
     
     return (
-        <Listbox value={selectedValue} onChange={onChange}>
+        <Listbox value={selectedValue || null} onChange={onChange}>
             {({ open }) => (
                 <div className={`relative ${open ? 'z-20' : 'z-10'} my-scroll`}>
                     {/* Listbox Button */}
                     <ListboxButton className="w-full px-2 h-9 py-1 flex items-center justify-between gap-3 rounded-md border border-gray-200 hover:bg-gray-100 text-center bg-white shadow-sm focus:outline-none">
-                        <span className="text-sm">{options.find(item => item.id == selectedValue.id)?.name || placeholder}</span>
+                        <span className="text-sm">{options.find(item => item.id == selectedValue?.id)?.name || placeholder}</span>
                         <IoIosArrowDown />
                     </ListboxButton>
 
@@ -42,7 +42,7 @@ const ListBoxComponent: React.FC<ListBoxComponentProps> = ({
                                 }
                             >
                                 {item.name}
-                                {selectedValue.id === item.id && (
+                                {selectedValue?.id === item.id && (
                                     <div className="ml-auto">
                                         <FaCheck />
                                     </div>

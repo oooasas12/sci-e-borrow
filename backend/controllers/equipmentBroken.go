@@ -17,7 +17,7 @@ type EquipmentBroken struct {
 
 func (db *EquipmentBroken) FindAll(ctx *gin.Context) {
 	var equipmentBrokens []models.EquipmentBroken
-	db.DB.Preload("Equipment").Preload("Equipment.EquipmentName").Preload("EquipmentStatus").Find(&equipmentBrokens)
+	db.DB.Preload("Equipment").Preload("Equipment.EquipmentName").Preload("EquipmentStatus").Preload("User").Preload("Equipment.EquipmentGroup").Find(&equipmentBrokens)
 
 	var response []models.EquipmentBrokenResponse
 	copier.Copy(&response, &equipmentBrokens)
@@ -27,7 +27,7 @@ func (db *EquipmentBroken) FindAll(ctx *gin.Context) {
 func (db *EquipmentBroken) FindOne(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	var equipmentBroken models.EquipmentBroken
-	if err := db.DB.Preload("Equipment").Preload("Equipment.EquipmentName").Preload("EquipmentStatus").First(&equipmentBroken, id).Error; err != nil {
+	if err := db.DB.Preload("Equipment").Preload("Equipment.EquipmentName").Preload("EquipmentStatus").Preload("User").Preload("Equipment.EquipmentGroup").First(&equipmentBroken, id).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
@@ -109,6 +109,16 @@ func (db *EquipmentBroken) Delete(ctx *gin.Context) {
 	if err := db.DB.First(&equipmentBroken, id).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "EquipmentBroken not found"})
 		return
+	}
+
+	// เปลี่ยน equipment_status_id ของ equipment ที่เชื่อมอยู่กับ EquipmentBroken ให้เป็น 1
+	var equipment models.Equipment
+	if err := db.DB.Where("id = ?", equipmentBroken.EquipmentID).First(&equipment).Error; err == nil {
+		equipment.EquipmentStatusID = 1
+		if err := db.DB.Save(&equipment).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update equipment status"})
+			return
+		}
 	}
 
 	// ลบข้อมูลผู้ใช้
