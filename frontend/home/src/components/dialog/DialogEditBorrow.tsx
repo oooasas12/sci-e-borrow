@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from 'next/navigation'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
-import { FaCheck, FaXmark } from "react-icons/fa6";
+import { FaCheck, FaCircleNotch, FaXmark } from "react-icons/fa6";
 import ButtonSelectColor from "../button/buttonSelectColor";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Equipment } from "@/types/equipment";
@@ -70,11 +70,11 @@ export const DialogEdit = ({
                                 </DialogTitle>
                                 <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={onClose} />
                             </div>
-                            <div className='flex flex-col md:flex-row gap-4'>
+                            <div className='flex flex-col md:flex-row gap-4 overflow-hidden h-full '>
                                 {children}
-                                <div className='flex flex-col gap-4 w-full h-full'>
-                                    <Table className='rounded-xl border'>
-                                        <TableHeader>
+                                <div className='flex flex-col gap-4 w-full p-[1px]'>
+                                    <Table className='rounded-xl border relative '>
+                                        <TableHeader className="sticky top-0 bg-white z-10 outline outline-1 outline-gray-200">
                                             <TableRow>
                                                 <TableHead>
 
@@ -88,7 +88,7 @@ export const DialogEdit = ({
                                                 <TableHead>
                                                     มูลค่า
                                                 </TableHead>
-                                                <TableHead  className="w-[10%]">
+                                                <TableHead className="w-[10%]">
                                                     หน่วยนับ
                                                 </TableHead>
                                                 <TableHead>
@@ -98,20 +98,28 @@ export const DialogEdit = ({
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {tableData.map((item) => (
-                                                <TableRow key={item.id} className={`cursor-pointer`} onClick={() => SelectedDelData(item.id.toString())}>
-                                                    <TableCell>
-                                                        <div className={`w-4 h-4 rounded-sm border border-gray-300 ${selectedEquipment.includes(item.id.toString()) ? 'bg-primary_1' : ''}`}>
-                                                            <FaCheck className={`text-white ${selectedEquipment.includes(item.id.toString()) ? 'block' : 'hidden'}`} />
-                                                        </div>
+                                            {tableData.length === 0 ? (
+                                                <TableRow>
+                                                    <TableCell colSpan={8} className="h-24 text-center">
+                                                        <FaCircleNotch className="text-primary_1 text-4xl animate-spin mx-auto" />
                                                     </TableCell>
-                                                    <TableCell>{item.equipment.code}</TableCell>
-                                                    <TableCell>{item.equipment.equipment_name.name}</TableCell>
-                                                    <TableCell>{item.equipment.value}</TableCell>
-                                                    <TableCell >{item.equipment.unit.name}</TableCell>
-                                                    <TableCell colSpan={2}>{item.equipment.location}</TableCell>
                                                 </TableRow>
-                                            ))}
+                                            ) : (
+                                                tableData.map((item) => (
+                                                    <TableRow key={item.id} className={`cursor-pointer`} onClick={() => SelectedDelData(item.id.toString())}>
+                                                        <TableCell>
+                                                            <div className={`w-4 h-4 rounded-sm border border-gray-300 ${selectedEquipment.includes(item.id.toString()) ? 'bg-primary_1' : ''}`}>
+                                                                <FaCheck className={`text-white ${selectedEquipment.includes(item.id.toString()) ? 'block' : 'hidden'}`} />
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell>{item.equipment.code}</TableCell>
+                                                        <TableCell>{item.equipment.equipment_name.name}</TableCell>
+                                                        <TableCell>{item.equipment.value}</TableCell>
+                                                        <TableCell >{item.equipment.unit.name}</TableCell>
+                                                        <TableCell colSpan={2}>{item.equipment.location}</TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
                                             {tableDataInsert && tableDataInsert.length > 0 && (
                                                 <TableRow className="bg-gray-100">
                                                     <TableCell colSpan={7}>

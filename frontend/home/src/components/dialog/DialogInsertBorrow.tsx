@@ -54,7 +54,7 @@ export const DialogEdit = ({
                             </div>
                             <div className='flex flex-col md:flex-row gap-4 overflow-hidden h-full'>
                                 {children}
-                                <div className='flex flex-col gap-4 w-full'>
+                                <div className='flex flex-col gap-4 w-full p-[1px]'>
                                     <Table className='rounded-xl border relative'>
                                         <TableHeader className="sticky top-0 bg-white z-10 outline outline-1 outline-gray-200">
                                             <TableRow>
