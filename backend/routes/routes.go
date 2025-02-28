@@ -152,6 +152,8 @@ func Server(r *gin.Engine) {
 	{
 		EquipmentBrokenGroup.GET("", EquipmentBrokenController.FindAll)
 		EquipmentBrokenGroup.GET("/:id", EquipmentBrokenController.FindOne)
+		EquipmentBrokenGroup.GET("/user/:id", EquipmentBrokenController.FindByUserID)
+		EquipmentBrokenGroup.GET("/branch/:id", EquipmentBrokenController.FindByBranchID)
 		EquipmentBrokenGroup.PUT("/:id", EquipmentBrokenController.Update)
 		EquipmentBrokenGroup.PATCH("/:id", EquipmentBrokenController.UpdateByName)
 		EquipmentBrokenGroup.PATCH("/update-status", EquipmentBrokenController.UpdateStatus)
@@ -163,9 +165,11 @@ func Server(r *gin.Engine) {
 	BorrowListController := controllers.BorrowList{DB: db}
 	{
 		BorrowListGroup.GET("", BorrowListController.FindAll)
+		BorrowListGroup.GET("/user/:id", BorrowListController.FindByUserID)
+		BorrowListGroup.GET("/:id", BorrowListController.FindOne)
+		BorrowListGroup.GET("/branch/:id", BorrowListController.FindByBranchID)
 		BorrowListGroup.PATCH("/update-date-return/:id", BorrowListController.UpdateDateReturn)
 		BorrowListGroup.PATCH("/update-status-borrow/:id", BorrowListController.UpdateStatusBorrow)
-		BorrowListGroup.GET("/:id", BorrowListController.FindOne)
 		BorrowListGroup.PUT("/:id", BorrowListController.Update)
 		BorrowListGroup.PATCH("/:id", BorrowListController.UpdateByName)
 		BorrowListGroup.POST("", BorrowListController.Create)

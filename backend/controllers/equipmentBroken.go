@@ -241,3 +241,41 @@ func (db *EquipmentBroken) UpdateStatus(ctx *gin.Context) {
 		"updated_equipment_count":        resultEquipment.RowsAffected,
 	})
 }
+
+func (db *EquipmentBroken) FindByUserID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid EquipmentBroken ID"})
+		return
+	}
+
+	var equipmentBroken []models.EquipmentBroken
+	if err := db.DB.Preload("Equipment").Preload("Equipment.EquipmentName").Preload("EquipmentStatus").Preload("User").Preload("Equipment.EquipmentGroup").Where("user_id = ?", id).Find(&equipmentBroken).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "EquipmentBroken not found"})
+		return
+	}
+
+	var response []models.EquipmentBrokenResponse
+	copier.Copy(&response, &equipmentBroken)
+
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
+}
+
+func (db *EquipmentBroken) FindByBranchID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid EquipmentBroken ID"})
+		return
+	}
+
+	var equipmentBroken []models.EquipmentBroken
+	if err := db.DB.Preload("Equipment").Preload("Equipment.EquipmentName").Preload("EquipmentStatus").Preload("User").Preload("User.Branch").Preload("Equipment.EquipmentGroup").Joins("JOIN users ON users.id = equipment_brokens.user_id").Where("users.branch_id = ?", id).Find(&equipmentBroken).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "EquipmentBroken not found"})
+		return
+	}
+
+	var response []models.EquipmentBrokenResponse
+	copier.Copy(&response, &equipmentBroken)
+
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
+}

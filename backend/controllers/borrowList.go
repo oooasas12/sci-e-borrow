@@ -396,3 +396,41 @@ func updateBorrowListFields(borrowList *models.BorrowList, form models.UpdateByN
 		}
 	}
 }
+
+func (db *BorrowList) FindByUserID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid borrowList ID"})
+		return
+	}
+
+	var borrowList []models.BorrowList
+	if err := db.DB.Preload("User").Preload("User.PositionFac").Preload("User.PositionBranch").Preload("User.Branch").Preload("ApprovalStatusBorrow").Preload("ApprovalStatusReturn").Where("user_id = ?", id).Find(&borrowList).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
+		return
+	}
+
+	var response []models.BorrowListResponse
+	copier.Copy(&response, &borrowList)
+
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
+}
+
+func (db *BorrowList) FindByBranchID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid borrowList ID"})
+		return
+	}
+
+	var borrowList []models.BorrowList
+	if err := db.DB.Preload("User").Preload("User.PositionFac").Preload("User.PositionBranch").Preload("User.Branch").Preload("ApprovalStatusBorrow").Preload("ApprovalStatusReturn").Joins("JOIN users ON users.id = borrow_lists.user_id").Where("users.branch_id = ?", id).Find(&borrowList).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
+		return
+	}
+
+	var response []models.BorrowListResponse
+	copier.Copy(&response, &borrowList)
+
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
+}
