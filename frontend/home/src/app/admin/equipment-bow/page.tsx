@@ -268,7 +268,6 @@ const EquipmentBow: React.FC = () => {
             }
             const detailData = await response.json();
             setSelectedEquipmentBorrowEdit(detailData.data);
-            console.log("selectedEquipmentBorrowEdit: ", selectedEquipmentBorrowEdit);
         } catch (error) {
             console.error('Error fetching borrow list detail:', error);
             toast.error('เกิดข้อผิดพลาดในการดึงข้อมูลรายละเอียดการยืม');

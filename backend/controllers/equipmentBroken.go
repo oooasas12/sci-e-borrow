@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sci-e-borrow-backend/models"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
@@ -206,6 +207,15 @@ func (db *EquipmentBroken) UpdateStatus(ctx *gin.Context) {
 	if result.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status"})
 		return
+	}
+
+	// หาก equipmentStatusID == 5 ให้ UPDATE date_end_repair เป็นวันนี้
+	if equipmentStatusID == 5 {
+		today := time.Now()
+		if err := db.DB.Model(&equipmentBroken).Where("id IN ?", ids).Update("date_end_repair", today).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update date_end_repair"})
+			return
+		}
 	}
 
 	// ดึง EquipmentID จาก EquipmentBroken เพื่อนำไปอัปเดต EquipmentStatusID ของ Equipment

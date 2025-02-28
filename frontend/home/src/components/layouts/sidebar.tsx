@@ -77,6 +77,15 @@ export const Sidebar = () => {
                 {
                     name: 'ตำแหน่งระดับสาขา',
                     link: '/admin/position-branch'
+                },
+                
+                {
+                    name: 'รายงานการยีม-คืน',
+                    link: '/admin/equipment-bow'
+                },
+                {
+                    name: 'รายการครุภัณฑ์ชำรุด',
+                    link: '/admin/equipment-broken'
                 }
             ]
         },
@@ -84,14 +93,6 @@ export const Sidebar = () => {
             menu: 'ดำเนินการครุภัณฑ์',
             icon: <HiArchive />,
             subMenu: [
-                {
-                    name: 'รายงานการยีม-คืน',
-                    link: '/equipment-bow'
-                },
-                {
-                    name: 'รายการครุภัณฑ์ชำรุด',
-                    link: '/equipment-broken'
-                }
             ]
         }
     ]

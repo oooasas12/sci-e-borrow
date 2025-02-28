@@ -40,7 +40,7 @@ export default function Login() {
               duration: 3000
             });
             setTimeout(() => {
-              router.push('/equipment-bow');
+              router.push('/admin/equipment-bow');
             }, 3000);
           } else {
             throw new Error('ข้อมูลผู้ใช้ไม่ถูกต้อง');

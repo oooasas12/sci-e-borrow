@@ -45,18 +45,18 @@ export const DialogEdit = ({
                         transition
                         className="relative transform overflow-visible rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-[80%] sm:max-h-[80%] h-full sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
                     >
-                        <div className='flex flex-col gap-4'>
+                        <div className='flex flex-col gap-4 h-full'>
                             <div className='flex justify-between'>
                                 <DialogTitle as="h2" className="text-base font-semibold text-gray-900">
                                     {title}
                                 </DialogTitle>
                                 <FaXmark className=' cursor-pointer text-gray-400 hover:text-gray-600' onClick={onClose} />
                             </div>
-                            <div className='flex flex-col md:flex-row gap-4'>
+                            <div className='flex flex-col md:flex-row gap-4 overflow-hidden h-full'>
                                 {children}
                                 <div className='flex flex-col gap-4 w-full'>
-                                    <Table className='rounded-xl border'>
-                                        <TableHeader>
+                                    <Table className='rounded-xl border relative'>
+                                        <TableHeader className="sticky top-0 bg-white z-10 outline outline-1 outline-gray-200">
                                             <TableRow>
                                                 <TableHead>
                                                     รหัสอุปกรณ์
@@ -76,7 +76,7 @@ export const DialogEdit = ({
                                                 <TableHead></TableHead>
                                             </TableRow>
                                         </TableHeader>
-                                        <TableBody>
+                                        <TableBody >
                                             {tableData.map((item) => (
                                                 <TableRow key={item.id}>
                                                     <TableCell>{item.code}</TableCell>

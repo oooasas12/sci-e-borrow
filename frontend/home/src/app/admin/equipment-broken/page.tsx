@@ -32,8 +32,9 @@ import { EquipmentBroken } from '@/types/equipmentBroken';
 import { Equipment } from '@/types/equipment';
 import { EquipmentName, EquipmentGroup, EquipmentStatus, BudgetSource, Unit } from '@/types/general';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
+import ListBoxStatus from '@/components/ListBox/ListBoxStatus';
+import DialogChangeStatus from '@/components/dialog/DialogChageStatus';
 
 const EquipmentBrokenPage: React.FC = () => {
     const router = useRouter();
@@ -41,6 +42,7 @@ const EquipmentBrokenPage: React.FC = () => {
         register: registerInsert,
         handleSubmit: handleSubmitInsert,
         watch: watchInsert,
+        reset: resetInsert,
         formState: { errors: errorsInsert },
     } = useForm<EquipmentBroken>()
 
@@ -83,13 +85,9 @@ const EquipmentBrokenPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [perPage, setPerPage] = useState(10)
 
-    const user = useSelector((state: RootState) => state.auth.user);
+    const user = useSelector((state: any) => state.auth.user);
+    const [openChangeStatus, setOpenChangeStatus] = useState(false);
 
-    useEffect(() => {
-        if (!user) {
-            router.push("/login");
-        }
-    }, [user]);
 
     const fetchMasterData = async () => {
         try {
@@ -156,7 +154,7 @@ const EquipmentBrokenPage: React.FC = () => {
         )
 
         setFilteredData(results);
-    }, [searchTerm, selectedFilterGroup, selectedFilterType, selectedFilterStatus]);
+    }, [searchTerm, selectedFilterGroup, selectedFilterType, selectedFilterStatus, data]);
 
     const filterGroup = (value: string) => {
         if (value === 'all') {
@@ -195,7 +193,6 @@ const EquipmentBrokenPage: React.FC = () => {
     }
 
     const onSubmit = async (data: EquipmentBroken) => {
-        console.log(user);
 
         if (!selectedEquipment) {
             toast.error('โปรดเลือกครุภัณฑ์')
@@ -287,6 +284,11 @@ const EquipmentBrokenPage: React.FC = () => {
         setOpenInsertData(false)
     }
 
+    const openModalInsert = () => {
+        resetInsert();
+        setOpenInsertData(true)
+    }
+
     const closeModalEdit = () => {
         setOpenEditData(false)
     }
@@ -335,6 +337,49 @@ const EquipmentBrokenPage: React.FC = () => {
             toast.error('ลบข้อมูลล้มเหลว');
         }
     }
+
+    const openModalChangeStatus = () => {
+        setOpenChangeStatus(true)
+    }
+
+    const closeModalChangeStatus = () => {
+        setOpenChangeStatus(false)
+    }
+
+    const handleChangeStatus = async (status: number, equipment_id: string[]) => {
+
+        if (status == 0) {
+            toast.error('โปรดเลือกสถานะ')
+            return;
+        }
+        if (equipment_id.length == 0) {
+            toast.error('โปรดเลือกครุภัณฑ์')
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('equipment_status_id', status.toString());
+        equipment_id.forEach(id => {
+            formData.append('id[]', id);
+        });
+
+        toast.promise(
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-broken/update-status`, {
+                method: 'PATCH',
+                body: formData,
+            }),
+            {
+                loading: 'กำลังอัปเดตสถานะ...',
+                success: () => {
+                    closeModalChangeStatus();
+                    fetchData(); // รีเฟรชข้อมูลหลังจากอัปเดตสถานะ
+                    return 'อัปเดตสถานะสำเร็จ';
+                },
+                error: 'ไม่สามารถอัปเดตสถานะได้',
+            }
+        );
+    }
+
     return (
         <Layout>
             <div className='container'>
@@ -354,12 +399,15 @@ const EquipmentBrokenPage: React.FC = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                             <FilterListBox placeholder='ประเภทครุภัณฑ์' selected={selectedFilterGroup} item={equipmentGroup} filter={filterGroup} />
-                            <FilterListBox placeholder='สถานะครุภัณฑ์' selected={selectedFilterStatus} item={equipmentStatus} filter={filterStatus} />
+                            <FilterListBox placeholder='สถานะครุภัณฑ์' selected={selectedFilterStatus} item={equipmentStatus.filter(item => item.id == 3 || item.id == 4 || item.id == 5 || item.id == 6)} filter={filterStatus} />
                             <FilterListBox placeholder='ชื่อครุภัณฑ์' selected={selectedFilterType} item={equipmentName} filter={filterType} />
                         </div>
-                        <div className='flex'>
-                            <button onClick={() => setOpenInsertData(true)} className='bg-primary_1 whitespace-nowrap hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>
-                                <span>เพิ่มรายการ</span>
+                        <div className='flex gap-3'>
+                            <button onClick={() => openModalChangeStatus()} className='bg-primary_1 whitespace-nowrap hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>
+                                <span>เปลี่ยนสถานะครุภัณฑ์</span>
+                            </button>
+                            <button onClick={() => openModalInsert()} className='bg-primary_1 whitespace-nowrap hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>
+                                <span>แจ้งชำรุด</span>
                             </button>
                         </div>
                     </div>
@@ -393,7 +441,7 @@ const EquipmentBrokenPage: React.FC = () => {
                                     <TableCell>{item.user.name}</TableCell>
                                     <TableCell>{new Date(item.date_broken).toLocaleDateString('th-TH')}</TableCell>
                                     <TableCell>{item.date_end_repair ? new Date(item.date_end_repair).toLocaleDateString('th-TH') : '-'}</TableCell>
-                                    <TableCell className='flex gap-2' >
+                                    <TableCell className='flex gap-2 items-center' >
                                         <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)} size={20} />
                                         <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.equipment.equipment_name.name)} size={20} />
                                     </TableCell>
@@ -420,7 +468,7 @@ const EquipmentBrokenPage: React.FC = () => {
                     </div>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="borrowing_date" className='text-sm text-font_color'>วันที่ชำรุด</label>
-                        <Input type="date" id='borrowing_date' className='w-full' {...registerInsert('date_broken', { required: '**โปรดเลือกวันที่' })} />
+                        <Input type="date" id='borrowing_date' min={new Date(new Date().setDate(new Date().getDate() - 10)).toISOString().split('T')[0]} max={new Date().toISOString().split('T')[0]} className='w-full' {...registerInsert('date_broken', { required: '**โปรดเลือกวันที่' })} />
                         {errorsInsert.date_broken && <p className='text-red-500'>{errorsInsert.date_broken.message}</p>}
                     </div>
                     <div className='flex flex-col gap-2'>
@@ -473,6 +521,14 @@ const EquipmentBrokenPage: React.FC = () => {
                 </>
             }
                 onClose={closeModalDel} open={openDelData} onDel={onDel} />
+            <DialogChangeStatus
+                title='เปลี่ยนสถานะครุภัณฑ์'
+                onClose={closeModalChangeStatus}
+                open={openChangeStatus}
+                tableData={filteredData.filter(item => item.equipment_status.id == 3)}
+                handleChangeStatus={handleChangeStatus}
+                status={equipmentStatus.filter(item => item.id == 4 || item.id == 5 || item.id == 6).map(item => ({ id: item.id, name: item.name }))}
+            />
         </Layout>
     );
 };
