@@ -40,21 +40,21 @@ type UpdateStatusReturn struct {
 }
 
 type UpdateByNameBorrowListForm struct {
-	DateBorrow             *time.Time `form:"date_borrow" binding:"omitempty" time_format:"2006-01-02"`
-	DateReturn             *time.Time `form:"date_return" binding:"omitempty" time_format:"2006-01-02"`
-	DocBorrow              string     `form:"doc_borrow" binding:"omitempty"`
-	DocReturn              string     `form:"doc_return" binding:"omitempty"`
-	ApprovalStatusBorrowID uint       `form:"approval_status_borrow_id" binding:"omitempty"`
-	ApprovalStatusReturnID uint       `form:"approval_status_return_id" binding:"omitempty"`
+	DateBorrow             time.Time  `form:"date_borrow"  time_format:"2006-01-02"`
+	DateReturn             *time.Time `form:"date_return"  time_format:"2006-01-02"`
+	DocBorrow              string     `form:"doc_borrow" `
+	DocReturn              string     `form:"doc_return" `
+	ApprovalStatusBorrowID uint       `form:"approval_status_borrow_id" `
+	ApprovalStatusReturnID uint       `form:"approval_status_return_id" `
 }
 
 type BorrowListResponse struct {
-	ID                   uint           `json:"id"`
-	DateBorrow           *time.Time     `json:"date_borrow"`
-	DateReturn           *time.Time     `json:"date_return"`
-	DocBorrow            string         `json:"doc_borrow"`
-	DocReturn            string         `json:"doc_return"`
-	ApprovalStatusBorrow ApprovalStatus `json:"approval_status_borrow"`
-	ApprovalStatusReturn ApprovalStatus `json:"approval_status_return"`
-	User                 User           `json:"user"`
+	ID                   uint            `json:"id"`
+	DateBorrow           time.Time       `json:"date_borrow"`
+	DateReturn           *time.Time      `json:"date_return"`
+	DocBorrow            string          `json:"doc_borrow"`
+	DocReturn            string          `json:"doc_return"`
+	ApprovalStatusBorrow GenaralResponse `json:"approval_status_borrow"`
+	ApprovalStatusReturn GenaralResponse `json:"approval_status_return"`
+	User                 UserResponse    `json:"user"`
 }

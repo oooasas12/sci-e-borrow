@@ -169,42 +169,31 @@ func (db *BorrowList) Delete(ctx *gin.Context) {
 }
 
 func (db *BorrowList) UpdateByName(ctx *gin.Context) {
+	// Parse BorrowList ID from URL
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid borrowList ID"})
 		return
 	}
 
-	// ดึงข้อมูลเดิมจากฐานข้อมูล
+	// Retrieve the existing BorrowList entry
 	var borrowList models.BorrowList
 	if err := db.DB.First(&borrowList, id).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
 		return
 	}
 
-	// อ่านค่าจาก form-data และบันทึกลง struct
+	// Bind form data
 	var form models.UpdateByNameBorrowListForm
 	if err := ctx.ShouldBind(&form); err != nil {
-		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error form": err.Error()})
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
 
-	// ใช้ reflect เพื่อตรวจสอบค่าที่ถูกส่งมา และอัปเดตเฉพาะค่าที่ไม่เป็นค่าเริ่มต้น (zero value)
-	borrowListValue := reflect.ValueOf(&borrowList).Elem()
-	formValue := reflect.ValueOf(form)
-	formType := reflect.TypeOf(form)
+	// Dynamically update only non-zero values
+	updateBorrowListFields(&borrowList, form)
 
-	for i := 0; i < formValue.NumField(); i++ {
-		fieldValue := formValue.Field(i)
-		fieldType := formType.Field(i)
-
-		// ตรวจสอบว่าเป็นค่าศูนย์หรือไม่ (ถ้าไม่ใช่ แสดงว่าผู้ใช้ส่งค่าเข้ามา)
-		if !fieldValue.IsZero() {
-			borrowListValue.FieldByName(fieldType.Name).Set(fieldValue)
-		}
-	}
-
-	// บันทึกข้อมูลที่อัปเดตลงฐานข้อมูล
+	// Save updates
 	if err := db.DB.Save(&borrowList).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update borrowList"})
 		return
@@ -380,4 +369,30 @@ func (db *BorrowList) UpdateStatusReturn(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "BorrowList updated status return successfully"})
+}
+
+// updateBorrowListFields updates only non-zero fields from form
+func updateBorrowListFields(borrowList *models.BorrowList, form models.UpdateByNameBorrowListForm) {
+	borrowListValue := reflect.ValueOf(borrowList).Elem()
+	formValue := reflect.ValueOf(form)
+	formType := reflect.TypeOf(form)
+
+	for i := 0; i < formValue.NumField(); i++ {
+		fieldValue := formValue.Field(i)
+		fieldType := formType.Field(i)
+
+		// Ignore zero values (default empty values)
+		if !fieldValue.IsZero() {
+			field := borrowListValue.FieldByName(fieldType.Name)
+
+			// Handle pointer fields (*time.Time)
+			if field.Kind() == reflect.Ptr && field.Type().Elem() == reflect.TypeOf(time.Time{}) {
+				if !fieldValue.IsNil() {
+					field.Set(fieldValue)
+				}
+			} else {
+				field.Set(fieldValue)
+			}
+		}
+	}
 }

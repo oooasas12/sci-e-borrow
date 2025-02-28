@@ -2,8 +2,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.scss";
-import { Providers } from '@/components/Providers';
-
+import { Provider } from 'react-redux';
+import { persistor, store } from "@/store/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { configureStore } from '@reduxjs/toolkit';
+import { Providers } from '@/app/providers';
 
 export default function RootLayout({
   children,
@@ -18,9 +21,7 @@ export default function RootLayout({
         <title>ระบบครุภัณฑ์ | คณะวิทยาศาตร์และเทคโนโลยี</title>
       </head>
       <body>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

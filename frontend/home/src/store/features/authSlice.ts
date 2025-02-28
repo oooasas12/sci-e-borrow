@@ -1,20 +1,32 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserState } from '@/types/State';
+import { User } from '@/types/user';
 
-const initialState: UserState = {
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+}
+
+const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
 };
 
+// ✅ ป้องกัน state.auth จากการเป็น null
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser: (state: UserState, action: PayloadAction<any>) => {
+    setUser: (state, action: PayloadAction<User>) => {
+      if (!state) {
+        return initialState; // ✅ แก้ไขให้คืนค่าเริ่มต้นแทน null
+      }
       state.user = action.payload;
       state.isAuthenticated = true;
     },
-    logout: (state: UserState) => {
+    logout: (state) => {
+      if (!state) {
+        return initialState;
+      }
       state.user = null;
       state.isAuthenticated = false;
     },

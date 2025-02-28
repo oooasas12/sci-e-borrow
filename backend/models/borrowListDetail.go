@@ -22,7 +22,7 @@ type DeleteBorrowListDetailForm struct {
 }
 
 type BorrowListDetailResponse struct {
-	ID         uint       `json:"id"`
-	BorrowList BorrowList `json:"borrow_list"`
-	Equipment  Equipment  `json:"equipment"`
+	ID         uint               `json:"id"`
+	BorrowList BorrowListResponse `json:"borrow_list"`
+	Equipment  EquipmentResponse  `json:"equipment"`
 }
