@@ -287,6 +287,7 @@ const EquipmentBow: React.FC = () => {
         setValueEdit('date_return', data.date_return ? dateReturn.toISOString().split('T')[0] : '');
 
         fetchBorrowListDetail(data.id);
+        fetchEquipment();
         setSelectedEquipmentBorrow([]);
         setOpenEditData(true);
     }

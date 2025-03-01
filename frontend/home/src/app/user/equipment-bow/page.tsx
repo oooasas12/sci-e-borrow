@@ -290,6 +290,7 @@ const EquipmentBow: React.FC = () => {
         setValueEdit('date_return', data.date_return ? dateReturn.toISOString().split('T')[0] : '');
 
         fetchBorrowListDetail(data.id);
+        fetchEquipment();
         setSelectedEquipmentBorrow([]);
         setOpenEditData(true);
     }
@@ -532,7 +533,7 @@ const EquipmentBow: React.FC = () => {
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>{item.date_borrow ? new Date(item.date_borrow).toLocaleDateString('th-TH') : '-'}</TableCell>
                                     <TableCell>{item.date_return ? new Date(item.date_return).toLocaleDateString('th-TH') : '-'}</TableCell>
-                                    <TableCell>{item.date_return ? item.approval_status_return.name : item.approval_status_borrow.name}</TableCell>
+                                    <TableCell>{item.date_return && item.approval_status_borrow.id === 1 ? `${item.approval_status_return.name}การคืน` : `${item.approval_status_borrow.name}การยืม`}</TableCell>
                                     <TableCell>Download</TableCell>
                                     <TableCell>Download</TableCell>
                                     <TableCell className='flex gap-2' >

@@ -152,6 +152,53 @@ func (db *EquipmentBroken) UpdateByName(ctx *gin.Context) {
 		return
 	}
 
+	// ตรวจสอบว่า equipment_id ที่ส่งมาไม่ตรงกับค่าเดิมใน DB
+	if equipmentBroken.EquipmentID != form.EquipmentID {
+		var equipments []models.Equipment
+
+		// ดึงข้อมูลอุปกรณ์ที่เกี่ยวข้องทั้งหมดในครั้งเดียว
+		if err := db.DB.Where("id IN (?)", []uint{equipmentBroken.EquipmentID, form.EquipmentID}).Find(&equipments).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch equipment"})
+			return
+		}
+
+		// ใช้ Transaction เพื่อความปลอดภัย
+		tx := db.DB.Begin()
+		defer func() {
+			if r := recover(); r != nil {
+				tx.Rollback()
+			}
+		}()
+
+		for i := range equipments {
+			if equipments[i].ID == equipmentBroken.EquipmentID {
+				if equipments[i].EquipmentStatusID != 1 {
+					equipments[i].EquipmentStatusID = 1
+					if err := tx.Save(&equipments[i]).Error; err != nil {
+						tx.Rollback()
+						ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update equipment status"})
+						return
+					}
+				}
+			} else if equipments[i].ID == form.EquipmentID {
+				if equipments[i].EquipmentStatusID != 3 {
+					equipments[i].EquipmentStatusID = 3
+					if err := tx.Save(&equipments[i]).Error; err != nil {
+						tx.Rollback()
+						ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update equipment status"})
+						return
+					}
+				}
+			}
+		}
+
+		// Commit transaction หากไม่มีข้อผิดพลาด
+		if err := tx.Commit().Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit failed"})
+			return
+		}
+	}
+
 	// ใช้ reflect เพื่อตรวจสอบค่าที่ถูกส่งมา และอัปเดตเฉพาะค่าที่ไม่เป็นค่าเริ่มต้น (zero value)
 	equipmentBrokenValue := reflect.ValueOf(&equipmentBroken).Elem()
 	formValue := reflect.ValueOf(form)

@@ -117,7 +117,7 @@ const EquipmentBrokenPage: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-broken`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-broken/user/${user.id}`);
             if (!response.ok) throw new Error('Failed to fetch data');
             const result = await response.json();
             setData(result.data);
@@ -250,6 +250,7 @@ const EquipmentBrokenPage: React.FC = () => {
             if (!response.ok) throw new Error('Failed to update data');
 
             await fetchData();
+            fetchMasterData();
             closeModalEdit();
             toast.success('แก้ไขรายการครุภัณฑ์ชำรุดสำเร็จ');
         } catch (error) {
@@ -387,7 +388,7 @@ const EquipmentBrokenPage: React.FC = () => {
                     position="bottom-right"
                     reverseOrder={false}
                 />
-                <h1 className='title lg text-font_color'>รายการครุภัณฑ์ชำรุด</h1>
+                <h1 className='title lg text-font_color'>ประวัติการชำรุดครุภัณฑ์</h1>
                 <div className='flex flex-col gap-4 mt-8'>
                     <div className='flex justify-between'>
                         <div className='flex gap-2 '>
@@ -442,8 +443,16 @@ const EquipmentBrokenPage: React.FC = () => {
                                     <TableCell>{new Date(item.date_broken).toLocaleDateString('th-TH')}</TableCell>
                                     <TableCell>{item.date_end_repair ? new Date(item.date_end_repair).toLocaleDateString('th-TH') : '-'}</TableCell>
                                     <TableCell className='flex gap-2 items-center' >
-                                        <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)} size={20} />
-                                        <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.equipment.equipment_name.name)} size={20} />
+                                        {item.equipment_status.id == 3 ? (
+                                            <MdEditSquare className='text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)} size={20} />
+                                        ) : (
+                                            <MdEditSquare className='text-gray-500 cursor-not-allowed' size={20} />
+                                        )}
+                                        {item.equipment_status.id == 3 ? (
+                                            <MdDelete className='text-red-600 cursor-pointer' onClick={() => handleDel(item.id, item.equipment.equipment_name.name)} size={20} />
+                                        ) : (
+                                            <MdDelete className='text-gray-500 cursor-not-allowed' size={20} />
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -489,7 +498,7 @@ const EquipmentBrokenPage: React.FC = () => {
                 <form onSubmit={handleSubmitEdit(onSubmitEdit)} className='flex flex-col gap-4'>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="equipment" className='text-sm text-font_color'>ครุภัณฑ์</label>
-                        <ListBoxComponent placeholder='รายการครุภัณฑ์' selectedValue={selectedEquipment} options={equipment.map(item => ({ id: item.id, name: item.code + ' - ' + item.equipment_name.name }))} onChange={handleSlectEquipment} />
+                        <ListBoxComponent placeholder={selectedEquipment?.code + ' - ' + selectedEquipment?.equipment_name?.name} selectedValue={selectedEquipment} options={equipment.map(item => ({ id: item.id, name: item.code + ' - ' + item.equipment_name.name }))} onChange={handleSlectEquipment} />
                         {errorInput.equipment && <p className='text-red-500 text-sm'>**โปรดเลือกครุภัณฑ์</p>}
                     </div>
                     <div className='flex flex-col gap-2'>
