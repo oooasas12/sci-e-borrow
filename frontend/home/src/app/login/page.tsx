@@ -10,6 +10,35 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { setBranch, setPositionBranch, setPositionFac, setEquipmentGroup, setEquipmentStatus, setApprovalStatus, setEquipmentName, setUnit, setBudgetSource } from '@/store/features/masterDataSlice';
 import { setUser } from '@/store/features/authSlice';
+import Cookies from 'js-cookie';
+import { v4 as uuidv4 } from 'uuid';
+
+// ฟังก์ชันสำหรับเก็บข้อมูลใน cookies
+const setAuthCookies = (userData: any, token: string) => {
+  // กำหนดวันหมดอายุเป็น 7 วัน
+  const expiresIn = 1;
+  
+  // เก็บ token
+  Cookies.set('auth_token', token, { 
+    expires: expiresIn,
+    secure: true,
+    sameSite: 'strict'
+  });
+  
+  // เก็บข้อมูลผู้ใช้
+  Cookies.set('user_data', JSON.stringify(userData), {
+    expires: expiresIn,
+    secure: true,
+    sameSite: 'strict'
+  });
+  
+  // สร้าง session ID
+  Cookies.set('session_id', uuidv4(), {
+    expires: expiresIn,
+    secure: true,
+    sameSite: 'strict'
+  });
+};
 
 export default function Login() {
   const router = useRouter();
@@ -21,41 +50,64 @@ export default function Login() {
   const handleClick = async () => {
     if (username && password) {
       try {
+        // แสดง loading
         const formData = new FormData();
         formData.append('username', username);
         formData.append('password', password);
 
+        // ส่งข้อมูลแบบ form-data
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
           method: 'POST',
-          body: formData
+          body: formData,
+          credentials: 'include',
+          mode: 'cors'
         });
-  
-        if (response.ok) {
-          const userData = await response.json();
-          
-          // ตรวจสอบว่าข้อมูลผู้ใช้มีอยู่ก่อนที่จะเก็บลง Redux
-          if (userData && userData.data) {
-            dispatch(setUser(userData.data));
-            toast.success('กำลังเข้าสู่ระบบ', {
-              duration: 3000
-            });
-            setTimeout(() => {
-              router.push('/admin/equipment-bow');
-            }, 3000);
-          } else {
-            throw new Error('ข้อมูลผู้ใช้ไม่ถูกต้อง');
+
+        // ดึงข้อมูล response
+        const result = await response.json();
+        console.log('API Response:', result); // เพิ่ม log เพื่อดูข้อมูลที่ได้รับ
+
+        if (!response.ok) {
+          throw new Error(result.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+        }
+
+        if (result.status === 'login success' && result.data) {
+          // เก็บข้อมูลใน cookies ก่อน
+          const token = result.token;
+          if (!token) {
+            throw new Error('ไม่พบ token ในข้อมูลที่ได้รับ');
           }
-        } else {
-          toast.error('Username หรือ Password ไม่ถูกต้อง', {
+          setAuthCookies(result.data, token);
+
+          // เก็บข้อมูลใน Redux
+          dispatch(setUser(result.data));
+
+          toast.success('เข้าสู่ระบบสำเร็จ', {
             duration: 3000
           });
-          setErrorLogin(true);
+          
+          // รอให้ cookies และ redux ถูกเซ็ตเรียบร้อยก่อน
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // ใช้ router.push แทน window.location
+          router.push('/admin/equipment-bow');
+        } else {
+          throw new Error(result.message || 'ข้อมูลผู้ใช้ไม่ถูกต้อง');
         }
       } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการเชื่อมต่อ:', error);
-        toast.error('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง', {
+        // ปิด loading และแสดง error
+        toast.dismiss('login');
+        console.error('Login error:', error);
+        
+        let errorMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง';
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        
+        toast.error(errorMessage, {
           duration: 3000
         });
+        setErrorLogin(true);
       }
     } else {
       toast.error('กรุณากรอกข้อมูลให้ครบถ้วน', {

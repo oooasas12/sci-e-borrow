@@ -17,7 +17,7 @@ type BorrowListDetail struct {
 func (db *BorrowListDetail) FindByBorrowListID(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	var borrowListDetails []models.BorrowListDetail
-	if err := db.DB.Preload("Equipment").Preload("Equipment.EquipmentStatus").Preload("Equipment.BudgetSource").Preload("Equipment.Unit").Preload("Equipment.EquipmentGroup").Preload("Equipment.EquipmentName").Preload("BorrowList").Where("borrow_list_id = ?", id).Find(&borrowListDetails).Error; err != nil {
+	if err := db.DB.Preload("Equipment").Preload("Equipment.EquipmentStatus").Preload("Equipment.BudgetSource").Preload("Equipment.Unit").Preload("Equipment.EquipmentGroup").Preload("Equipment.EquipmentName").Preload("BorrowList").Preload("BorrowList.User").Where("borrow_list_id = ?", id).Find(&borrowListDetails).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Invalid borrowListDetails ID"})
 		return
 	}

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"sci-e-borrow-backend/models"
@@ -20,7 +19,6 @@ func (db *Equipment) FindAll(ctx *gin.Context) {
 	var equipments []models.Equipment
 	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Find(&equipments)
 
-	fmt.Println("equipments :: ", equipments)
 	var response []models.EquipmentResponse
 	copier.Copy(&response, &equipments)
 	ctx.JSON(http.StatusOK, gin.H{"data": response})

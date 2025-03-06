@@ -184,6 +184,14 @@ func Server(r *gin.Engine) {
 		BorrowListDetailGroup.DELETE("", BorrowListDetailController.Delete)
 	}
 
+	signatureGroup := r.Group("/api/signature")
+	signatureController := controllers.Signature{DB: db}
+	{
+		signatureGroup.POST("/upload", signatureController.Upload)
+		signatureGroup.GET("/image/:image_path", signatureController.GetSignatureImage)
+		signatureGroup.GET("/user/:user_id", signatureController.GetSignatureByUser)
+	}
+
 	loginController := controllers.Login{DB: db}
 	r.POST("/api/login", loginController.Login)
 

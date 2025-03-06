@@ -389,8 +389,8 @@ const EquipmentBrokenPage: React.FC = () => {
                 />
                 <h1 className='title lg text-font_color'>รายการครุภัณฑ์ชำรุด</h1>
                 <div className='flex flex-col gap-4 mt-8'>
-                    <div className='flex justify-between'>
-                        <div className='flex gap-2 '>
+                    <div className='flex justify-between items-start'>
+                        <div className='flex flex-col gap-2 '>
                             <Input
                                 type="text"
                                 placeholder="ค้นหา..."
@@ -398,9 +398,11 @@ const EquipmentBrokenPage: React.FC = () => {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                            <FilterListBox placeholder='ประเภทครุภัณฑ์' selected={selectedFilterGroup} item={equipmentGroup} filter={filterGroup} />
-                            <FilterListBox placeholder='สถานะครุภัณฑ์' selected={selectedFilterStatus} item={equipmentStatus.filter(item => item.id == 3 || item.id == 4 || item.id == 5 || item.id == 6)} filter={filterStatus} />
-                            <FilterListBox placeholder='ชื่อครุภัณฑ์' selected={selectedFilterType} item={equipmentName} filter={filterType} />
+                            <div className='flex gap-2'>
+                                <FilterListBox placeholder='ประเภทครุภัณฑ์' selected={selectedFilterGroup} item={equipmentGroup} filter={filterGroup} />
+                                <FilterListBox placeholder='สถานะครุภัณฑ์' selected={selectedFilterStatus} item={equipmentStatus.filter(item => item.id == 3 || item.id == 4 || item.id == 5 || item.id == 6)} filter={filterStatus} />
+                                <FilterListBox placeholder='ชื่อครุภัณฑ์' selected={selectedFilterType} item={equipmentName} filter={filterType} />
+                            </div>
                         </div>
                         <div className='flex gap-3'>
                             <button onClick={() => openModalChangeStatus()} className='bg-primary_1 whitespace-nowrap hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>

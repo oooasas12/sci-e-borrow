@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"sci-e-borrow-backend/models"
@@ -20,7 +19,6 @@ func (u *User) FindAll(ctx *gin.Context) {
 	var users []models.User
 	u.DB.Preload("PositionFac").Preload("PositionBranch").Preload("Branch").Find(&users)
 
-	fmt.Println("users :: ", users)
 	var response []models.UserResponse
 	copier.Copy(&response, &users)
 	ctx.JSON(http.StatusOK, gin.H{"data": response})
