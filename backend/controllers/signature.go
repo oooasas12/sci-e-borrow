@@ -138,3 +138,37 @@ func (s *Signature) GetSignatureByUser(c *gin.Context) {
 		"data": response,
 	})
 }
+
+// DeleteSignature ลบข้อมูลลายเซ็น
+func (s *Signature) DeleteSignature(c *gin.Context) {
+	// รับ ID ของลายเซ็นที่ต้องการลบจาก URL parameter
+	signatureID := c.Param("id")
+	if signatureID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "กรุณาระบุรหัสลายเซ็น"})
+		return
+	}
+
+	// ค้นหาลายเซ็นในฐานข้อมูล
+	var signature models.Signature
+	if err := s.DB.First(&signature, signatureID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่พบลายเซ็นที่ต้องการลบ"})
+		return
+	}
+
+	// ลบไฟล์รูปภาพจากระบบไฟล์
+	filePath := filepath.Join("images/signature", signature.ImageName)
+	if err := os.Remove(filePath); err != nil && !os.IsNotExist(err) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถลบไฟล์รูปภาพได้"})
+		return
+	}
+
+	// ลบข้อมูลจากฐานข้อมูล
+	if err := s.DB.Delete(&signature).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถลบข้อมูลลายเซ็นได้"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ลบลายเซ็นเรียบร้อยแล้ว",
+	})
+}

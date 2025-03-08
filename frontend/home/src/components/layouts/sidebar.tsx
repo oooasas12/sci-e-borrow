@@ -1,139 +1,239 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from 'next/navigation'
-import { IoMdMenu } from "react-icons/io";
+import { useRouter } from "next/navigation";
+import { IoIosArrowDown, IoMdMenu } from "react-icons/io";
 import { FaChartBar, FaUser } from "react-icons/fa6";
-import { FaCog, FaListAlt } from "react-icons/fa";
+import {
+  FaCog,
+  FaExchangeAlt,
+  FaListAlt,
+  FaSignOutAlt,
+  FaTools,
+} from "react-icons/fa";
 import Link from "next/link";
 import { HiArchive } from "react-icons/hi";
-
+import { useSelector, useDispatch } from "react-redux";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { logout } from '@/store/features/authSlice';
+import Cookies from 'js-cookie';
 // type SidebarData = {
 // };
 
 export const Sidebar = () => {
-    const router = useRouter();
-    const [openMenu, setOpenMenu] = useState<number[]>([]);
-    const HomePage = () => {
-        router.push('/');
-    }
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.auth.user);
+  const [openMenu, setOpenMenu] = useState<number[]>([]);
+  const HomePage = () => {
+    router.push("/");
+  };
 
-    const handleOpenMenu = (index: number) => {
-        if (openMenu.includes(index)) {
-            setOpenMenu(openMenu.filter((item) => item !== index));
-        } else {
-            setOpenMenu([...openMenu, index]);
-        }
+  const handleOpenMenu = (index: number) => {
+    if (openMenu.includes(index)) {
+      setOpenMenu(openMenu.filter((item) => item !== index));
+    } else {
+      setOpenMenu([...openMenu, index]);
     }
+  };
 
-    const menu = [
+  const handleLogout = () => {
+    window.location.href = '/login';
+    dispatch(logout());
+    Cookies.remove('auth_token');
+    Cookies.remove('user_data');
+    Cookies.remove('session_id');
+  };
+
+  const menu = [
+    {
+      menu: "รายงาน",
+      icon: <FaChartBar />,
+      subMenu: [],
+    },
+    {
+      menu: "จัดการ",
+      icon: <FaCog />,
+      subMenu: [
         {
-            menu: 'รายงาน',
-            icon: <FaChartBar />,
-            subMenu: [
-                
-            ]
+          name: "ผู้ใช้งาน",
+          link: "/admin/user",
         },
         {
-            menu: 'จัดการ',
-            icon: <FaCog />,
-            subMenu: [
-                {
-                    name: 'ผู้ใช้งาน',
-                    link: '/admin/user'
-                },
-                {
-                    name: 'รายการครุภัณฑ์',
-                    link: '/admin/equipment'
-                },
-                {
-                    name: 'รายการชื่อครุภัณฑ์',
-                    link: '/admin/equipment-name'
-                },
-                {
-                    name: 'ประเภทครุภัณฑ์',
-                    link: '/admin/equipment-type'
-                },
-                {
-                    name: 'สาขา',
-                    link: '/admin/group-branch'
-                },
-                {
-                    name: 'ตั้งเวลารักษาการแทน',
-                    link: '/admin/set-time'
-                },
-                {
-                    name: 'หน่วยนับ',
-                    link: '/admin/unit'
-                },
-                {
-                    name: 'แหล่งเงิน',
-                    link: '/admin/budget-source'
-                },
-                {
-                    name: 'ตำแหน่งระดับคณะ',
-                    link: '/admin/position-fac'
-                },
-                {
-                    name: 'ตำแหน่งระดับสาขา',
-                    link: '/admin/position-branch'
-                },
-                
-                {
-                    name: 'รายงานการยีม-คืน',
-                    link: '/admin/equipment-bow'
-                },
-                {
-                    name: 'รายการครุภัณฑ์ชำรุด',
-                    link: '/admin/equipment-broken'
-                }
-            ]
+          name: "รายการครุภัณฑ์",
+          link: "/admin/equipment",
         },
         {
-            menu: 'ดำเนินการครุภัณฑ์',
-            icon: <HiArchive />,
-            subMenu: [
-            ]
-        }
-    ]
-    return (
-        <div className="bg-primary_1 fixed top-0 lg:relative break-words lg:min-h-screen lg:w-64 w-full my-scroll">
-            <div className=" relative px-6 py-4 flex flex-row items-center lg:hidden">
-                <div className="flex gap-4 items-center ">
-                    <img src="/images/logo-sci.png" className=" size-[40px] " alt="" />
-                    <span className="text-sm text-white">ระบบยืม-คืนครุภัณฑ์ <br /> คณะวิทยาศาตร์และเทคโนโลยี</span>
-                </div>
-                <IoMdMenu className="text-primary_2 size-8 ml-auto cursor-pointer lg:hidden" />
-            </div>
-            <div className=" h-screen w-64 relative  py-6 lg:flex flex-col hidden overflow-auto">
-                <div className="flex gap-4 px-4 items-center w-full">
-                    <img src="/images/logo-sci.png" className=" size-[40px] " alt="" />
-                    <span className="text-sm text-white">ระบบยืม-คืนครุภัณฑ์ <br /> คณะวิทยาศาตร์และเทคโนโลยี</span>
-                </div>
-                <div className="flex flex-col mt-8 ">
-                    {menu.map((menu, index) => (
-                        <div className="flex flex-col gap-2 " key={index}>
-                            <span className="flex gap-2 items-center text-white py-2 px-4 hover:bg-dark cursor-pointer" onClick={() => handleOpenMenu(index)}>{menu.icon} {menu.menu}</span>
-                            <div className={`h-full  transition-all mx-4 bg-white rounded text-sm duration-300 ease-in-out overflow-hidden flex flex-col  ${openMenu.includes(index) ? 'max-h-screen my-2' : 'max-h-0'}`}>
-                                {menu.subMenu.map((subMenu, index) => (
-                                    <Link
-                                        key={index}
-                                        href={{
-                                            pathname: subMenu.link
-                                        }}
-                                        className="text-dark hover:bg-gray-100 p-2 cursor-pointer"
-                                    >
-                                        {subMenu.name}
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+          name: "รายการชื่อครุภัณฑ์",
+          link: "/admin/equipment-name",
+        },
+        {
+          name: "ประเภทครุภัณฑ์",
+          link: "/admin/equipment-type",
+        },
+        {
+          name: "สาขา",
+          link: "/admin/group-branch",
+        },
+        {
+          name: "ตั้งเวลารักษาการแทน",
+          link: "/admin/set-time",
+        },
+        {
+          name: "หน่วยนับ",
+          link: "/admin/unit",
+        },
+        {
+          name: "แหล่งเงิน",
+          link: "/admin/budget-source",
+        },
+        {
+          name: "ตำแหน่งระดับคณะ",
+          link: "/admin/position-fac",
+        },
+        {
+          name: "ตำแหน่งระดับสาขา",
+          link: "/admin/position-branch",
+        },
 
+        {
+          name: "รายงานการยีม-คืน",
+          link: "/admin/equipment-bow",
+        },
+        {
+          name: "รายการครุภัณฑ์ชำรุด",
+          link: "/admin/equipment-broken",
+        },
+      ],
+    },
+  ];
+  return (
+    <div className="my-scroll fixed top-0 w-full break-words bg-primary_1 lg:relative lg:min-h-screen lg:w-64">
+      <div className="flex h-full flex-col justify-between">
+        <div className="flex flex-col gap-2">
+          <div className="relative flex flex-row items-center px-6 py-4 lg:hidden">
+            <div className="flex items-center gap-4">
+              <img src="/images/logo-sci.png" className="size-[40px]" alt="" />
+              <span className="text-sm text-white">
+                ระบบยืม-คืนครุภัณฑ์ <br /> คณะวิทยาศาตร์และเทคโนโลยี
+              </span>
+            </div>
+            <IoMdMenu className="ml-auto size-8 cursor-pointer text-primary_2 lg:hidden" />
+          </div>
+          <div className="relative hidden h-full w-64 flex-col overflow-auto py-6 lg:flex">
+            <div className="flex w-full items-center gap-4 px-4">
+              <img src="/images/logo-sci.png" className="size-[40px]" alt="" />
+              <span className="text-sm text-white">
+                ระบบยืม-คืนครุภัณฑ์ <br /> คณะวิทยาศาตร์และเทคโนโลยี
+              </span>
+            </div>
+            <div className="mt-8 flex flex-col">
+              {(user.position_fac.id == 6 ||
+                user.position_fac.id == 2 ||
+                user.position_branch.id == 5) ?
+                menu.map((menu, index) => (
+                  <div className="flex flex-col gap-2" key={index}>
+                    <div
+                      className="flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-dark"
+                      onClick={() => handleOpenMenu(index)}
+                    >
+                      <span className="flex items-center gap-2 text-white">
+                        {menu.icon} {menu.menu}
+                      </span>
+                      <IoIosArrowDown
+                        className={`text-white transition-all duration-500 ease-in-out ${openMenu.includes(index) ? "rotate-180" : ""}`}
+                      />
+                    </div>
+                    <div
+                      className={`mx-4 flex h-full flex-col overflow-hidden rounded bg-white text-sm transition-all duration-300 ease-in-out ${openMenu.includes(index) ? "my-2 max-h-screen" : "max-h-0"}`}
+                    >
+                      {menu.subMenu.map((subMenu, index) => (
+                        <Link
+                          key={index}
+                          href={{
+                            pathname: subMenu.link,
+                          }}
+                          className="cursor-pointer p-2 text-dark hover:bg-gray-100"
+                        >
+                          {subMenu.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )) : user.position_branch.id == 2 ? (
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href={{
+                      pathname: "/approval/equipment-bow",
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
+                  >
+                    <FaListAlt /> อนุมัติการยืม-คืน
+                  </Link>
+                  <Link
+                    href={{
+                      pathname: "/approval/equipment-broken",
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
+                  >
+                    <HiArchive /> ประวัติการแจ้งครุภัณฑ์ชำรุด
+                  </Link>
+                </div>
+              ) :  (
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href={{
+                      pathname: "/user/equipment-bow",
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
+                  >
+                    <FaExchangeAlt /> แจ้งการยืม-คืน
+                  </Link>
+                  <Link
+                    href={{
+                      pathname: "/user/equipment-broken",
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
+                  >
+                    <FaTools /> แจ้งการครุภัณฑ์ชำรุด
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-    );
+        <div className="flex flex-col justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="w-full">
+              <div className="flex cursor-pointer flex-col gap-2">
+                <div className="flex items-center gap-2 px-4 py-2 text-white">
+                  <div className="flex items-center justify-center rounded-full bg-gray-300 px-6 py-4">
+                    <span className="text-2xl font-bold">
+                      {user.name ? user.name.charAt(0).toUpperCase() : ""}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-base text-white">
+                      {user.name ? user.name : ""}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {user.position_branch.name}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white min-w-[200px] rounded-md shadow-lg p-2">
+              <DropdownMenuItem className="cursor-pointer p-2 hover:bg-gray-100 rounded-md">โปรไฟล์</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer p-2 hover:bg-gray-100 rounded-md">
+                ล็อคเอ้าท์
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Sidebar;

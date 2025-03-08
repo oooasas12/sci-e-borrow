@@ -5,7 +5,7 @@ import { RxDoubleArrowLeft, RxDoubleArrowRight } from "react-icons/rx";
 
 interface IPagination {
   current_page: number;
-  items_per_page: number;
+  items_per_page?: number;
   total_item: number;
   onPerPageSelector: (perPage: number) => void;
   pageDirectHandler: (index: number) => void;
@@ -14,7 +14,7 @@ interface IPagination {
 
 const PaginationList: FC<IPagination> = ({
   current_page,
-  items_per_page,
+  items_per_page = 12,
   total_item,
   onPerPageSelector,
   pageDirectHandler,
@@ -153,13 +153,17 @@ const PaginationList: FC<IPagination> = ({
                 ))}
               </div>
             )}
-            <p>per page : </p>
-            <div
-              className="ring-1 bg-white  ring-inset ring-gray-300 w-fit px-2 h-8 rounded-md hover:ring-2 cursor-pointer flex justify-center items-center"
-              onClick={() => setToggleDropup(!toggleDropup)}
-            >
-              <p>{items_per_page}</p>
-            </div>
+            {items_per_page && items_per_page != 12 && (
+              <>
+                <p>per page : </p>
+                <div
+                  className="ring-1 bg-white  ring-inset ring-gray-300 w-fit px-2 h-8 rounded-md hover:ring-2 cursor-pointer flex justify-center items-center"
+                  onClick={() => setToggleDropup(!toggleDropup)}
+                >
+                  <p>{items_per_page}</p>
+                </div>
+              </>
+            )}
           </div>
           <nav
             className="isolate inline-flex -space-x-px rounded-md shadow-sm"

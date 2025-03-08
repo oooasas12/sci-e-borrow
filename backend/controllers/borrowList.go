@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"reflect"
 	"sci-e-borrow-backend/models"
 	"strconv"
@@ -271,41 +272,73 @@ func (db *BorrowList) UpdateStatusBorrow(ctx *gin.Context) {
 		return
 	}
 
-	// ดึงข้อมูลเดิมจากฐานข้อมูล
-	if err := db.DB.Model(&borrowList).Update("approval_status_borrow_id", form.ApprovalStatusBorrowID).Error; err != nil {
+	// สร้าง updates map สำหรับเก็บค่าที่จะอัพเดต
+	updates := map[string]interface{}{
+		"approval_status_borrow_id": form.ApprovalStatusBorrowID,
+	}
+
+	// จัดการกับไฟล์ PDF เฉพาะเมื่อ ApprovalStatusBorrowID = 1
+	if form.ApprovalStatusBorrowID == 1 && form.File != nil {
+		// สร้างชื่อไฟล์ใหม่
+		now := time.Now()
+		fileName := fmt.Sprintf("%d_%d_%d_%d_%d_%d_%d_%d.pdf",
+			borrowList.UserID,
+			now.UnixNano()/int64(time.Millisecond)%1000,
+			now.Second(),
+			now.Minute(),
+			now.Hour(),
+			now.Day(),
+			now.Month(),
+			now.Year(),
+		)
+
+		// สร้างโฟลเดอร์ถ้ายังไม่มี
+		if err := os.MkdirAll("images/file_contact", 0755); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create directory"})
+			return
+		}
+
+		// บันทึกไฟล์
+		filePath := fmt.Sprintf("images/file_contact/%s", fileName)
+		if err := ctx.SaveUploadedFile(form.File, filePath); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			return
+		}
+
+		// เพิ่มชื่อไฟล์ลงใน updates map
+		updates["doc_borrow"] = fileName
+	}
+
+	// อัพเดตข้อมูลใน DB
+	if err := db.DB.Model(&borrowList).Updates(updates).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Update BorrowList not found"})
 		return
 	}
 
-	var borrowListDetails []models.BorrowListDetail
-	if err := db.DB.Where("borrow_list_id = ?", id).Find(&borrowListDetails).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
-		return
-	}
+	// ถ้า ApprovalStatusBorrowID = 1 หรือ 2 ให้อัพเดตสถานะอุปกรณ์
+	if form.ApprovalStatusBorrowID == 1 || form.ApprovalStatusBorrowID == 2 {
+		var borrowListDetails []models.BorrowListDetail
+		if err := db.DB.Where("borrow_list_id = ?", id).Find(&borrowListDetails).Error; err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
+			return
+		}
 
-	// อัปเดต EquipmentStatusID สำหรับ Equipment ทั้งหมดที่เกี่ยวข้อง
-	var equipment models.Equipment
-	equipmentIDs := []uint{}
-	for _, detail := range borrowListDetails {
-		equipmentIDs = append(equipmentIDs, detail.EquipmentID)
-	}
+		// อัปเดต EquipmentStatusID สำหรับ Equipment ทั้งหมดที่เกี่ยวข้อง
+		var equipment models.Equipment
+		equipmentIDs := []uint{}
+		for _, detail := range borrowListDetails {
+			equipmentIDs = append(equipmentIDs, detail.EquipmentID)
+		}
 
-	if form.ApprovalStatusBorrowID == 1 {
 		if len(equipmentIDs) > 0 {
-			if err := db.DB.Model(&equipment).
-				Where("id IN ?", equipmentIDs).
-				Update("equipment_status_id", 2).Error; err != nil {
-				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update EquipmentStatus"})
-				return
+			newStatus := 1 // สถานะเริ่มต้น (กรณี ApprovalStatusBorrowID = 2)
+			if form.ApprovalStatusBorrowID == 1 {
+				newStatus = 2 // เปลี่ยนเป็นสถานะ 2 เมื่อ ApprovalStatusBorrowID = 1
 			}
 
-			// สร้างไฟล์ PDF ใบยืม เข้า BlockChain และนำรหัส hash กลับมาบันทึกลงฐานข้อมูล
-		}
-	} else if form.ApprovalStatusBorrowID == 2 {
-		if len(equipmentIDs) > 0 {
 			if err := db.DB.Model(&equipment).
 				Where("id IN ?", equipmentIDs).
-				Update("equipment_status_id", 1).Error; err != nil {
+				Update("equipment_status_id", newStatus).Error; err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update EquipmentStatus"})
 				return
 			}
@@ -335,26 +368,64 @@ func (db *BorrowList) UpdateStatusReturn(ctx *gin.Context) {
 		return
 	}
 
-	// ดึงข้อมูลเดิมจากฐานข้อมูล
-	if err := db.DB.Model(&borrowList).Update("approval_status_return_id", form.ApprovalStatusReturnID).Error; err != nil {
+	// สร้าง updates map สำหรับเก็บค่าที่จะอัพเดต
+	updates := map[string]interface{}{
+		"approval_status_return_id": form.ApprovalStatusReturnID,
+	}
+
+	// จัดการกับไฟล์ PDF เฉพาะเมื่อ ApprovalStatusReturnID = 1
+	if form.ApprovalStatusReturnID == 1 && form.File != nil {
+		// สร้างชื่อไฟล์ใหม่
+		now := time.Now()
+		fileName := fmt.Sprintf("%d_%d_%d_%d_%d_%d_%d_%d.pdf",
+			borrowList.UserID,
+			now.UnixNano()/int64(time.Millisecond)%1000,
+			now.Second(),
+			now.Minute(),
+			now.Hour(),
+			now.Day(),
+			now.Month(),
+			now.Year(),
+		)
+
+		// สร้างโฟลเดอร์ถ้ายังไม่มี
+		if err := os.MkdirAll("images/file_contact", 0755); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create directory"})
+			return
+		}
+
+		// บันทึกไฟล์
+		filePath := fmt.Sprintf("images/file_contact/%s", fileName)
+		if err := ctx.SaveUploadedFile(form.File, filePath); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			return
+		}
+
+		// เพิ่มชื่อไฟล์ลงใน updates map
+		updates["doc_return"] = fileName
+	}
+
+	// อัพเดตข้อมูลใน DB
+	if err := db.DB.Model(&borrowList).Updates(updates).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Update BorrowList not found"})
 		return
 	}
 
-	var borrowListDetails []models.BorrowListDetail
-	if err := db.DB.Where("borrow_list_id = ?", id).Find(&borrowListDetails).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
-		return
-	}
-
-	// อัปเดต EquipmentStatusID เป็น 1 สำหรับ Equipment ทั้งหมดที่เกี่ยวข้อง
-	var equipment models.Equipment
-	equipmentIDs := []uint{}
-	for _, detail := range borrowListDetails {
-		equipmentIDs = append(equipmentIDs, detail.EquipmentID)
-	}
-
+	// ถ้า ApprovalStatusReturnID = 1 ให้อัพเดตสถานะอุปกรณ์
 	if form.ApprovalStatusReturnID == 1 {
+		var borrowListDetails []models.BorrowListDetail
+		if err := db.DB.Where("borrow_list_id = ?", id).Find(&borrowListDetails).Error; err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
+			return
+		}
+
+		// อัปเดต EquipmentStatusID เป็น 1 สำหรับ Equipment ทั้งหมดที่เกี่ยวข้อง
+		var equipment models.Equipment
+		equipmentIDs := []uint{}
+		for _, detail := range borrowListDetails {
+			equipmentIDs = append(equipmentIDs, detail.EquipmentID)
+		}
+
 		if len(equipmentIDs) > 0 {
 			if err := db.DB.Model(&equipment).
 				Where("id IN ?", equipmentIDs).
@@ -363,9 +434,6 @@ func (db *BorrowList) UpdateStatusReturn(ctx *gin.Context) {
 				return
 			}
 		}
-
-		// สร้างไฟล์ PDF ใบส่งคืน เข้า BlockChain และนำรหัส hash กลับมาบันทึกลงฐานข้อมูล
-
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "BorrowList updated status return successfully"})
@@ -433,4 +501,35 @@ func (db *BorrowList) FindByBranchID(ctx *gin.Context) {
 	copier.Copy(&response, &borrowList)
 
 	ctx.JSON(http.StatusOK, gin.H{"data": response})
+}
+
+func (db *BorrowList) GetPDFFile(ctx *gin.Context) {
+	// ตั้งค่า CORS headers
+	ctx.Header("Access-Control-Allow-Origin", "*")
+	ctx.Header("Access-Control-Allow-Methods", "GET")
+	ctx.Header("Access-Control-Allow-Headers", "Content-Type")
+
+	fileName := ctx.Param("file_name")
+	if fileName == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "file_name is required"})
+		return
+	}
+
+	// สร้าง path ของไฟล์
+	filePath := fmt.Sprintf("images/file_contact/%s", fileName)
+
+	// ตรวจสอบว่าไฟล์มีอยู่จริงหรือไม่
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+
+	// ตั้งค่า header สำหรับการแสดงผล PDF
+	ctx.Header("Content-Description", "File Transfer")
+	ctx.Header("Content-Transfer-Encoding", "binary")
+	ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", fileName))
+	ctx.Header("Content-Type", "application/pdf")
+
+	// ส่งไฟล์กลับไป
+	ctx.File(filePath)
 }

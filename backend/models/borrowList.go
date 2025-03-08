@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"mime/multipart"
+
 	"gorm.io/gorm"
 )
 
@@ -32,11 +34,13 @@ type CreateBorrowListForm struct {
 }
 
 type UpdateStatusBorrow struct {
-	ApprovalStatusBorrowID uint `form:"approval_status_borrow_id" binding:"required"`
+	ApprovalStatusBorrowID uint                  `form:"approval_status_borrow_id" binding:"required"`
+	File                   *multipart.FileHeader `form:"file" binding:"omitempty"`
 }
 
 type UpdateStatusReturn struct {
-	ApprovalStatusReturnID uint `form:"approval_status_return_id" binding:"required"`
+	ApprovalStatusReturnID uint                  `form:"approval_status_return_id" binding:"required"`
+	File                   *multipart.FileHeader `form:"file" binding:"omitempty"`
 }
 
 type UpdateByNameBorrowListForm struct {

@@ -8,6 +8,19 @@ import (
 )
 
 func Server(r *gin.Engine) {
+	// // เพิ่ม CORS middleware
+	// r.Use(func(c *gin.Context) {
+	// 	c.Header("Access-Control-Allow-Origin", "*")
+	// 	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+	// 	c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+	// 	if c.Request.Method == "OPTIONS" {
+	// 		c.AbortWithStatus(204)
+	// 		return
+	// 	}
+
+	// 	c.Next()
+	// })
 
 	db := config.GetDB()
 	userGroup := r.Group("/api/users")
@@ -168,8 +181,10 @@ func Server(r *gin.Engine) {
 		BorrowListGroup.GET("/user/:id", BorrowListController.FindByUserID)
 		BorrowListGroup.GET("/:id", BorrowListController.FindOne)
 		BorrowListGroup.GET("/branch/:id", BorrowListController.FindByBranchID)
+		BorrowListGroup.GET("/pdf/:file_name", BorrowListController.GetPDFFile)
 		BorrowListGroup.PATCH("/update-date-return/:id", BorrowListController.UpdateDateReturn)
 		BorrowListGroup.PATCH("/update-status-borrow/:id", BorrowListController.UpdateStatusBorrow)
+		BorrowListGroup.PATCH("/update-status-return/:id", BorrowListController.UpdateStatusReturn)
 		BorrowListGroup.PUT("/:id", BorrowListController.Update)
 		BorrowListGroup.PATCH("/:id", BorrowListController.UpdateByName)
 		BorrowListGroup.POST("", BorrowListController.Create)
@@ -190,6 +205,7 @@ func Server(r *gin.Engine) {
 		signatureGroup.POST("/upload", signatureController.Upload)
 		signatureGroup.GET("/image/:image_path", signatureController.GetSignatureImage)
 		signatureGroup.GET("/user/:user_id", signatureController.GetSignatureByUser)
+		signatureGroup.DELETE("/:id", signatureController.DeleteSignature)
 	}
 
 	loginController := controllers.Login{DB: db}

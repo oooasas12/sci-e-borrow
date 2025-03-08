@@ -109,6 +109,7 @@ const PositionFacPage: React.FC = () => {
             });
             if (response.ok) {
                 setOpenInsertData(false);
+                resetInsert();
                 fetchData();
                 toast.success('เพิ่มข้อมูลสำเร็จ');
             }

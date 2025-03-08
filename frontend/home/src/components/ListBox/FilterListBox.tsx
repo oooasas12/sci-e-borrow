@@ -41,7 +41,7 @@ const FilterListBox: React.FC<FilterListBoxProps> = ({ selected, item, filter, p
                 </ListboxButton>
 
                 {/* Listbox Options */}
-                <ListboxOptions className="absolute mt-1 max-h-60 w-[160px] overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <ListboxOptions className="absolute mt-1 max-h-60 w-[200px] overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     {/* Option: All */}
                     <ListboxOption
                         key="all"

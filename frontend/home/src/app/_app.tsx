@@ -4,6 +4,8 @@ import { store, persistor } from '../store/store'; // ปรับเส้น�
 import Layout from '@/Layouts/default';
 
 function MyApp({ Component, pageProps }: { Component: React.ComponentType; pageProps: any }) {
+
+  console.log("check app page");
   return (
     <>
       <html>

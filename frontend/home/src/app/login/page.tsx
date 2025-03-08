@@ -65,11 +65,10 @@ export default function Login() {
 
         // ดึงข้อมูล response
         const result = await response.json();
-        console.log('API Response:', result); // เพิ่ม log เพื่อดูข้อมูลที่ได้รับ
 
-        if (!response.ok) {
-          throw new Error(result.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
-        }
+        // if (!response.ok) {
+        //   throw new Error(result.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+        // }
 
         if (result.status === 'login success' && result.data) {
           // เก็บข้อมูลใน cookies ก่อน

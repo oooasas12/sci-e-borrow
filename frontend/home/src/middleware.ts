@@ -66,9 +66,7 @@ export async function middleware(request: NextRequest) {
   let response = NextResponse.next()
   
   // เพิ่ม Security Headers สำหรับทุก request
-  console.log('aaaaaaaaaaaaaa')
   response = addSecurityHeaders(response)
-  console.log('bbbbbbbbbbbbbbbbbbb')
   
   // ถ้าเป็น path ที่ไม่ต้องยืนยันตัวตน
   if (isPublicPath(pathname)) {
@@ -80,7 +78,6 @@ export async function middleware(request: NextRequest) {
   const userData = request.cookies.get('user_data')?.value
   const sessionId = request.cookies.get('session_id')?.value
 
-  console.log('ccccccccccccccccccc')
   // ตรวจสอบว่ามีข้อมูลครบหรือไม่
   if (!token || !userData || !sessionId) {
     
@@ -88,12 +85,10 @@ export async function middleware(request: NextRequest) {
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
   }
-  console.log('dddddddddddddddddddd')
-
   // ตรวจสอบความถูกต้องของ token
+  
   const isValidToken = await verifyToken(token)
   if (!isValidToken) {
-    console.log('gggggggggggggggggggg')
     // ถ้า token ไม่ถูกต้อง ให้ลบ cookies และ redirect ไปหน้า login
     const response = NextResponse.redirect(new URL('/login', request.url))
     response.cookies.delete('auth_token')
@@ -101,7 +96,6 @@ export async function middleware(request: NextRequest) {
     response.cookies.delete('session_id')
     return response
   }
-  console.log('ffffffffffffffffffffff')
 
   try {
     // ตรวจสอบความถูกต้องของ user data
@@ -113,8 +107,6 @@ export async function middleware(request: NextRequest) {
     // ถ้า user data ไม่ถูกต้อง ให้ redirect ไปหน้า login
     return NextResponse.redirect(new URL('/login', request.url))
   }
-
-  console.log('eeeeeeeeeeeeeeeeeeee')
 
   return response
 }
