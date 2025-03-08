@@ -782,6 +782,13 @@ const EquipmentBow: React.FC = () => {
                     </TableCell>
                   </TableRow>
                 ))}
+              {filteredData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center">
+                    ไม่พบข้อมูล
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
           <div className="flex w-full justify-between">
@@ -814,6 +821,7 @@ const EquipmentBow: React.FC = () => {
               type="date"
               id="borrowing_date"
               defaultValue={new Date().toISOString().split("T")[0]}
+              min={new Date().toISOString().split("T")[0]}
               className="w-full"
               {...registerInsert("date_borrow", {
                 required: "โปรดเลือกวันที่ยืม",
@@ -833,7 +841,9 @@ const EquipmentBow: React.FC = () => {
               type="date"
               id="return_date"
               className="w-full"
-              {...registerInsert("date_return")}
+              {...registerInsert("date_return", {
+                required: "โปรดเลือกวันที่คืน",
+              })}
               min={
                 watchInsert("date_borrow")
                   ? new Date(watchInsert("date_borrow"))
