@@ -852,6 +852,11 @@ const EquipmentBow: React.FC = () => {
                   : new Date().toISOString().split("T")[0]
               }
             />
+            {errorsInsert.date_return && (
+              <span className="text-sm text-red-500">
+                {errorsInsert.date_return.message}
+              </span>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-sm text-font_color">เลือกอุปกรณ์</label>

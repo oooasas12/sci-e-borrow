@@ -731,7 +731,9 @@ const EquipmentBow: React.FC = () => {
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none"
                           disabled
                         >
-                          รออนุมัติ
+                          {item.date_return <= new Date().toISOString()
+                            ? "รออนุมัติ"
+                            : "ยังไม่ถึงวันคืน"}
                         </button>
                       ) : (
                         <button
@@ -748,6 +750,18 @@ const EquipmentBow: React.FC = () => {
                         size={20}
                         onClick={() => handleShowDetail(item.id)}
                       />
+                      {item.approval_status_borrow.id != 1 ? (
+                        <MdEditSquare
+                          className={`cursor-pointer text-yellow-500`}
+                          size={20}
+                          onClick={() => handleEdit(item)}
+                        />
+                      ) : (
+                        <MdEditSquare
+                          className={`cursor-not-allowed text-gray-500`}
+                          size={20}
+                        />
+                      )}
                       {item.approval_status_borrow.id != 1 ? (
                         <MdDelete
                           className="cursor-pointer text-red-600"

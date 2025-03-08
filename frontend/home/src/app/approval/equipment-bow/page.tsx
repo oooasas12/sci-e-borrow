@@ -762,7 +762,7 @@ const EquipmentBow: React.FC = () => {
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none hover:bg-yellow-600"
                           onClick={() => handleShowDetailReturn(item.id)}
                           disabled={
-                            item.date_return <= new Date().toISOString() ||
+                            item.date_return >= new Date().toISOString() ||
                             !item.date_return
                           }
                         >
