@@ -89,7 +89,13 @@ export default function Login() {
           await new Promise(resolve => setTimeout(resolve, 1000));
           
           // ใช้ router.push แทน window.location
-          router.push('/admin/equipment-bow');
+          if (result.data.position_branch.id == 5) {
+            router.push('/admin/equipment-bow');
+          } else if (result.data.position_branch.id == 2) {
+            router.push('/approval/equipment-bow');
+          } else {
+            router.push('/user/equipment-bow');
+          }
         } else {
           throw new Error(result.message || 'ข้อมูลผู้ใช้ไม่ถูกต้อง');
         }

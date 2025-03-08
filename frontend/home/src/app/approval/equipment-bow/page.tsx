@@ -496,31 +496,33 @@ const EquipmentBow: React.FC = () => {
   };
 
   const handleDelListEquipmentBorrowDetail = async (value: string[]) => {
-    try {
-      const formData = new FormData();
-      value.forEach((item) => formData.append("id[]", item));
+    await toast.promise(
+      (async () => {
+        const formData = new FormData();
+        value.forEach((item) => formData.append("id[]", item));
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/borrow-list-detail`,
-        {
-          method: "DELETE",
-          body: formData,
-        },
-      );
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/borrow-list-detail`,
+          {
+            method: "DELETE",
+            body: formData,
+          },
+        );
 
-      if (!response.ok) {
-        throw new Error("Failed to delete equipment borrow details");
-      }
+        if (!response.ok) {
+          throw new Error("Failed to delete equipment borrow details");
+        }
 
-      // อัปเดตข้อมูลที่แสดงผลหลังจากลบ
-      fetchBorrowListDetail();
-      fetchEquipment();
-
-      toast.success("ลบข้อมูลสำเร็จ");
-    } catch (error) {
-      console.error("Error deleting equipment borrow details:", error);
-      toast.error("เกิดข้อผิดพลาดในการลบข้อมูล");
-    }
+        // อัปเดตข้อมูลที่แสดงผลหลังจากลบ
+        fetchBorrowListDetail();
+        fetchEquipment();
+      })(),
+      {
+        loading: "กำลังลบข้อมูล...",
+        success: "ลบข้อมูลสำเร็จ",
+        error: "เกิดข้อผิดพลาดในการลบข้อมูล",
+      },
+    );
   };
 
   const handleShowDetail = (id: number) => {
@@ -573,7 +575,9 @@ const EquipmentBow: React.FC = () => {
     <Layout>
       <div className="container">
         <Toaster position="bottom-right" reverseOrder={false} />
-        <h1 className="title lg text-font_color">ประวัติการยืม-คืน สาขา{user.branch.name}</h1>
+        <h1 className="title lg text-font_color">
+          ประวัติการยืม-คืน สาขา{user.branch.name}
+        </h1>
         <div className="mt-8 flex flex-col gap-4">
           <div className="flex justify-between">
             <div className="flex gap-2">
@@ -654,10 +658,10 @@ const EquipmentBow: React.FC = () => {
                 <TableHead className="whitespace-nowrap text-center">
                   สถานะการยืม
                 </TableHead>
-                <TableHead className="whitespace-nowrap text-center w-[20%]">
+                <TableHead className="w-[20%] whitespace-nowrap text-center">
                   เอกสารการยืม
                 </TableHead>
-                <TableHead className="whitespace-nowrap text-center w-[20%]">
+                <TableHead className="w-[20%] whitespace-nowrap text-center">
                   เอกสารการคืน
                 </TableHead>
               </TableRow>
@@ -691,13 +695,13 @@ const EquipmentBow: React.FC = () => {
                       {item.approval_status_borrow.id === 1 ? (
                         <button
                           onClick={() => handleViewPDF(item.doc_borrow)}
-                          className="mx-auto w-[70%] flex justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
+                          className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
                         >
                           ดูเอกสารการยืม
                         </button>
                       ) : item.approval_status_borrow.id != 2 ? (
                         <button
-                          className="mx-auto w-[70%] flex justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none hover:bg-yellow-600"
+                          className="mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none hover:bg-yellow-600"
                           onClick={() => handleShowDetail(item.id)}
                         >
                           รออนุมัติ
@@ -705,7 +709,7 @@ const EquipmentBow: React.FC = () => {
                       ) : (
                         <button
                           disabled
-                          className="mx-auto w-[70%] flex justify-center rounded-md bg-gray-500 px-4 py-2 text-white"
+                          className="mx-auto flex w-[70%] justify-center rounded-md bg-gray-500 px-4 py-2 text-white"
                         >
                           ไม่อนุมัติ
                         </button>
@@ -713,12 +717,12 @@ const EquipmentBow: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       {item.approval_status_return.id === 1 ? (
-                        <button className="mx-auto w-[70%] flex justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark">
+                        <button className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark">
                           ดูเอกสารการคืน
                         </button>
                       ) : item.approval_status_borrow.id != 2 ? (
                         <button
-                          className="mx-auto w-[70%] flex justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none hover:bg-yellow-600"
+                          className="mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none hover:bg-yellow-600"
                           onClick={() => handleShowDetail(item.id)}
                         >
                           รออนุมัติ
@@ -726,7 +730,7 @@ const EquipmentBow: React.FC = () => {
                       ) : (
                         <button
                           disabled
-                          className="mx-auto w-[70%] flex justify-center rounded-md bg-gray-500 px-4 py-2 text-white"
+                          className="mx-auto flex w-[70%] justify-center rounded-md bg-gray-500 px-4 py-2 text-white"
                         >
                           ไม่อนุมัติ
                         </button>

@@ -75,18 +75,17 @@ export async function middleware(request: NextRequest) {
 
   // ตรวจสอบ token และ user data
   const token = request.cookies.get('auth_token')?.value
-  const userData = request.cookies.get('user_data')?.value
   const sessionId = request.cookies.get('session_id')?.value
+  const userData = request.cookies.get('user_data')?.value
 
   // ตรวจสอบว่ามีข้อมูลครบหรือไม่
   if (!token || !userData || !sessionId) {
-    
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
   }
+
   // ตรวจสอบความถูกต้องของ token
-  
   const isValidToken = await verifyToken(token)
   if (!isValidToken) {
     // ถ้า token ไม่ถูกต้อง ให้ลบ cookies และ redirect ไปหน้า login
@@ -98,11 +97,36 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // ตรวจสอบความถูกต้องของ user data
+    // ตรวจสอบความถูกต้องของ user data และ permission
     const parsedUserData = JSON.parse(userData)
-    if (!parsedUserData.id || !parsedUserData.username) {
+    if (!parsedUserData.id || !parsedUserData.username || !parsedUserData.position_branch) {
       throw new Error('Invalid user data')
     }
+
+    // ตรวจสอบ permission ตาม path
+    const branchId = parsedUserData.position_branch.id
+
+    // เช็คการเข้าถึงหน้า admin
+    if (pathname.startsWith('/admin')) {
+      if (branchId !== 5) {
+        return NextResponse.redirect(new URL('/admin/equipment-bow', request.url))
+      }
+    }
+    
+    // เช็คการเข้าถึงหน้า approval
+    if (pathname.startsWith('/approval')) {
+      if (branchId !== 2) {
+        return NextResponse.redirect(new URL('/approval/equipment-bow', request.url))
+      }
+    }
+
+    // ถ้าไม่ใช่ทั้ง admin และ approval จะเข้าถึงได้เฉพาะหน้า user เท่านั้น
+    if (branchId !== 5 && branchId !== 2) {
+      if (!pathname.startsWith('/user')) {
+        return NextResponse.redirect(new URL('/user/equipment-bow', request.url))
+      }
+    }
+
   } catch {
     // ถ้า user data ไม่ถูกต้อง ให้ redirect ไปหน้า login
     return NextResponse.redirect(new URL('/login', request.url))

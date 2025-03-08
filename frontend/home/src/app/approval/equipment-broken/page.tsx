@@ -264,35 +264,39 @@ const EquipmentBrokenPage: React.FC = () => {
       return;
     }
 
-    try {
-      const dateBroken =
-        data.date_broken instanceof Date
-          ? data.date_broken
-          : new Date(data.date_broken);
-      const formData = new FormData();
-      formData.append("date_broken", dateBroken.toISOString().split("T")[0]);
-      formData.append("detail", data.detail);
-      formData.append("equipment_id", selectedEquipment.id.toString());
-      formData.append("equipment_status_id", "3"); // สถานะชำรุด
-      formData.append("user_id", user?.id.toString() || ""); // ใช้ ID จาก Redux
+    const dateBroken =
+      data.date_broken instanceof Date
+        ? data.date_broken
+        : new Date(data.date_broken);
+    const formData = new FormData();
+    formData.append("date_broken", dateBroken.toISOString().split("T")[0]);
+    formData.append("detail", data.detail);
+    formData.append("equipment_id", selectedEquipment.id.toString());
+    formData.append("equipment_status_id", "3"); // สถานะชำรุด
+    formData.append("user_id", user?.id.toString() || ""); // ใช้ ID จาก Redux
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/equipment-broken`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+    await toast.promise(
+      (async () => {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/equipment-broken`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
 
-      if (!response.ok) throw new Error("Failed to add data");
+        if (!response.ok) throw new Error("Failed to add data");
 
-      await fetchData();
-      fetchMasterData();
-      closeModalInsert();
-      toast.success("เพิ่มรายการครุภัณฑ์ชำรุดสำเร็จ");
-    } catch (error) {
-      toast.error("เพิ่มรายการครุภัณฑ์ชำรุดล้มเหลว");
-    }
+        await fetchData();
+        fetchMasterData();
+        closeModalInsert();
+      })(),
+      {
+        loading: "กำลังเพิ่มรายการครุภัณฑ์ชำรุด...",
+        success: "เพิ่มรายการครุภัณฑ์ชำรุดสำเร็จ",
+        error: "เพิ่มรายการครุภัณฑ์ชำรุดล้มเหลว",
+      },
+    );
   };
 
   const onSubmitEdit = async (data: EquipmentBroken) => {
@@ -301,32 +305,36 @@ const EquipmentBrokenPage: React.FC = () => {
       return;
     }
 
-    try {
-      const formData = new FormData();
-      formData.append("date_broken", data.date_broken.toString());
-      if (data.date_end_repair) {
-        formData.append("date_end_repair", data.date_end_repair.toString());
-      }
-      formData.append("detail", data.detail);
-      formData.append("equipment_id", selectedEquipment.id.toString());
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/equipment-broken/${editData?.id}`,
-        {
-          method: "PATCH",
-          body: formData,
-        },
-      );
-
-      if (!response.ok) throw new Error("Failed to update data");
-
-      await fetchData();
-      fetchMasterData();
-      closeModalEdit();
-      toast.success("แก้ไขรายการครุภัณฑ์ชำรุดสำเร็จ");
-    } catch (error) {
-      toast.error("แก้ไขรายการครุภัณฑ์ชำรุดล้มเหลว");
+    const formData = new FormData();
+    formData.append("date_broken", data.date_broken.toString());
+    if (data.date_end_repair) {
+      formData.append("date_end_repair", data.date_end_repair.toString());
     }
+    formData.append("detail", data.detail);
+    formData.append("equipment_id", selectedEquipment.id.toString());
+
+    await toast.promise(
+      (async () => {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/equipment-broken/${editData?.id}`,
+          {
+            method: "PATCH",
+            body: formData,
+          },
+        );
+
+        if (!response.ok) throw new Error("Failed to update data");
+
+        await fetchData();
+        fetchMasterData();
+        closeModalEdit();
+      })(),
+      {
+        loading: "กำลังแก้ไขรายการครุภัณฑ์ชำรุด...",
+        success: "แก้ไขรายการครุภัณฑ์ชำรุดสำเร็จ",
+        error: "แก้ไขรายการครุภัณฑ์ชำรุดล้มเหลว",
+      },
+    );
   };
 
   const perPageSelectorHandler = (perPage: number) => {
@@ -400,22 +408,24 @@ const EquipmentBrokenPage: React.FC = () => {
   };
 
   const onDel = async () => {
-    try {
-      const response = await fetch(
+    toast.promise(
+      fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/equipment-broken/${delData.index}`,
         {
           method: "DELETE",
         },
-      );
-
-      if (!response.ok) throw new Error("Failed to delete data");
-
-      await fetchData(); // รีเฟรชข้อมูล
-      closeModalDel();
-      toast.success("ลบสำเร็จ");
-    } catch (error) {
-      toast.error("ลบข้อมูลล้มเหลว");
-    }
+      ).then((response) => {
+        if (!response.ok) throw new Error("Failed to delete data");
+        return fetchData().then(() => {
+          closeModalDel();
+        });
+      }),
+      {
+        loading: "กำลังลบข้อมูล...",
+        success: "ลบสำเร็จ",
+        error: "ลบข้อมูลล้มเหลว",
+      },
+    );
   };
 
   const openModalChangeStatus = () => {
