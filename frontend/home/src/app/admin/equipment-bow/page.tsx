@@ -538,10 +538,10 @@ const EquipmentBow: React.FC = () => {
         fetchEquipment();
       })(),
       {
-        loading: 'กำลังลบข้อมูล...',
-        success: 'ลบข้อมูลสำเร็จ',
-        error: 'เกิดข้อผิดพลาดในการลบข้อมูล',
-      }
+        loading: "กำลังลบข้อมูล...",
+        success: "ลบข้อมูลสำเร็จ",
+        error: "เกิดข้อผิดพลาดในการลบข้อมูล",
+      },
     );
   };
 
@@ -631,8 +631,17 @@ const EquipmentBow: React.FC = () => {
               {filterDateStart && filterDateEnd && (
                 <div className="ml-2 text-sm text-gray-600">
                   กำลังกรอง:{" "}
-                  {new Date(filterDateStart).toLocaleDateString("th-TH")} ถึง{" "}
-                  {new Date(filterDateEnd).toLocaleDateString("th-TH")}
+                  {new Date(filterDateStart).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}{" "}
+                  ถึง{" "}
+                  {new Date(filterDateEnd).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
                 </div>
               )}
             </div>
@@ -661,12 +670,26 @@ const EquipmentBow: React.FC = () => {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>
                       {item.date_borrow
-                        ? new Date(item.date_borrow).toLocaleDateString("th-TH")
+                        ? new Date(item.date_borrow).toLocaleDateString(
+                            "en-US",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
+                          )
                         : "-"}
                     </TableCell>
                     <TableCell>
                       {item.date_return
-                        ? new Date(item.date_return).toLocaleDateString("th-TH")
+                        ? new Date(item.date_return).toLocaleDateString(
+                            "en-US",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
+                          )
                         : "-"}
                     </TableCell>
                     <TableCell>{item.user.name}</TableCell>

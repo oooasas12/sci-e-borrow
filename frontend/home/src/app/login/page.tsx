@@ -87,10 +87,15 @@ export default function Login() {
           
           // รอให้ cookies และ redux ถูกเซ็ตเรียบร้อยก่อน
           await new Promise(resolve => setTimeout(resolve, 1000));
-          
+
           // ใช้ router.push แทน window.location
-          if (result.data.position_branch.id == 5) {
-            router.push('/admin/equipment-bow');
+          if (
+            result.data.position_branch.id == 5 ||
+            result.data.position_fac.id == 1 ||
+            result.data.position_fac.id == 2 ||
+            result.data.position_fac.id == 6
+          ) {
+            router.push("/admin/equipment-bow");
           } else if (result.data.position_branch.id == 2) {
             router.push('/approval/equipment-bow');
           } else {

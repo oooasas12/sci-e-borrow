@@ -14,9 +14,14 @@ import {
 import Link from "next/link";
 import { HiArchive } from "react-icons/hi";
 import { useSelector, useDispatch } from "react-redux";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
-import { logout } from '@/store/features/authSlice';
-import Cookies from 'js-cookie';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@radix-ui/react-dropdown-menu";
+import { logout } from "@/store/features/authSlice";
+import Cookies from "js-cookie";
 // type SidebarData = {
 // };
 
@@ -38,11 +43,11 @@ export const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    window.location.href = '/login';
+    window.location.href = "/login";
     dispatch(logout());
-    Cookies.remove('auth_token');
-    Cookies.remove('user_data');
-    Cookies.remove('session_id');
+    Cookies.remove("auth_token");
+    Cookies.remove("user_data");
+    Cookies.remove("session_id");
   };
 
   const menu = [
@@ -108,8 +113,8 @@ export const Sidebar = () => {
     },
   ];
   return (
-    <div className="my-scroll fixed top-0 w-full break-words bg-primary_1 lg:relative lg:min-h-screen lg:w-64">
-      <div className="flex h-full flex-col justify-between">
+    <div className="my-scroll fixed top-0 w-full break-words bg-primary_1 lg:relative lg:min-h-screen lg:w-64 lg:min-w-64">
+      <div className="flex h-screen fixed overflow-auto w-62 flex-col justify-between">
         <div className="flex flex-col gap-2">
           <div className="relative flex flex-row items-center px-6 py-4 lg:hidden">
             <div className="flex items-center gap-4">
@@ -129,8 +134,9 @@ export const Sidebar = () => {
             </div>
             <div className="mt-8 flex flex-col">
               {(user.position_fac.id == 6 ||
+                user.position_fac.id == 1 ||
                 user.position_fac.id == 2 ||
-                user.position_branch.id == 5) ?
+                user.position_branch.id == 5) &&
                 menu.map((menu, index) => (
                   <div className="flex flex-col gap-2" key={index}>
                     <div
@@ -160,7 +166,9 @@ export const Sidebar = () => {
                       ))}
                     </div>
                   </div>
-                )) : user.position_branch.id == 2 ? (
+                ))}
+
+              {user.position_branch.id == 2 && (
                 <div className="flex flex-col gap-2">
                   <Link
                     href={{
@@ -179,10 +187,15 @@ export const Sidebar = () => {
                     <HiArchive /> ประวัติการแจ้งครุภัณฑ์ชำรุด
                   </Link>
                 </div>
-              ) :  (
-                <div className="flex flex-col gap-2">
-                  <Link
-                    href={{
+              )}
+              {user.position_branch.id != 5 &&
+                user.position_fac.id != 1 &&
+                user.position_fac.id != 2 &&
+                user.position_fac.id != 6 &&
+                user.position_branch.id != 2 && (
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      href={{
                       pathname: "/user/equipment-bow",
                     }}
                     className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
@@ -202,7 +215,7 @@ export const Sidebar = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col justify-end">
+        <div className="flex flex-col justify-end w-62">
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full">
               <div className="flex cursor-pointer flex-col gap-2">
@@ -223,9 +236,14 @@ export const Sidebar = () => {
                 </div>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white min-w-[200px] rounded-md shadow-lg p-2">
-              <DropdownMenuItem className="cursor-pointer p-2 hover:bg-gray-100 rounded-md">โปรไฟล์</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer p-2 hover:bg-gray-100 rounded-md">
+            <DropdownMenuContent className="min-w-[200px] rounded-md bg-white p-2 shadow-lg">
+              <DropdownMenuItem className="cursor-pointer rounded-md p-2 hover:bg-gray-100">
+                โปรไฟล์
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="cursor-pointer rounded-md p-2 hover:bg-gray-100"
+              >
                 ล็อคเอ้าท์
               </DropdownMenuItem>
             </DropdownMenuContent>

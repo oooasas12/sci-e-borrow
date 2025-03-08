@@ -525,6 +525,38 @@ const EquipmentBow: React.FC = () => {
     setOpenDetail(false);
   };
 
+  const handleViewPDF = async (docBorrow: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/borrow-list/pdf/${docBorrow}`,
+        {
+          method: "GET",
+        },
+      );
+
+      console.log(response);
+
+      if (!response.ok) {
+        throw new Error("ไม่พบไฟล์เอกสาร");
+      }
+
+      // สร้าง Blob จาก response
+      const blob = await response.blob();
+
+      // สร้าง URL สำหรับ Blob
+      const url = window.URL.createObjectURL(blob);
+
+      // เปิดไฟล์ PDF ในแท็บใหม่
+      window.open(url, "_blank");
+
+      // ล้าง URL object เพื่อป้องกันการรั่วไหลของหน่วยความจำ
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("ไม่สามารถดูเอกสารได้");
+    }
+  };
+
   return (
     <Layout>
       <div className="container">
@@ -602,8 +634,17 @@ const EquipmentBow: React.FC = () => {
               {filterDateStart && filterDateEnd && (
                 <div className="ml-2 text-sm text-gray-600">
                   กำลังกรอง:{" "}
-                  {new Date(filterDateStart).toLocaleDateString("th-TH")} ถึง{" "}
-                  {new Date(filterDateEnd).toLocaleDateString("th-TH")}
+                  {new Date(filterDateStart).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}{" "}
+                  ถึง{" "}
+                  {new Date(filterDateEnd).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
                 </div>
               )}
             </div>
@@ -614,11 +655,13 @@ const EquipmentBow: React.FC = () => {
                 <TableHead className="whitespace-nowrap">#</TableHead>
                 <TableHead className="whitespace-nowrap">วันที่ยืม</TableHead>
                 <TableHead className="whitespace-nowrap">วันที่คืน</TableHead>
-                <TableHead className="whitespace-nowrap">สถานะการยืม</TableHead>
-                <TableHead className="whitespace-nowrap">
+                <TableHead className="w-[15%] whitespace-nowrap text-center">
+                  สถานะการยืม
+                </TableHead>
+                <TableHead className="whitespace-nowrap text-center">
                   เอกสารการยืม
                 </TableHead>
-                <TableHead className="whitespace-nowrap">
+                <TableHead className="whitespace-nowrap text-center">
                   เอกสารการคืน
                 </TableHead>
                 <TableHead className="whitespace-nowrap"></TableHead>
@@ -632,21 +675,80 @@ const EquipmentBow: React.FC = () => {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>
                       {item.date_borrow
-                        ? new Date(item.date_borrow).toLocaleDateString("th-TH")
+                        ? new Date(item.date_borrow).toLocaleDateString(
+                            "en-US",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
+                          )
                         : "-"}
                     </TableCell>
                     <TableCell>
                       {item.date_return
-                        ? new Date(item.date_return).toLocaleDateString("th-TH")
+                        ? new Date(item.date_return).toLocaleDateString(
+                            "en-US",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
+                          )
                         : "-"}
                     </TableCell>
                     <TableCell>
-                      {item.date_return && item.approval_status_borrow.id === 1
-                        ? `${item.approval_status_return.name}การคืน`
-                        : `${item.approval_status_borrow.name}การยืม`}
+                      {item.approval_status_borrow.id == 2 ? (
+                        <span className="flex items-center justify-center rounded-full bg-red-500 px-2 py-1 text-white">
+                          รอการอนุมัติ
+                        </span>
+                      ) : item.doc_return ? (
+                        <span className="flex items-center justify-center rounded-full bg-green-500 px-2 py-1 text-white">
+                          อนุมัติการคืน
+                        </span>
+                      ) : item.date_return <
+                        new Date().toISOString().split("T")[0] ? (
+                        <span className="flex items-center justify-center rounded-full bg-yellow-500 px-2 py-1 text-white">
+                          {item.approval_status_return.name}การคืน
+                        </span>
+                      ) : item.doc_borrow ? (
+                        <span className="flex items-center justify-center rounded-full bg-green-500 px-2 py-1 text-white">
+                          อนุมัติการยืม
+                        </span>
+                      ) : (
+                        <span className="flex items-center justify-center rounded-full bg-yellow-500 px-2 py-1 text-white">
+                          {item.approval_status_borrow.name}การยืม
+                        </span>
+                      )}
                     </TableCell>
-                    <TableCell>Download</TableCell>
-                    <TableCell>Download</TableCell>
+                    <TableCell>
+                      {item.doc_borrow ? (
+                        <button
+                          onClick={() => handleViewPDF(item.doc_borrow)}
+                          className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
+                        >
+                          ดูเอกสารการยืม
+                        </button>
+                      ) : (
+                        <span className="flex items-center justify-center">
+                          -
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {item.doc_return ? (
+                        <button
+                          onClick={() => handleViewPDF(item.doc_return)}
+                          className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
+                        >
+                          ดูเอกสารการยืม
+                        </button>
+                      ) : (
+                        <span className="flex items-center justify-center">
+                          -
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell className="flex gap-2">
                       <FaCircleExclamation
                         className="cursor-pointer text-blue-500"

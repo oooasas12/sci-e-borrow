@@ -545,7 +545,7 @@ const EquipmentBrokenPage: React.FC = () => {
                   ประเภทครุภัณฑ์
                 </TableHead>
                 <TableHead className="whitespace-nowrap">รายละเอียด</TableHead>
-                <TableHead className="whitespace-nowrap">
+                <TableHead className="w-[15%] whitespace-nowrap text-center">
                   สถานะครุภัณฑ์ชำรุดชำรุด
                 </TableHead>
                 <TableHead className="whitespace-nowrap">
@@ -568,15 +568,38 @@ const EquipmentBrokenPage: React.FC = () => {
                     <TableCell>{item.equipment.equipment_name.name}</TableCell>
                     <TableCell>{item.equipment.equipment_group.name}</TableCell>
                     <TableCell>{item.detail}</TableCell>
-                    <TableCell>{item.equipment_status.name}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`${
+                          item.equipment_status.id === 3
+                            ? "flex items-center justify-center rounded-full bg-yellow-500 px-2 py-1 text-white"
+                            : item.equipment_status.id === 5
+                              ? "flex items-center justify-center rounded-full bg-green-500 px-2 py-1 text-white"
+                              : item.equipment_status.id === 4
+                                ? "flex items-center justify-center rounded-full bg-red-500 px-2 py-1 text-white"
+                                : ""
+                        }`}
+                      >
+                        {item.equipment_status.name}
+                      </span>
+                    </TableCell>
                     <TableCell>{item.user.name}</TableCell>
                     <TableCell>
-                      {new Date(item.date_broken).toLocaleDateString("th-TH")}
+                      {new Date(item.date_broken).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
                     </TableCell>
                     <TableCell>
                       {item.date_end_repair
                         ? new Date(item.date_end_repair).toLocaleDateString(
-                            "th-TH",
+                            "en-US",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
                           )
                         : "-"}
                     </TableCell>

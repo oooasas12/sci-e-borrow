@@ -582,7 +582,7 @@ const EquipmentBrokenPage: React.FC = () => {
                     </TableCell>
                     <TableCell>{item.user.name}</TableCell>
                     <TableCell>
-                      {new Date(item.date_broken).toLocaleDateString("th-TH", {
+                      {new Date(item.date_broken).toLocaleDateString("en-US", {
                         day: "2-digit",
                         month: "2-digit",
                         year: "numeric",
@@ -591,7 +591,7 @@ const EquipmentBrokenPage: React.FC = () => {
                     <TableCell>
                       {item.date_end_repair
                         ? new Date(item.date_end_repair).toLocaleDateString(
-                            "th-TH",
+                            "en-US",
                             {
                               day: "2-digit",
                               month: "2-digit",

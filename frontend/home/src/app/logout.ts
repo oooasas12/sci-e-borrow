@@ -1,3 +1,5 @@
+"use client";
+
 import { useDispatch } from 'react-redux';
 import { logout } from '@/store/features/authSlice';
 import Cookies from 'js-cookie';
@@ -16,5 +18,5 @@ export const handleLogout = () => {
   Cookies.remove('session_id');
 
   // redirect ไปหน้า login
-  router.push('/login');
-}; 
+  router.push("/login");
+};

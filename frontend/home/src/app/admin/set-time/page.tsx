@@ -394,8 +394,17 @@ const Settime: React.FC = () => {
               {filterDateStart && filterDateEnd && (
                 <div className="ml-2 text-sm text-gray-600">
                   กำลังกรอง:{" "}
-                  {new Date(filterDateStart).toLocaleDateString("th-TH")} ถึง{" "}
-                  {new Date(filterDateEnd).toLocaleDateString("th-TH")}
+                  {new Date(filterDateStart).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}{" "}
+                  ถึง{" "}
+                  {new Date(filterDateEnd).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
                 </div>
               )}
             </div>
@@ -424,10 +433,18 @@ const Settime: React.FC = () => {
                   <TableRow key={item.id}>
                     <TableCell>{item.id}</TableCell>
                     <TableCell>
-                      {new Date(item.date_start).toLocaleDateString("th-TH")}
+                      {new Date(item.date_start).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
                     </TableCell>
                     <TableCell>
-                      {new Date(item.date_stop).toLocaleDateString("th-TH")}
+                      {new Date(item.date_stop).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
                     </TableCell>
                     <TableCell>{item.time_start}</TableCell>
                     <TableCell>{item.time_stop}</TableCell>

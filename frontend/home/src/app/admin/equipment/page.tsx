@@ -483,7 +483,7 @@ const EquipmentPage: React.FC = () => {
         <h1 className="title lg text-font_color">รายการครุภัณฑ์</h1>
         <div className="mt-8 flex flex-col gap-4">
           <div className="flex justify-between">
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
               <Input
                 type="text"
                 placeholder="ค้นหา..."
@@ -491,29 +491,31 @@ const EquipmentPage: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <FilterListBox
-                placeholder="ประเภทครุภัณฑ์"
-                selected={selectedFilterEquipmentGroup}
-                item={equipmentGroup}
-                filter={filterEquipmentGroup}
-              />
-              <FilterListBox
-                placeholder="สถานะครุภัณฑ์"
-                selected={selectedFilterEquipmentStatus}
-                item={equipmentStatus}
-                filter={filterEquipmentStatus}
-              />
-              <FilterListBox
-                placeholder="ชื่อครุภัณฑ์"
-                selected={selectedFilterEquipmentName}
-                item={equipmentName}
-                filter={filterEquipmentName}
-              />
+              <div className="flex gap-2">
+                <FilterListBox
+                  placeholder="ประเภทครุภัณฑ์"
+                  selected={selectedFilterEquipmentGroup}
+                  item={equipmentGroup}
+                  filter={filterEquipmentGroup}
+                />
+                <FilterListBox
+                  placeholder="สถานะครุภัณฑ์"
+                  selected={selectedFilterEquipmentStatus}
+                  item={equipmentStatus}
+                  filter={filterEquipmentStatus}
+                />
+                <FilterListBox
+                  placeholder="ชื่อครุภัณฑ์"
+                  selected={selectedFilterEquipmentName}
+                  item={equipmentName}
+                  filter={filterEquipmentName}
+                />
+              </div>
             </div>
-            <div className="flex">
+            <div className="flex h-fit">
               <button
                 onClick={() => setOpenInsertData(true)}
-                className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 text-white transition-all hover:bg-dark"
+                className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-2 text-white transition-all hover:bg-dark"
               >
                 <span>เพิ่มรายการ</span>
               </button>
@@ -547,7 +549,7 @@ const EquipmentPage: React.FC = () => {
                 <TableHead className="whitespace-nowrap">
                   สถานที่ตั้ง/จัดเก็บ
                 </TableHead>
-                <TableHead className="whitespace-nowrap">
+                <TableHead className="whitespace-nowrap text-center">
                   สถานะครุภัณฑ์
                 </TableHead>
                 <TableHead className="whitespace-nowrap"></TableHead>
@@ -565,13 +567,31 @@ const EquipmentPage: React.FC = () => {
                     <TableCell>{item.unit.name}</TableCell>
                     <TableCell>{item.value}</TableCell>
                     <TableCell>
-                      {new Date(item.date_come).toLocaleDateString("th-TH")}
+                      {new Date(item.date_come).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
                     </TableCell>
                     <TableCell>{item.budget_source.name}</TableCell>
                     <TableCell>{item.feature}</TableCell>
                     <TableCell>{item.code_old}</TableCell>
                     <TableCell>{item.location}</TableCell>
-                    <TableCell>{item.equipment_status.name}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`${
+                          item.equipment_status.id === 3
+                            ? "flex items-center justify-center rounded-full bg-yellow-500 px-2 py-1 text-white"
+                            : item.equipment_status.id === 5
+                              ? "flex items-center justify-center rounded-full bg-green-500 px-2 py-1 text-white"
+                              : item.equipment_status.id === 4
+                                ? "flex items-center justify-center rounded-full bg-red-500 px-2 py-1 text-white"
+                                : ""
+                        }`}
+                      >
+                        {item.equipment_status.name}
+                      </span>
+                    </TableCell>
                     <TableCell className="flex items-center justify-center gap-2">
                       <MdEditSquare
                         className="cursor-pointer text-yellow-500"

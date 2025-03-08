@@ -57,6 +57,7 @@ import { store } from "@/store/store";
 import DialogShowBorrow from "@/components/dialog/DialogShowBorrow";
 import DialogShowBorrowApproval from "@/components/dialog/DialogShowBorrowApproval";
 import BorrowForm from "@/components/forms/BorrowForm";
+import DialogShowReturnApproval from "@/components/dialog/DialogShowReturnApproval";
 
 const EquipmentBow: React.FC = () => {
   const {
@@ -119,6 +120,7 @@ const EquipmentBow: React.FC = () => {
     useState<BorrowListDetail[]>([]);
   const user = useSelector((state: any) => state.auth.user);
   const [openDetail, setOpenDetail] = useState(false);
+  const [openDetailReturn, setOpenDetailReturn] = useState(false);
 
   // เพิ่ม function สำหรับดึงข้อมูล
   const fetchData = async () => {
@@ -530,8 +532,17 @@ const EquipmentBow: React.FC = () => {
     fetchBorrowListDetail(id);
   };
 
+  const handleShowDetailReturn = (id: number) => {
+    setOpenDetailReturn(true);
+    fetchBorrowListDetail(id);
+  };
+
   const closeModalDetail = () => {
     setOpenDetail(false);
+  };
+
+  const closeModalDetailReturn = () => {
+    setOpenDetailReturn(false);
   };
 
   const handleViewPDF = async (docBorrow: string) => {
@@ -642,8 +653,17 @@ const EquipmentBow: React.FC = () => {
               {filterDateStart && filterDateEnd && (
                 <div className="ml-2 text-sm text-gray-600">
                   กำลังกรอง:{" "}
-                  {new Date(filterDateStart).toLocaleDateString("th-TH")} ถึง{" "}
-                  {new Date(filterDateEnd).toLocaleDateString("th-TH")}
+                  {new Date(filterDateStart).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}{" "}
+                  ถึง{" "}
+                  {new Date(filterDateEnd).toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
                 </div>
               )}
             </div>
@@ -674,12 +694,26 @@ const EquipmentBow: React.FC = () => {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>
                       {item.date_borrow
-                        ? new Date(item.date_borrow).toLocaleDateString("th-TH")
+                        ? new Date(item.date_borrow).toLocaleDateString(
+                            "en-US",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
+                          )
                         : "-"}
                     </TableCell>
                     <TableCell>
                       {item.date_return
-                        ? new Date(item.date_return).toLocaleDateString("th-TH")
+                        ? new Date(item.date_return).toLocaleDateString(
+                            "en-US",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
+                          )
                         : "-"}
                     </TableCell>
                     <TableCell>{item.user.name}</TableCell>
@@ -717,15 +751,23 @@ const EquipmentBow: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       {item.approval_status_return.id === 1 ? (
-                        <button className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark">
+                        <button
+                          className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
+                          onClick={() => handleViewPDF(item.doc_return)}
+                        >
                           ดูเอกสารการคืน
                         </button>
                       ) : item.approval_status_borrow.id != 2 ? (
                         <button
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none hover:bg-yellow-600"
-                          onClick={() => handleShowDetail(item.id)}
+                          onClick={() => handleShowDetailReturn(item.id)}
+                          disabled={
+                            item.date_return <= new Date().toISOString()
+                          }
                         >
-                          รออนุมัติ
+                          {item.date_return <= new Date().toISOString()
+                            ? "รออนุมัติ"
+                            : "ยังไม่ถึงวันคืน"}
                         </button>
                       ) : (
                         <button
@@ -769,6 +811,13 @@ const EquipmentBow: React.FC = () => {
         data={selectedEquipmentBorrowEdit}
         onClose={closeModalDetail}
         open={openDetail}
+        handleResponse={handleUpdateStatusBorrow}
+      />
+      <DialogShowReturnApproval
+        title="เอกสารคำร้องขอคืนรายการครุภัณฑ์"
+        data={selectedEquipmentBorrowEdit}
+        onClose={closeModalDetailReturn}
+        open={openDetailReturn}
         handleResponse={handleUpdateStatusBorrow}
       />
     </Layout>
