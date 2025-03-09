@@ -211,4 +211,11 @@ func Server(r *gin.Engine) {
 	loginController := controllers.Login{DB: db}
 	r.POST("/api/login", loginController.Login)
 
+	dashboardGroup := r.Group("/api/dashboard")
+	dashboardController := controllers.Dashboard{DB: db}
+	{
+		dashboardGroup.GET("", dashboardController.GetDashboardData)
+		dashboardGroup.GET("/borrow-stats", dashboardController.GetBorrowStats)
+		dashboardGroup.GET("/yearly-borrow-stats", dashboardController.GetYearlyBorrowStats)
+	}
 }

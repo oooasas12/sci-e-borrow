@@ -113,7 +113,7 @@ export const Sidebar = () => {
     },
   ];
   return (
-    <div className="my-scroll fixed top-0 w-full break-words bg-primary_1 lg:relative lg:min-h-screen lg:w-64 lg:min-w-64">
+    <div className="my-scroll sidebar fixed top-0 w-full break-words bg-primary_1 lg:relative lg:min-h-screen lg:w-64 lg:min-w-64">
       <div className="flex h-screen fixed overflow-auto w-62 flex-col justify-between">
         <div className="flex flex-col gap-2">
           <div className="relative flex flex-row items-center px-6 py-4 lg:hidden">
