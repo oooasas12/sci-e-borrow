@@ -133,11 +133,11 @@ export default function Login() {
         reverseOrder={false}
       />
       <div className="h-screen w-full overflow-auto">
-        <div className="mx-auto flex items-center h-full md:px-[40px] lg:w-[920px] ">
+        <div className="mx-auto flex items-center h-full md:px-[40px] lg:max-w-[1024px] ">
           <div className="container mx-auto h-full md:h-fit">
             <div className="flex bg-bg_1 rounded-lg h-full md:h-fit lg:min-h-[400px]">
               <div className="w-1/3 hidden lg:block">
-                <img src="/images/600x400.png" className=" rounded-l-lg h-full object-cover" alt="" />
+                <img src="/images/sci_location.jpg" className=" rounded-l-lg h-full object-cover object-center" alt="" />
               </div>
               <div className="w-full lg:w-2/3 ">
                 <form action={handleClick} className="flex gap-8 flex-col p-8 h-full justify-center">

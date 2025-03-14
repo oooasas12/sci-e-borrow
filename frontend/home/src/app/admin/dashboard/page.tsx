@@ -621,7 +621,7 @@ export default function Dashboard() {
                   {dashboardData.recentBorrows?.map((borrow) => (
                     <TableRow key={borrow.ID}>
                       <TableCell className="font-medium">
-                        {borrow.DocBorrow}
+                        {borrow.ID}
                       </TableCell>
                       <TableCell>
                         {new Date(borrow.DateBorrow).toLocaleDateString(
@@ -1023,7 +1023,7 @@ export default function Dashboard() {
                       {dashboardData.recentBorrows?.map((borrow) => (
                         <TableRow key={borrow.ID}>
                           <TableCell className="font-medium">
-                            {borrow.DocBorrow}
+                            {borrow.ID}
                           </TableCell>
                           <TableCell>
                             {new Date(borrow.DateBorrow).toLocaleDateString(

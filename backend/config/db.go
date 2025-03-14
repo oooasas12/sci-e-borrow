@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"os"
 	"sci-e-borrow-backend/models"
 
 	"gorm.io/driver/mysql"
@@ -12,8 +13,13 @@ import (
 var db *gorm.DB
 
 func InitDB() {
-	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
-	dsn := "root:rootpassword@tcp(127.0.0.1:3306)/e-borrow?charset=utf8mb4&parseTime=True&loc=Local"
+	// ใช้ค่า DSN จาก environment variable
+	dsn := os.Getenv("database_connect")
+	if dsn == "" {
+		// กรณีไม่มีค่าใน environment variable ใช้ค่าเริ่มต้น
+		dsn = "root:rootpassword@tcp(mysql:3306)/mydatabase?charset=utf8mb4&parseTime=True&loc=Local"
+	}
+
 	var database *gorm.DB
 	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),

@@ -32,6 +32,7 @@ func Server(r *gin.Engine) {
 		userGroup.PATCH("/:id", userController.UpdateByName)
 		userGroup.POST("", userController.Create)
 		userGroup.DELETE("/:id", userController.Delete)
+		userGroup.PATCH("/password/:id", userController.ChangePassword)
 	}
 
 	branchGroup := r.Group("/api/branch")

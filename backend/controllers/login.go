@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jinzhu/copier"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -62,8 +63,9 @@ func (u *Login) Login(ctx *gin.Context) {
 		return
 	}
 
-	// ตรวจสอบ password
-	if user.Password != loginForm.Password {
+	// ตรวจสอบ password โดยใช้ bcrypt
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginForm.Password))
+	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username or password"})
 		return
 	}

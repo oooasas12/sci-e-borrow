@@ -33,12 +33,21 @@ export const Sidebar = () => {
   const HomePage = () => {
     router.push("/");
   };
+  const [openMenuReport, setOpenMenuReport] = useState<boolean>(false);
 
   const handleOpenMenu = (index: number) => {
     if (openMenu.includes(index)) {
       setOpenMenu(openMenu.filter((item) => item !== index));
     } else {
       setOpenMenu([...openMenu, index]);
+    }
+  };
+  
+  const handleOpenMenuReport = () => {
+    if (openMenuReport) {
+      setOpenMenuReport(false);
+    } else {
+      setOpenMenuReport(true);
     }
   };
 
@@ -51,11 +60,6 @@ export const Sidebar = () => {
   };
 
   const menu = [
-    {
-      menu: "รายงาน",
-      icon: <FaChartBar />,
-      subMenu: [],
-    },
     {
       menu: "จัดการ",
       icon: <FaCog />,
@@ -102,7 +106,7 @@ export const Sidebar = () => {
         },
 
         {
-          name: "รายงานการยีม-คืน",
+          name: "รายการการยืม-คืน",
           link: "/admin/equipment-bow",
         },
         {
@@ -114,7 +118,7 @@ export const Sidebar = () => {
   ];
   return (
     <div className="my-scroll sidebar fixed top-0 w-full break-words bg-primary_1 lg:relative lg:min-h-screen lg:w-64 lg:min-w-64">
-      <div className="flex h-screen fixed overflow-auto w-62 flex-col justify-between">
+      <div className="w-62 fixed flex h-screen flex-col justify-between overflow-auto">
         <div className="flex flex-col gap-2">
           <div className="relative flex flex-row items-center px-6 py-4 lg:hidden">
             <div className="flex items-center gap-4">
@@ -133,10 +137,54 @@ export const Sidebar = () => {
               </span>
             </div>
             <div className="mt-8 flex flex-col">
-              {(user.position_fac.id == 6 ||
+              {(user.position_fac.id === 2 || user.position_fac.id === 3) && (
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <div
+                      className="flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-dark"
+                      onClick={() => handleOpenMenuReport()}
+                    >
+                      <span className="flex items-center gap-2 text-white">
+                        <FaChartBar /> รายงาน
+                      </span>
+                      <IoIosArrowDown
+                        className={`text-white transition-all duration-500 ease-in-out ${openMenuReport ? "rotate-180" : ""}`}
+                      />
+                    </div>
+                    <div
+                      className={`mx-4 flex h-full flex-col overflow-hidden rounded bg-white text-sm transition-all duration-300 ease-in-out ${openMenuReport ? "my-2 max-h-screen" : "max-h-0"}`}
+                    >
+                      <Link
+                        href={{
+                          pathname: "/admin/dashboard",
+                        }}
+                        className="cursor-pointer p-2 text-dark hover:bg-gray-100"
+                      >
+                        หน้าหลัก
+                      </Link>
+                      <Link
+                        href={{
+                          pathname: "/admin/dashboard/equipment-unable",
+                        }}
+                        className="cursor-pointer p-2 text-dark hover:bg-gray-100"
+                      >
+                        รายงานครุภัณฑ์ไม่สามารถใช้งานได้
+                      </Link>
+                      <Link
+                        href={{
+                          pathname: "/admin/dashboard/equipment-lost",
+                        }}
+                        className="cursor-pointer p-2 text-dark hover:bg-gray-100"
+                      >
+                        รายงานครุภัณฑ์สูญหาย
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {(user.position_fac.id == 3 ||
                 user.position_fac.id == 1 ||
-                user.position_fac.id == 2 ||
-                user.position_branch.id == 5) &&
+                user.position_fac.id == 2) &&
                 menu.map((menu, index) => (
                   <div className="flex flex-col gap-2" key={index}>
                     <div
@@ -191,31 +239,31 @@ export const Sidebar = () => {
               {user.position_branch.id != 5 &&
                 user.position_fac.id != 1 &&
                 user.position_fac.id != 2 &&
-                user.position_fac.id != 6 &&
+                user.position_fac.id != 3 &&
                 user.position_branch.id != 2 && (
                   <div className="flex flex-col gap-2">
                     <Link
                       href={{
-                      pathname: "/user/equipment-bow",
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
-                  >
-                    <FaExchangeAlt /> แจ้งการยืม-คืน
-                  </Link>
-                  <Link
-                    href={{
-                      pathname: "/user/equipment-broken",
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
-                  >
-                    <FaTools /> แจ้งการครุภัณฑ์ชำรุด
-                  </Link>
-                </div>
-              )}
+                        pathname: "/user/equipment-bow",
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
+                    >
+                      <FaExchangeAlt /> แจ้งการยืม-คืน
+                    </Link>
+                    <Link
+                      href={{
+                        pathname: "/user/equipment-broken",
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 text-white hover:bg-dark"
+                    >
+                      <FaTools /> แจ้งการครุภัณฑ์ชำรุด
+                    </Link>
+                  </div>
+                )}
             </div>
           </div>
         </div>
-        <div className="flex flex-col justify-end w-62">
+        <div className="w-62 flex flex-col justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full">
               <div className="flex cursor-pointer flex-col gap-2">
@@ -238,7 +286,7 @@ export const Sidebar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="min-w-[200px] rounded-md bg-white p-2 shadow-lg">
               <DropdownMenuItem className="cursor-pointer rounded-md p-2 hover:bg-gray-100">
-                โปรไฟล์
+                <Link href="/profile">โปรไฟล์</Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleLogout}

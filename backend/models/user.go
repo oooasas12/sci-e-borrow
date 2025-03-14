@@ -43,3 +43,9 @@ type UserResponse struct {
 	PositionBranch GenaralResponse `json:"position_branch"`
 	Branch         GenaralResponse `json:"branch"`
 }
+
+type ChangePasswordForm struct {
+	OldPassword     string `form:"old_password" binding:"required"`
+	NewPassword     string `form:"new_password" binding:"required"`
+	ConfirmPassword string `form:"confirm_password" binding:"required"`
+}

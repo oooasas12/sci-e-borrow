@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prod": "npm run build && npm run start"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
@@ -21,6 +22,7 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@reduxjs/toolkit": "^2.5.1",
     "@types/js-cookie": "^3.0.6",
+    "@types/jspdf": "^2.0.0",
     "@types/uuid": "^10.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -28,6 +30,8 @@
     "html2pdf.js": "^0.10.3",
     "jose": "^6.0.8",
     "js-cookie": "^3.0.5",
+    "jspdf": "^3.0.0",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.469.0",
     "next": "15.0.4",
     "react": "^19.0.0",
