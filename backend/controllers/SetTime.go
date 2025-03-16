@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"sci-e-borrow-backend/models"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
@@ -110,4 +112,62 @@ func (db *SetTime) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "SetTime deleted successfully"})
+}
+
+func (db *SetTime) CheckCurrentTime(ctx *gin.Context) {
+	// รับค่าวันและเวลาปัจจุบันจาก request
+	currentTime := ctx.Query("current_time")
+	currentDate := ctx.Query("current_date")
+
+	if currentTime == "" || currentDate == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "กรุณาระบุวันและเวลา"})
+		return
+	}
+
+	// แปลงวันที่จาก string เป็น time.Time
+	parsedDate, err := time.Parse("2006-01-02", currentDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "รูปแบบวันที่ไม่ถูกต้อง"})
+		return
+	}
+
+	var setTimes []models.SetTime
+	// ค้นหาข้อมูลที่วันที่ปัจจุบันอยู่ระหว่าง DateStart และ DateStop
+	if err := db.DB.Where("date_start <= ? AND date_stop >= ?", parsedDate, parsedDate).
+		Preload("User").
+		Find(&setTimes).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "เกิดข้อผิดพลาดในการค้นหาข้อมูล"})
+		return
+	}
+
+	// ตรวจสอบเวลา
+	var matchingSetTimes []models.SetTimeResponse
+	for _, setTime := range setTimes {
+		// แปลงเวลาเป็นนาที เพื่อเปรียบเทียบ
+		currentMinutes := convertTimeToMinutes(currentTime)
+		startMinutes := convertTimeToMinutes(setTime.TimeStart)
+		stopMinutes := convertTimeToMinutes(setTime.TimeStop)
+
+		if currentMinutes >= startMinutes && currentMinutes <= stopMinutes {
+			var response models.SetTimeResponse
+			copier.Copy(&response, &setTime)
+			matchingSetTimes = append(matchingSetTimes, response)
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"is_within_time": len(matchingSetTimes) > 0,
+		"matching_times": matchingSetTimes,
+	})
+}
+
+// ฟังก์ชันช่วยแปลงเวลาเป็นนาที
+func convertTimeToMinutes(timeStr string) int {
+	parts := strings.Split(timeStr, ":")
+	if len(parts) < 2 {
+		return 0
+	}
+	hours, _ := strconv.Atoi(parts[0])
+	minutes, _ := strconv.Atoi(parts[1])
+	return hours*60 + minutes
 }

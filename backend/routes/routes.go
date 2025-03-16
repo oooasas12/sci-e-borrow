@@ -143,6 +143,7 @@ func Server(r *gin.Engine) {
 		SetTimeGroup.PUT("/:id", SetTimeController.Update)
 		SetTimeGroup.POST("", SetTimeController.Create)
 		SetTimeGroup.DELETE("/:id", SetTimeController.Delete)
+		SetTimeGroup.GET("/check", SetTimeController.CheckCurrentTime)
 	}
 
 	EquipmentGroup := r.Group("/api/equipment")

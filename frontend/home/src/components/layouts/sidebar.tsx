@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosArrowDown, IoMdMenu } from "react-icons/io";
 import { FaChartBar, FaUser } from "react-icons/fa6";
@@ -30,6 +30,30 @@ export const Sidebar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.auth.user);
   const [openMenu, setOpenMenu] = useState<number[]>([]);
+  const [isWithinTime, setIsWithinTime] = useState<boolean>(false);
+  
+  useEffect(() => {
+    const checkCurrentTime = async () => {
+      try {
+        const currentDate = new Date().toISOString().split('T')[0];
+        const currentTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/set-time/check?current_date=${currentDate}&current_time=${currentTime}`);
+        const data = await response.json();
+        
+        setIsWithinTime(data.is_within_time);
+      } catch (error) {
+        console.error('Error checking time:', error);
+        setIsWithinTime(false);
+      }
+    };
+
+    checkCurrentTime();
+    // ตรวจสอบทุก 30 นาที
+    const interval = setInterval(checkCurrentTime, 1800000);
+    return () => clearInterval(interval);
+  }, []);
+
   const HomePage = () => {
     router.push("/");
   };
@@ -216,7 +240,9 @@ export const Sidebar = () => {
                   </div>
                 ))}
 
-              {user.position_branch.id == 2 && (
+              {(user.position_branch.id == 2 ||
+                user.position_fac.id == 2 ||
+                (user.position_fac.id == 3 && isWithinTime)) && (
                 <div className="flex flex-col gap-2">
                   <Link
                     href={{

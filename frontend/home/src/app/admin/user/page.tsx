@@ -77,6 +77,7 @@ const UserPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState<User[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
+  const user = useSelector((state: any) => state.auth.user);
 
   const fetchData = async () => {
     try {
@@ -85,8 +86,12 @@ const UserPage: React.FC = () => {
         throw new Error("Failed to fetch data");
       }
       const result = await response.json();
-      setData(result?.data);
-      setFilteredData(result?.data);
+
+      const setDataUser = result?.data?.filter(
+        (item: User) => item.id != user.id,
+      );
+      setData(setDataUser);
+      setFilteredData(setDataUser);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("ไม่สามารถดึงข้อมูลได้");
@@ -295,8 +300,6 @@ const UserPage: React.FC = () => {
   };
 
   const onSubmitEdit = async (data: User) => {
-    console.log("test data :: ", data);
-
     if (!selectedBranch) {
       setErrorInput({ ...errorInput, branch: true });
       return;
@@ -357,7 +360,6 @@ const UserPage: React.FC = () => {
   };
 
   const handleEdit = (data: User) => {
-    console.log("Edit data: ", data);
     resetEdit();
     setValue("id", data.id);
     setValue("name", data.name);

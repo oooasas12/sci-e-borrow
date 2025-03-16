@@ -1,0 +1,56 @@
+[
+  [
+    {
+      "id": 7,
+      "code": "2",
+      "value": "25000",
+      "date_come": "2025-03-16T00:00:00Z",
+      "feature": "xxxxxxxx",
+      "location": "xxxxxxxx",
+      "equipment_status": { "id": 1, "name": "ว่าง" },
+      "budget_source": { "id": 1, "name": "เงินงบประมาณ แผ่นดิน" },
+      "unit": { "id": 3, "name": "ตัว" },
+      "equipment_group": {
+        "id": 1,
+        "code": "201",
+        "name": "ครุภัณฑ์สํานักงาน"
+      },
+      "equipment_name": { "id": 5, "name": "ป้ายชื่อศูนย์วิทยาศาสตร์" },
+      "code_old": "xxxxxxxx"
+    },
+    {
+      "id": 1,
+      "code": "1",
+      "value": "1200000",
+      "date_come": "2025-03-16T00:00:00Z",
+      "feature": "xxxxxxxx",
+      "location": "xxxxxxxx",
+      "equipment_status": { "id": 1, "name": "ว่าง" },
+      "budget_source": { "id": 1, "name": "เงินงบประมาณ แผ่นดิน" },
+      "unit": { "id": 3, "name": "ตัว" },
+      "equipment_group": {
+        "id": 1,
+        "code": "201",
+        "name": "ครุภัณฑ์สํานักงาน"
+      },
+      "equipment_name": { "id": 1, "name": "ลิฟท์โดยสาร" },
+      "code_old": "xxxxxxxx"
+    }
+  ],
+  [
+    {
+      "id": 8,
+      "code": "3",
+      "value": "25000",
+      "date_come": "2025-03-16T00:00:00Z",
+      "feature": "xxxxxxxxxxxxxxx",
+      "location": "xxxxxxxxxxxxxxx",
+      "equipment_status": { "id": 1, "name": "ว่าง" },
+      "budget_source": { "id": 1, "name": "เงินงบประมาณ แผ่นดิน" },
+      "unit": { "id": 2, "name": "เครื่อง" },
+      "equipment_group": { "id": 2, "code": "202", "name": "ครุภัณฑ์การศึกษา" },
+      "equipment_name": { "id": 6, "name": "เครื่องชั่งทศนิยม 2 ตําแหน่ง" },
+      "code_old": "xxxxxxxxxxxxxxx"
+    }
+  ]
+]

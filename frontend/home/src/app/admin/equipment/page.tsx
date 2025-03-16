@@ -23,7 +23,12 @@ import {
   ListboxOptions,
 } from "@headlessui/react";
 import { Input } from "@/components/ui/input";
-import { FaCheck, FaCircleExclamation, FaXmark, FaFilePdf } from "react-icons/fa6";
+import {
+  FaCheck,
+  FaCircleExclamation,
+  FaXmark,
+  FaFilePdf,
+} from "react-icons/fa6";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { CheckIcon } from "lucide-react";
 import ButtonPrimary from "@/components/button/buttonPrimary";
@@ -118,8 +123,13 @@ const EquipmentPage: React.FC = () => {
   const [filterDateEnd, setFilterDateEnd] = useState<string>("");
   const [openAdd, setOpenAdd] = useState(false);
   const [openExportPDF, setOpenExportPDF] = useState(false);
-  const [selectedGroupsForExport, setSelectedGroupsForExport] = useState<number[]>([]);
-  const [selectedStatusesForExport, setSelectedStatusesForExport] = useState<number[]>([]);
+  const [selectedGroupsForExport, setSelectedGroupsForExport] = useState<
+    number[]
+  >([]);
+  const [selectedStatusesForExport, setSelectedStatusesForExport] = useState<
+    number[]
+  >([]);
+  const [testData, setTestData] = useState<Equipment[][]>([]);
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -215,7 +225,10 @@ const EquipmentPage: React.FC = () => {
     if (filterDateStart && filterDateEnd) {
       results = results.filter((item) => {
         const itemDate = new Date(item.date_come);
-        return itemDate >= new Date(filterDateStart) && itemDate <= new Date(filterDateEnd);
+        return (
+          itemDate >= new Date(filterDateStart) &&
+          itemDate <= new Date(filterDateEnd)
+        );
       });
     }
 
@@ -325,12 +338,12 @@ const EquipmentPage: React.FC = () => {
     const apiFormData = new FormData();
     apiFormData.append("code", formData.code);
     apiFormData.append("value", formData.value);
-    apiFormData.append(
-      "date_come",
+
+    const dateCome =
       formData.date_come instanceof Date
-        ? formData.date_come.toISOString()
-        : formData.date_come,
-    );
+        ? formData.date_come
+        : new Date(formData.date_come);
+    apiFormData.append("date_come", dateCome.toISOString().split("T")[0]);
     apiFormData.append("feature", formData.feature);
     apiFormData.append("location", formData.location);
     apiFormData.append(
@@ -362,8 +375,8 @@ const EquipmentPage: React.FC = () => {
           setSelectedEquipmentStatus({ id: 0, name: "" });
           setSelectedEquipmentName({ id: 0, name: "" });
           setOpenInsertData(false);
-          resetInsert();
           fetchData();
+          resetInsert();
           return "เพิ่มข้อมูลครุภัณฑ์สำเร็จ";
         },
         error: "ไม่สามารถเพิ่มข้อมูลครุภัณฑ์ได้",
@@ -395,12 +408,11 @@ const EquipmentPage: React.FC = () => {
     formData.append("id", String(data.id));
     formData.append("code", data.code);
     formData.append("value", data.value);
-    formData.append(
-      "date_come",
+    const dateCome =
       data.date_come instanceof Date
-        ? data.date_come.toISOString()
-        : data.date_come,
-    );
+        ? data.date_come
+        : new Date(data.date_come);
+    formData.append("date_come", dateCome.toISOString().split("T")[0]);
     formData.append("feature", data.feature);
     formData.append("location", data.location);
     formData.append("equipment_group_id", String(data.equipment_group.id));
@@ -509,56 +521,65 @@ const EquipmentPage: React.FC = () => {
 
   const handleOpenExportPDFDialog = () => {
     // ตั้งค่าเริ่มต้นให้เลือกทุกกลุ่มและทุกสถานะ
-    setSelectedGroupsForExport(equipmentGroup.map(group => group.id));
-    setSelectedStatusesForExport(equipmentStatus.map(status => status.id));
+    setSelectedGroupsForExport(equipmentGroup.map((group) => group.id));
+    setSelectedStatusesForExport(equipmentStatus.map((status) => status.id));
     setOpenExportPDF(true);
   };
 
   // ฟังก์ชันสำหรับการเช็ค/ยกเลิกเช็คตัวกรองประเภทครุภัณฑ์
   const handleGroupFilterChange = (groupId: number, checked: boolean) => {
     if (checked) {
-      setSelectedGroupsForExport(prev => [...prev, groupId]);
+      setSelectedGroupsForExport((prev) => [...prev, groupId]);
     } else {
-      setSelectedGroupsForExport(prev => prev.filter(id => id !== groupId));
+      setSelectedGroupsForExport((prev) => prev.filter((id) => id !== groupId));
     }
   };
 
   // ฟังก์ชันสำหรับการเช็ค/ยกเลิกเช็คตัวกรองสถานะ
   const handleStatusFilterChange = (statusId: number, checked: boolean) => {
     if (checked) {
-      setSelectedStatusesForExport(prev => [...prev, statusId]);
+      setSelectedStatusesForExport((prev) => [...prev, statusId]);
     } else {
-      setSelectedStatusesForExport(prev => prev.filter(id => id !== statusId));
+      setSelectedStatusesForExport((prev) =>
+        prev.filter((id) => id !== statusId),
+      );
     }
   };
-  
+
   const handleExportPDF = async () => {
     // กรองข้อมูลตามตัวกรองที่เลือก
-    let filteredForExport = [...filteredData].filter(item => 
-      selectedGroupsForExport.includes(item.equipment_group.id) &&
-      selectedStatusesForExport.includes(item.equipment_status.id)
-    );
+    let filteredForExport = [...filteredData];
+
+    // แยกข้อมูลตามกลุ่มครุภัณฑ์เป็น array ของแต่ละกลุ่ม
+    const groupedData = selectedGroupsForExport
+      .map((groupId) => {
+        return filteredForExport.filter(
+          (item) =>
+            item.equipment_group.id === groupId &&
+            selectedStatusesForExport.includes(item.equipment_status.id),
+        );
+      })
+      .filter((group) => group.length > 0); // กรองกลุ่มที่ไม่มีข้อมูลออก
+
+    // เรียงลำดับข้อมูลในแต่ละกลุ่ม
+    groupedData.forEach((group) => {
+      group.sort((a, b) => {
+        // เรียงตามสถานะ
+        const statusCompare = a.equipment_status.name.localeCompare(
+          b.equipment_status.name,
+        );
+        if (statusCompare !== 0) return statusCompare;
+
+        // เรียงตามชื่อครุภัณฑ์
+        return a.equipment_name.name.localeCompare(b.equipment_name.name);
+      });
+    });
+
+    // กำหนดค่าให้ sortedData เป็น array ของ array ที่แยกตามกลุ่ม
+
+    setTestData(groupedData);
+    console.log("groupedData ::", groupedData);
     
-    // เรียงลำดับข้อมูลตาม 1.สถานะ 2.ชื่อครุภัณฑ์
-    const sortedData = filteredForExport.sort((a, b) => {
-      // เรียงตามสถานะ
-      const statusCompare = a.equipment_status.name.localeCompare(b.equipment_status.name);
-      if (statusCompare !== 0) return statusCompare;
-      
-      // เรียงตามชื่อครุภัณฑ์
-      return a.equipment_name.name.localeCompare(b.equipment_name.name);
-    });
-
-    // แยกข้อมูลตามประเภทครุภัณฑ์
-    const groupedByEquipmentGroup: { [key: string]: Equipment[] } = {};
-    sortedData.forEach(item => {
-      const groupKey = item.equipment_group.name;
-      if (!groupedByEquipmentGroup[groupKey]) {
-        groupedByEquipmentGroup[groupKey] = [];
-      }
-      groupedByEquipmentGroup[groupKey].push(item);
-    });
-
     // แปลง base64 ของโลโก้
     const logoUrl = "/images/logo-sru.png";
     const logoResponse = await fetch(logoUrl);
@@ -571,99 +592,82 @@ const EquipmentPage: React.FC = () => {
 
     // สร้าง element ชั่วคราวสำหรับ PDF
     const tempContainer = document.createElement("div");
-    tempContainer.style.cssText = "font-family: sarabun, sans-serif; color: black;";
+    tempContainer.style.cssText =
+      "font-family: sarabun, sans-serif; color: black;";
     document.body.appendChild(tempContainer);
 
-    let pdfContent = "";
-    
-    // สร้างหน้าปก
-    pdfContent += `
-      <div style="width: 100%; padding: 20px;">
-        <div style="display: flex; margin-bottom: 20px;">
-          <div style="display: flex; width: 100%;">
-            <img src="${logoBase64}" alt="Logo" style="height: 100px;" />
-            <div style="margin-left: 20px;">
-              <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">รายงานครุภัณฑ์</h2>
-              <h3 style="font-size: 18px; font-weight: bold;">คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏสุราษฎร์ธานี</h3>
-              <div style="text-align: right; margin-top: 20px;">
-                <p>วันที่ ${new Date().getDate()} เดือน ${new Date().toLocaleString("th-TH", { month: "long" })} พ.ศ. ${new Date().getFullYear() + 543}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="page-break"></div>
-    `;
-
-    // สร้างตารางข้อมูลสำหรับแต่ละประเภทครุภัณฑ์
-    Object.keys(groupedByEquipmentGroup).forEach((groupName, groupIndex) => {
-      if (groupIndex > 0) {
-        pdfContent += `<div class="page-break"></div>`;
-      }
-      
-      pdfContent += `
-        <div style="width: 100%; padding: 20px;">
-          <div style="display: flex; margin-bottom: 20px;">
-            <div style="display: flex; width: 100%;">
-              <img src="${logoBase64}" alt="Logo" style="height: 80px;" />
-              <div style="margin-left: 20px;">
-                <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">รายงานครุภัณฑ์ - ${groupName}</h2>
-                <h3 style="font-size: 16px; font-weight: bold;">คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏสุราษฎร์ธานี</h3>
-              </div>
-            </div>
-          </div>
-
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px;">
-            <thead>
-              <tr>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">ลำดับ</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">รหัสครุภัณฑ์</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">ชื่อครุภัณฑ์</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">หน่วยนับ</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">มูลค่าครุภัณฑ์</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">วันที่ได้มา</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">คุณสมบัติ<br/>(ยี่ห่อ/รุ่น)</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">สถานที่ตั้ง/<br/>จัดเก็บ</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">แหล่งเงิน</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">เลขครุภัณฑ์เดิม</th>
-                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">สถานะ</th>
-              </tr>
-            </thead>
-            <tbody>
-      `;
-
-      // เพิ่มข้อมูลสำหรับแต่ละรายการในประเภทนี้
-      groupedByEquipmentGroup[groupName].forEach((item, index) => {
-        pdfContent += `
-          <tr>
-            <td style="border: 1px solid #ccc; padding: 5px; text-align: center;">${index + 1}</td>
-            <td style="border: 1px solid #ccc; padding: 5px;">${item.code}</td>
-            <td style="border: 1px solid #ccc; padding: 5px;">${item.equipment_name.name}</td>
-            <td style="border: 1px solid #ccc; padding: 5px; text-align: center;">${item.unit.name}</td>
-            <td style="border: 1px solid #ccc; padding: 5px; text-align: right;">${parseFloat(item.value).toLocaleString("th-TH")}</td>
-            <td style="border: 1px solid #ccc; padding: 5px; text-align: center;">${item.date_come ? new Date(item.date_come).toLocaleDateString("th-TH") : "-"}</td>
-            <td style="border: 1px solid #ccc; padding: 5px;">${item.feature || "-"}</td>
-            <td style="border: 1px solid #ccc; padding: 5px;">${item.location || "-"}</td>
-            <td style="border: 1px solid #ccc; padding: 5px;">${item.budget_source.name}</td>
-            <td style="border: 1px solid #ccc; padding: 5px;">${item.code_old || "-"}</td>
-            <td style="border: 1px solid #ccc; padding: 5px;">${item.equipment_status.name}</td>
-          </tr>
-        `;
-      });
-
-      pdfContent += `
-            </tbody>
-          </table>
-        </div>
-      `;
-    });
+    // สร้างเนื้อหา PDF
+    let pdfContent = 
+      `<div>` +
+      `<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 10px;">` +
+        `<div style="display: flex; gap: 8px; align-items: flex-end;">` +
+          `<img src="/images/logo-sru.png" alt="logo" style="width: 50px; height: 60px;"/>` +
+          `<div style="display: flex; flex-direction: column; gap: 6px;">` +
+            `<h1 style="font-size: 12px; font-weight: bold;">มหาวิทยาลัยราชภัฏสุราษฎร์ธานี</h1>` +
+            `<p style="font-size: 12px; font-weight: bold;">ระบบคลังพัสดุ</p>` +
+          `</div>` +
+        `</div>` +
+        `<div style="display: flex; flex-direction: column; gap: 12px;">` +
+          `<h1 style="font-size: 16px; font-weight: bold;">รายงานรายการครุภัณฑ์</h1>` +
+          `<p style="font-size: 10px;">013 : คลังคณะวิทยาศาสตร์และเทคโนโลยี</p>` +
+        `</div>` +
+      `</div>` +
+      `<div style="width: 100%; height: 2px; background-color: black; margin: 10px 0px;"></div>` +
+      groupedData.map((group, index) => {
+        return (
+          `<div key="${index}">` +
+            `<p style="font-size: 10px; font-weight: bold;">กลุ่มพัสดุ ${group[0]?.equipment_group?.code} : ${group[0]?.equipment_group?.name}</p>` +
+            `<div style="width: 100%; padding: 20px 0px;">` +
+              `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px;">` +
+                `<thead>` +
+                  `<tr style="background-color: #d1d5db;">` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%; margin: auto auto;">ลำดับ</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">รหัสครุภัณฑ์</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 17%;">รายการครุภัณฑ์</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">ปกติ</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">ชำรุด</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">เสื่อมสภาพ</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">สูญหาย</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">หน่วยนับ</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">มูลค่าครุภัณฑ์</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">วันที่ได้มา</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 13%;">แหล่งเงิน</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">หมายเหตุ/<br/>เลขครุภัณฑ์เดิม</th>` +
+                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">สถานที่ตั้ง/<br/>จัดเก็บ</th>` +
+                  `</tr>` +
+                `</thead>` +
+                group.map((item, index) => 
+                  `<tbody>` +
+                    `<tr>` +
+                      `<td style="border: 1px solid black; padding: 10px; text-align: center;">${index + 1}</td>` +
+                      `<td style="border: 1px solid black; padding: 10px; vertical-align: middle;">${item.code}</td>` +
+                      `<td style="border: 1px solid black; padding: 10px;">${item.equipment_name.name}</td>` +
+                      `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${(item.equipment_status.id != 3 && item.equipment_status.id != 4 && item.equipment_status.id != 6) && "checked"} /></td>` +
+                      `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${(item.equipment_status.id == 3) && "checked"} /></td>` +
+                      `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${(item.equipment_status.id == 6) && "checked"} /></td>` +
+                      `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${(item.equipment_status.id == 4) && "checked"} /></td>` +
+                      `<td style="border: 1px solid black; padding: 10px; text-align: center;">${item.unit.name}</td>` +
+                      `<td style="border: 1px solid black; padding: 10px; text-align: right;">${parseFloat(item.value).toLocaleString("th-TH")}</td>` +
+                      `<td style="border: 1px solid black; padding: 10px; text-align: center;">${item.date_come ? new Date(item.date_come).toLocaleDateString("th-TH") : "-"}</td>` +
+                      `<td style="border: 1px solid black; padding: 10px;">${item.budget_source.name}</td>` +
+                      `<td style="border: 1px solid black; padding: 10px;">${item.code_old || "-"}</td>` +
+                      `<td style="border: 1px solid black; padding: 10px;">${item.location || "-"}</td>` +
+                    `</tr>` +
+                  `</tbody>`
+                ).join("") +
+              `</table>` +
+            `</div>` +
+          `</div>`
+        );
+      }).join("") +
+    `</div>`;
 
     tempContainer.innerHTML = pdfContent;
 
     try {
       const opt = {
         margin: [10, 10, 10, 10],
-        filename: `รายงานครุภัณฑ์_${new Date().toLocaleDateString("th-TH")}.pdf`,
+        filename: `แบบตรวจสอบครุภัณฑ์ประจำปี_${new Date().toLocaleDateString("th-TH")}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
           scale: 2,
@@ -698,6 +702,7 @@ const EquipmentPage: React.FC = () => {
       window.open(url, "_blank");
     } catch (error) {
       console.error("Error generating PDF:", error);
+      toast.error("เกิดข้อผิดพลาดในการสร้าง PDF");
     } finally {
       document.body.removeChild(tempContainer);
     }
@@ -751,7 +756,7 @@ const EquipmentPage: React.FC = () => {
             <div className="flex h-fit">
               <button
                 onClick={() => setOpenInsertData(true)}
-                className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-2 text-white transition-all hover:bg-dark mr-2"
+                className="mr-2 flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-2 text-white transition-all hover:bg-dark"
               >
                 <span>เพิ่มรายการ</span>
               </button>
@@ -1503,14 +1508,10 @@ const EquipmentPage: React.FC = () => {
       </Dialog>
       {/* Modal สำหรับตัวกรองก่อนการส่งออก PDF */}
       <Dialog open={openExportPDF} onClose={() => setOpenExportPDF(false)}>
-        <DialogBackdrop
-          className="data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in fixed inset-0 bg-gray-500/75 transition-opacity"
-        />
-        <div className="fixed inset-0 z-10 overflow-y-auto">
+        <DialogBackdrop className="z-40 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in fixed inset-0 bg-gray-500/75 transition-opacity" />
+        <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <DialogPanel
-              className="data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in w-full max-w-md overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all transform data-closed:scale-95 data-closed:translate-y-4 data-enter:translate-y-0 data-enter:scale-100"
-            >
+            <DialogPanel className="data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in data-closed:scale-95 data-closed:translate-y-4 data-enter:translate-y-0 data-enter:scale-100 w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
               <DialogTitle
                 as="h3"
                 className="text-lg font-medium leading-6 text-gray-900"
@@ -1518,24 +1519,29 @@ const EquipmentPage: React.FC = () => {
                 ส่งออกรายงานครุภัณฑ์
               </DialogTitle>
               <div className="mt-4">
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="mb-4 text-sm text-gray-500">
                   กรุณาเลือกตัวกรองสำหรับรายงาน
                 </p>
-                
+
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="mb-1 block text-sm font-medium text-gray-700">
                       กรองตามประเภทครุภัณฑ์
                     </label>
-                    <div className="flex flex-wrap gap-2 mt-1">
+                    <div className="mt-3 flex flex-col gap-2">
                       {equipmentGroup.map((group) => (
                         <div key={group.id} className="flex items-center">
-                          <input
+                          <Input
                             type="checkbox"
                             id={`group-${group.id}`}
-                            className="h-4 w-4 rounded border-gray-300 text-primary_1 focus:ring-primary_1"
+                            className="h-4 w-4 rounded border-gray-300 text-primary_1 focus:ring-primary_1 "
                             checked={selectedGroupsForExport.includes(group.id)}
-                            onChange={(e) => handleGroupFilterChange(group.id, e.target.checked)}
+                            onChange={(e) =>
+                              handleGroupFilterChange(
+                                group.id,
+                                e.target.checked,
+                              )
+                            }
                           />
                           <label
                             htmlFor={`group-${group.id}`}
@@ -1545,38 +1551,14 @@ const EquipmentPage: React.FC = () => {
                           </label>
                         </div>
                       ))}
+                      
                     </div>
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      กรองตามสถานะ
-                    </label>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {equipmentStatus.map((status) => (
-                        <div key={status.id} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={`status-${status.id}`}
-                            className="h-4 w-4 rounded border-gray-300 text-primary_1 focus:ring-primary_1"
-                            checked={selectedStatusesForExport.includes(status.id)}
-                            onChange={(e) => handleStatusFilterChange(status.id, e.target.checked)}
-                          />
-                          <label
-                            htmlFor={`status-${status.id}`}
-                            className="ml-2 text-sm text-gray-700"
-                          >
-                            {status.name}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="pt-3 flex justify-end gap-3">
+
+                  <div className="flex justify-end gap-3 pt-3">
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 border border-gray-300"
+                      className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                       onClick={() => setOpenExportPDF(false)}
                     >
                       ยกเลิก
