@@ -714,7 +714,7 @@ const EquipmentPage: React.FC = () => {
         <Toaster position="bottom-right" reverseOrder={false} />
         <h1 className="title lg text-font_color">รายการครุภัณฑ์</h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-col md:flex-row gap-4">
             <div className="flex flex-col gap-2">
               <Input
                 type="text"
@@ -756,7 +756,7 @@ const EquipmentPage: React.FC = () => {
             <div className="flex h-fit">
               <button
                 onClick={() => setOpenInsertData(true)}
-                className="mr-2 flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-2 text-white transition-all hover:bg-dark"
+                className="mr-2 flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-2  text-white transition-all hover:bg-dark"
               >
                 <span>เพิ่มรายการ</span>
               </button>

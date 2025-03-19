@@ -103,7 +103,7 @@ const EquipmentStatusPage: React.FC = () => {
             <div className='container'>
                 <h1 className='title lg text-font_color'>รายการสถานะครุภัณฑ์</h1>
                 <div className='flex flex-col gap-4 mt-8'>
-                    <div className='flex justify-between'>
+                    <div className='flex justify-between flex-col md:flex-row gap-4'>
                         <div className='flex gap-2 '>
                             <Input
                                 type="text"
@@ -114,7 +114,7 @@ const EquipmentStatusPage: React.FC = () => {
                             />
                         </div>
                         <div className='flex'>
-                            <button onClick={() => setOpenInsertData(true)} className='bg-primary_1 whitespace-nowrap hover:bg-dark rounded-lg flex items-center gap-2 px-6  text-white w-fit transition-all'>
+                            <button onClick={() => setOpenInsertData(true)} className='bg-primary_1 whitespace-nowrap hover:bg-dark rounded-lg flex items-center gap-2 px-6 py-1.5  text-white w-fit transition-all'>
                                 <span>เพิ่มรายการ</span>
                             </button>
                         </div>

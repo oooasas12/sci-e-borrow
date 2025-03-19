@@ -67,7 +67,7 @@ body {
 .container {
   padding: 24px 40px;
 
-  @media (max-width: 993px) {
+  @media (min-width: 993px) {
     padding: 24px;
     margin-top: 80px;
   }

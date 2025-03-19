@@ -590,7 +590,7 @@ const EquipmentBow: React.FC = () => {
           ประวัติการยืม-คืน สาขา{user.branch.name}
         </h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-col md:flex-row gap-4">
             <div className="flex gap-2">
               <Input
                 type="text"

@@ -480,7 +480,7 @@ const EquipmentBrokenPage: React.FC = () => {
           ประวัติการแจ้งชำรุดครุภัณฑ์ สาขา{user.branch.name}
         </h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between flex-col md:flex-row gap-4">
             <div className="flex flex-wrap gap-2">
               <Input
                 type="text"

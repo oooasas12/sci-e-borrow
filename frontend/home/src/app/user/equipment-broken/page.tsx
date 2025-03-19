@@ -480,7 +480,7 @@ const EquipmentBrokenPage: React.FC = () => {
           ประวัติการแจ้งชำรุดครุภัณฑ์
         </h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between flex-col md:flex-row gap-4">
             <div className="flex flex-col gap-2">
               <Input
                 type="text"
@@ -519,13 +519,13 @@ const EquipmentBrokenPage: React.FC = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => openModalChangeStatus()}
-                className="flex min-h-[40px] w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 text-white transition-all hover:bg-dark"
+                className="flex min-h-[40px] w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
               >
                 <span>เปลี่ยนสถานะครุภัณฑ์</span>
               </button>
               <button
                 onClick={() => openModalInsert()}
-                className="flex min-h-[40px] w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 text-white transition-all hover:bg-dark"
+                className="flex min-h-[40px] w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
               >
                 <span>แจ้งชำรุด</span>
               </button>

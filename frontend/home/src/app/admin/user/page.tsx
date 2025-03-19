@@ -439,7 +439,7 @@ const UserPage: React.FC = () => {
         <Toaster position="bottom-right" reverseOrder={false} />
         <h1 className="title lg text-font_color">บัญชีผู้ใช้</h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-col md:flex-row gap-4">
             <div className="flex gap-2">
               <Input
                 type="text"
@@ -470,7 +470,7 @@ const UserPage: React.FC = () => {
             <div className="flex">
               <button
                 onClick={() => setOpenInsertData(true)}
-                className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 text-white transition-all hover:bg-dark"
+                className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
               >
                 <span>เพิ่มรายการ</span>
               </button>
