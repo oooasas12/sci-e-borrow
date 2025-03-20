@@ -7,8 +7,12 @@ import {
   DialogBackdrop,
   DialogPanel,
   DialogTitle,
+  ListboxOption,
+  Listbox,
+  ListboxOptions,
+  ListboxButton,
 } from "@headlessui/react";
-import { FaCircleNotch, FaCirclePlus, FaXmark } from "react-icons/fa6";
+import { FaCheck, FaCircleNotch, FaCirclePlus, FaXmark } from "react-icons/fa6";
 import ButtonSelectColor from "../button/buttonSelectColor";
 import {
   Table,
@@ -27,6 +31,7 @@ import { useSelector } from "react-redux";
 import html2pdf from "html2pdf.js";
 import PaginationList from "../pagination/PaginationList";
 import { toast, Toaster } from "react-hot-toast";
+import { IoIosArrowDown } from "react-icons/io";
 
 type DialogData = {
   onClick?: () => void; // ฟังก์ชันที่จะเรียกเมื่อคลิก
@@ -57,13 +62,22 @@ export const DialogShowBorrowApproval = ({
   const [signatures, setSignatures] = useState<Signature[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | string | null>(null);
   const [selectedSignature, setSelectedSignature] = useState<string>("");
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const user = useSelector((state: any) => state.auth.user);
   const [signatureUrls, setSignatureUrls] = useState<{ [key: string]: string }>(
     {},
   );
   const [perPage, setPerPage] = useState(12);
   const [currentPage, setCurrentPage] = useState(1);
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [statusEdit, setStatusEdit] = useState<{
+    status: number;
+    equipment_id: string;
+  }[]>([]);
 
+  useEffect(() => {
+    setStatusEdit([]);
+  }, []);
   const perPageSelectorHandler = (perPage: number) => {
     setCurrentPage(1);
     setPerPage(perPage);
@@ -148,10 +162,34 @@ export const DialogShowBorrowApproval = ({
     }
   };
 
+  const toggleItemSelection = (itemId: number) => {
+    setSelectedItems((prev) => {
+      if (prev.includes(itemId)) {
+        return prev.filter((id) => id !== itemId);
+      } else {
+        return [...prev, itemId];
+      }
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === data.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(data.map((item) => item.id));
+    }
+  };
+
   const handleGeneratePDF = async (status: string) => {
+    if (selectedItems.length === 0) {
+      toast.error("กรุณาเลือกอย่างน้อย 1 รายการ");
+      return;
+    }
+
     // คำนวณจำนวนหน้าทั้งหมด
+    const selectedData = data.filter((item) => selectedItems.includes(item.id));
     const itemsPerPage = 12;
-    const totalPages = Math.ceil(data.length / itemsPerPage);
+    const totalPages = Math.ceil(selectedData.length / itemsPerPage);
 
     // แปลง base64 ของโลโก้
     const logoUrl = "/images/logo-sru.png";
@@ -186,8 +224,8 @@ export const DialogShowBorrowApproval = ({
 
     for (let page = 0; page < totalPages; page++) {
       const startIdx = page * itemsPerPage;
-      const endIdx = Math.min((page + 1) * itemsPerPage, data.length);
-      const pageItems = data.slice(startIdx, endIdx);
+      const endIdx = Math.min((page + 1) * itemsPerPage, selectedData.length);
+      const pageItems = selectedData.slice(startIdx, endIdx);
 
       pdfContent += `
                 <div class="${page > 0 ? "page-break" : ""}" style="width: 100%; padding: 20px;">
@@ -196,7 +234,7 @@ export const DialogShowBorrowApproval = ({
                             <img src="${logoBase64}" alt="Logo" style="height: 100px;" />
                             <div style="margin-left: 20px;">
                                 <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">คำร้องขอคืนครุภัณฑ์</h2>
-                                <h3 style="font-size: 18px; font-weight: bold;">คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏสุราษฎร์ธานี</h3>
+                                <h3 style="font-size: 18px; font-weight: bold;">คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏสุราษฏร์ธานี</h3>
                                 <div style="text-align: right; margin-top: 20px;">
                                     <p>วันที่ ${new Date().getDate()} เดือน ${new Date().toLocaleString("th-TH", { month: "long" })} พ.ศ. ${new Date().getFullYear() + 543}</p>
                                 </div>
@@ -251,8 +289,8 @@ export const DialogShowBorrowApproval = ({
 
                     <div style="display: flex; justify-content: space-between; margin-top: auto; height: 100%;">
                         <div style="text-align: center; margin-top: auto;">
-                            <p>ลงชื่อ ${data[0].borrow_list.user.name} ผู้คืน</p>
-                            <p style="margin-top: 5px;">( ${data[0].borrow_list.user.name} )</p>
+                            <p style="font-size: 12px;">ลงชื่อ ${data[0].borrow_list.user.name}  ผู้คืน</p>
+                            <p style="margin-top: 5px; font-size: 12px;">( ${data[0].borrow_list.user.name} )</p>
                         </div>
                         <div style="text-align: center;">
                             ${
@@ -266,8 +304,8 @@ export const DialogShowBorrowApproval = ({
                             `
                                 : ""
                             }
-                            <p>ลงชื่อ...........................................................ผู้อนุมัติ</p>
-                            <p style="margin-top: 5px;">( ${selectedSignature ? data[0].borrow_list.user.name : "......................................................"} )</p>
+                            <p style="font-size: 12px;">ลงชื่อ...........................................................ผู้อนุมัติ</p>
+                            <p style="margin-top: 5px; font-size: 12px;">( ${selectedSignature ? user.name : "......................................................"} )</p>
                         </div>
                     </div>
                 </div>
@@ -299,15 +337,21 @@ export const DialogShowBorrowApproval = ({
       // สร้าง FormData สำหรับส่งไฟล์และสถานะ
       const formData = new FormData();
       formData.append("approval_status_return_id", status);
+
+      // เพิ่ม equipment_ids ที่ถูกเลือก
+      selectedItems.forEach((itemId) => {
+        formData.append("equipment_ids[]", itemId.toString());
+      });
+
       if (status === "1") {
         formData.append(
-            "file",
-            new File(
-              [pdfBlob],
-              `คำร้องขอคืนครุภัณฑ์_${data[0].borrow_list.id}.pdf`,
-              { type: "application/pdf" },
-            ),
-          );
+          "file",
+          new File(
+            [pdfBlob],
+            `คำร้องขอคืนครุภัณฑ์_${data[0].borrow_list.id}.pdf`,
+            { type: "application/pdf" },
+          ),
+        );
       }
 
       // ส่ง API request ด้วย toast.promise
@@ -317,8 +361,8 @@ export const DialogShowBorrowApproval = ({
           {
             method: "PATCH",
             body: formData,
-          }
-        ).then(response => {
+          },
+        ).then((response) => {
           if (!response.ok) {
             throw new Error("ไม่สามารถอัปเดตสถานะการคืนได้");
           }
@@ -326,10 +370,10 @@ export const DialogShowBorrowApproval = ({
           return response;
         }),
         {
-          loading: 'กำลังอัปเดตสถานะการคืน...',
-          success: 'อัปเดตสถานะการคืนสำเร็จ',
-          error: 'เกิดข้อผิดพลาดในการอัปเดตสถานะการคืน'
-        }
+          loading: "กำลังอัปเดตสถานะการคืน...",
+          success: "อัปเดตสถานะการคืนสำเร็จ",
+          error: "เกิดข้อผิดพลาดในการอัปเดตสถานะการคืน",
+        },
       );
 
       // ถ้าสำเร็จให้ปิด dialog
@@ -344,8 +388,10 @@ export const DialogShowBorrowApproval = ({
   useEffect(() => {
     if (open) {
       fetchSignatures(user.id); // ต้องแก้เป็น user ID จริง
+      // เริ่มต้นเลือกทุกรายการเมื่อเปิด dialog
+      setSelectedItems(data.map((item) => item.id));
     }
-  }, [open]);
+  }, [open, data]);
 
   useEffect(() => {
     const loadSignatures = async () => {
@@ -360,6 +406,35 @@ export const DialogShowBorrowApproval = ({
       loadSignatures();
     }
   }, [signatures]);
+
+  const resetData = (status: number, equipment_id: string) => {
+    setStatusEdit([...statusEdit, { status: status, equipment_id: equipment_id }]);
+  };  
+
+  const handleChangeStatus = async (status: number, equipment_id: string) => {
+    const formData = new FormData();
+    formData.append("equipment_status_id", status.toString());
+    await toast.promise(
+    (async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/equipment/${equipment_id}`,
+        {
+          method: "PATCH",
+          body: formData,
+        },
+      );
+
+      if (!response.ok) throw new Error("Failed to add data");
+
+      resetData(status, equipment_id);
+    })(),
+    {
+        loading: "กำลังเปลี่ยนสถานะครุภัณฑ์...",
+        success: "เปลี่ยนสถานะครุภัณฑ์สำเร็จ",
+        error: "เกิดข้อผิดพลาดในการเปลี่ยนสถานะครุภัณฑ์",
+      },
+    );
+  };
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-10">
@@ -405,7 +480,7 @@ export const DialogShowBorrowApproval = ({
                           </h2>
                           <h3 className="text-lg font-semibold">
                             คณะวิทยาศาสตร์และเทคโนโลยี
-                            มหาวิทยาลัยราชภัฏสุราษฎร์ธานี
+                            มหาวิทยาลัยราชภัฏสุราษฏร์ธานี
                           </h3>
                         </div>
                         <div className="mt-auto text-right">
@@ -436,6 +511,16 @@ export const DialogShowBorrowApproval = ({
                   <Table className="w-full border-collapse border border-gray-300">
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-12 border border-gray-300 p-2">
+                          <div className="flex items-center justify-center">
+                            <input
+                              type="checkbox"
+                              checked={selectedItems.length === data.length}
+                              onChange={handleSelectAll}
+                              className="h-4 w-4 cursor-pointer"
+                            />
+                          </div>
+                        </TableHead>
                         <TableHead className="border border-gray-300 p-2">
                           ลำดับ
                         </TableHead>
@@ -451,6 +536,9 @@ export const DialogShowBorrowApproval = ({
                         <TableHead className="border border-gray-300 p-2">
                           วันที่ส่งคืน
                         </TableHead>
+                        <TableHead className="border border-gray-300 p-2">
+                          สถานะ
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -460,25 +548,102 @@ export const DialogShowBorrowApproval = ({
                           currentPage * perPage,
                         )
                         .map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="border border-gray-300 p-2">
+                          <TableRow
+                            key={index}
+                            className={`${selectedItems.includes(item.id) ? "bg-gray-100" : ""}`}
+                          >
+                            <TableCell className="w-12 border border-gray-300 p-2">
+                              <div className="flex items-center justify-center">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedItems.includes(item.id)}
+                                  onChange={() => {}}
+                                  className="h-4 w-4 cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleItemSelection(item.id);
+                                  }}
+                                />
+                              </div>
+                            </TableCell>
+                            <TableCell className="border border-gray-300 p-2 cursor-pointer" 
+                            onClick={() => toggleItemSelection(item.id)}>
                               {index + 1}
                             </TableCell>
-                            <TableCell className="border border-gray-300 p-2">
+                            <TableCell className="border border-gray-300 p-2 cursor-pointer" 
+                            onClick={() => toggleItemSelection(item.id)}>
                               {item.equipment.code}
                             </TableCell>
-                            <TableCell className="border border-gray-300 p-2">
+                            <TableCell className="border border-gray-300 p-2 cursor-pointer" 
+                            onClick={() => toggleItemSelection(item.id)}>
                               {item.equipment.equipment_name.name}
                             </TableCell>
-                            <TableCell className="border border-gray-300 p-2">
+                            <TableCell className="border border-gray-300 p-2 cursor-pointer" 
+                            onClick={() => toggleItemSelection(item.id)}>
                               {new Date(
                                 item.borrow_list.date_borrow,
                               ).toLocaleDateString("th-TH")}
                             </TableCell>
-                            <TableCell className="border border-gray-300 p-2">
+                            <TableCell className="border border-gray-300 p-2 cursor-pointer" 
+                            onClick={() => toggleItemSelection(item.id)}>
                               {new Date(
                                 item.borrow_list.date_return,
                               ).toLocaleDateString("th-TH")}
+                            </TableCell>
+                            <TableCell className="border border-gray-300 p-2">
+                              <Listbox onChange={() => {}} value={null}>
+                                {({ open }) => (
+                                  <div className={`my-scroll relative ${open ? "z-50" : "z-10"}`}>
+                                    {/* Listbox Button */}
+                                    <ListboxButton 
+                                      onClick={() => setOpenMenuId(open ? null : index)}
+                                      className="flex h-9 w-full items-center justify-center gap-3 rounded-md border border-gray-200 bg-white px-2 py-1 text-center shadow-sm hover:bg-gray-100 focus:outline-none">
+                                      <span className="flex items-center justify-between gap-4 text-sm">
+                                        {statusEdit.find(s => String(s.equipment_id) === String(item.equipment.id))?.status == 4 ? "สูญหาย" : statusEdit.find(s => String(s.equipment_id) === String(item.equipment.id))?.status == 6 ? "เสื่อมสภาพ" : item.equipment.equipment_status.name} <IoIosArrowDown />
+                                      </span>
+                                    </ListboxButton>
+
+                                    {/* Listbox Options */}
+                                    <ListboxOptions className="absolute mt-1 max-h-60 w-fit overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    {/* Dynamic Options */}
+                                    <ListboxOption
+                                      key={index}
+                                      value={4}
+                                      className={({ active }) =>
+                                        `flex cursor-pointer select-none items-center justify-between gap-2 px-4 py-2 ${
+                                          active
+                                            ? "bg-gray-100"
+                                            : "text-gray-900"
+                                        }`
+                                      }
+                                      onClick={(event) => {
+                                        event.preventDefault();
+                                        handleChangeStatus(4, String(item.equipment.id));
+                                      }}
+                                    >
+                                      สูญหาย
+                                    </ListboxOption>
+                                    <ListboxOption
+                                      key={index}
+                                      value={6}
+                                      className={({ active }) =>
+                                        `flex cursor-pointer select-none items-center justify-between gap-2 px-4 py-2 ${
+                                          active
+                                            ? "bg-gray-100"
+                                            : "text-gray-900"
+                                        }`
+                                      }
+                                      onClick={(event) => {
+                                        event.preventDefault();
+                                        handleChangeStatus(6, String(item.equipment.id));
+                                      }}
+                                    >
+                                      เสื่อมสภาพ
+                                    </ListboxOption>
+                                  </ListboxOptions>
+                                  </div>
+                                )}
+                              </Listbox>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -496,6 +661,12 @@ export const DialogShowBorrowApproval = ({
                           .fill(0)
                           .map((_, index) => (
                             <TableRow key={index}>
+                              <TableCell className="w-12 border border-gray-300 p-2">
+                                &nbsp;
+                              </TableCell>
+                              <TableCell className="border border-gray-300 p-2">
+                                &nbsp;
+                              </TableCell>
                               <TableCell className="border border-gray-300 p-2">
                                 &nbsp;
                               </TableCell>
@@ -547,7 +718,7 @@ export const DialogShowBorrowApproval = ({
                       <p className="mt-1">
                         ({" "}
                         {selectedSignature
-                          ? data[0].borrow_list.user.name
+                          ? user.name
                           : "......................................................"}{" "}
                         )
                       </p>
@@ -596,14 +767,9 @@ export const DialogShowBorrowApproval = ({
               </div>
               <div className="mt-auto flex justify-end gap-4">
                 <button
-                  onClick={() => handleGeneratePDF("2")}
-                  className="rounded-lg bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-                >
-                  ไม่อนุมัติ
-                </button>
-                <button
                   onClick={() => handleGeneratePDF("1")}
-                  className="rounded-lg bg-primary_1 px-4 py-2 text-white hover:bg-dark"
+                  className={`rounded-lg  px-4 py-2 text-white  ${selectedSignature ? "bg-primary_1 hover:bg-dark" : "bg-primary_1/50"}`}
+                  disabled={!selectedSignature}
                 >
                   อนุมัติ
                 </button>

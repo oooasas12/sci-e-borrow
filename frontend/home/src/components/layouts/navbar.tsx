@@ -168,7 +168,7 @@ export const Navbar = () => {
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-col gap-2">
                     <div
-                      className="flex cursor-pointer items-center justify-between p-6 hover:bg-dark"
+                      className="flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-dark"
                       onClick={() => handleOpenMenuReport()}
                     >
                       <span className="flex items-center gap-2 text-white">
@@ -215,7 +215,7 @@ export const Navbar = () => {
                 menu.map((menu, index) => (
                   <div className="flex flex-col gap-2" key={index}>
                     <div
-                      className="flex cursor-pointer items-center justify-between px-6 py-2 hover:bg-dark"
+                      className="flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-dark"
                       onClick={() => handleOpenMenu(index)}
                     >
                       <span className="flex items-center gap-2 text-white">
@@ -226,7 +226,7 @@ export const Navbar = () => {
                       />
                     </div>
                     <div
-                      className={`mx-6 flex h-full flex-col overflow-hidden rounded bg-white text-sm transition-all duration-300 ease-in-out ${openMenu.includes(index) ? "my-2 max-h-screen" : "max-h-0"}`}
+                      className={`mx-4 flex h-full flex-col overflow-hidden rounded bg-white text-sm transition-all duration-300 ease-in-out ${openMenu.includes(index) ? "my-2 max-h-screen" : "max-h-0"}`}
                     >
                       {menu.subMenu.map((subMenu, index) => (
                         <Link

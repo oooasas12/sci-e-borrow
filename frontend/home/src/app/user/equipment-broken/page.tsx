@@ -126,7 +126,7 @@ const EquipmentBrokenPage: React.FC = () => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-name`),
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-group`),
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment-status`),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment/find-data-free`),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipment/find-data-inform-broken`),
       ]);
 
       const [
@@ -489,7 +489,7 @@ const EquipmentBrokenPage: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <div className="flex gap-2">
+              <div className="flex flex-col lg:flex-row gap-2">
                 <FilterListBox
                   placeholder="ประเภทครุภัณฑ์"
                   selected={selectedFilterGroup}
@@ -517,12 +517,6 @@ const EquipmentBrokenPage: React.FC = () => {
               </div>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => openModalChangeStatus()}
-                className="flex min-h-[40px] w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
-              >
-                <span>เปลี่ยนสถานะครุภัณฑ์</span>
-              </button>
               <button
                 onClick={() => openModalInsert()}
                 className="flex min-h-[40px] w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"

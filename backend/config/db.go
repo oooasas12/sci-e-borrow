@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sci-e-borrow-backend/models"
@@ -14,6 +15,7 @@ var db *gorm.DB
 
 func InitDB() {
 	// ใช้ค่า DSN จาก environment variable
+	fmt.Println("database_connect", os.Getenv("database_connect"))
 	dsn := os.Getenv("database_connect")
 	if dsn == "" {
 		// กรณีไม่มีค่าใน environment variable ใช้ค่าเริ่มต้น

@@ -25,7 +25,7 @@ func main() {
 
 	// เพิ่ม CORS middleware
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://46e7-223-206-64-225.ngrok-free.app", "http://localhost:3000"},
+		AllowOrigins:     []string{"https://ba06-202-29-18-249.ngrok-free.app", "http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

@@ -154,7 +154,7 @@ const EquipmentBrokenPage: React.FC = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/equipment-broken/user/${user.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/equipment-broken/branch/${user.branch.id}`,
       );
       if (!response.ok) throw new Error("Failed to fetch data");
       const result = await response.json();
@@ -480,8 +480,8 @@ const EquipmentBrokenPage: React.FC = () => {
           ประวัติการแจ้งชำรุดครุภัณฑ์ สาขา{user.branch.name}
         </h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex items-start justify-between flex-col md:flex-row gap-4">
-            <div className="flex flex-wrap gap-2">
+          <div className="flex items-start justify-between flex-col lg:flex-row gap-4">
+            <div className="flex flex-col lg:flex-row gap-2">
               <Input
                 type="text"
                 placeholder="ค้นหา..."
@@ -530,7 +530,7 @@ const EquipmentBrokenPage: React.FC = () => {
                 </TableHead>
                 <TableHead className="whitespace-nowrap">รายละเอียด</TableHead>
                 <TableHead className="whitespace-nowrap">
-                  สถานะครุภัณฑ์ชำรุดชำรุด
+                  สถานะครุภัณฑ์ชำรุด
                 </TableHead>
                 <TableHead className="whitespace-nowrap">
                   ผู้ดำเนินการ
@@ -551,7 +551,21 @@ const EquipmentBrokenPage: React.FC = () => {
                     <TableCell>{item.equipment.equipment_name.name}</TableCell>
                     <TableCell>{item.equipment.equipment_group.name}</TableCell>
                     <TableCell>{item.detail}</TableCell>
-                    <TableCell>{item.equipment_status.name}</TableCell>
+                    <TableCell>
+                    <span
+                        className={`${
+                          item.equipment_status.id === 3
+                            ? "flex items-center justify-center rounded-full bg-yellow-500 px-2 py-1 text-white"
+                            : item.equipment_status.id === 5
+                              ? "flex items-center justify-center rounded-full bg-green-500 px-2 py-1 text-white"
+                              : item.equipment_status.id === 4
+                                ? "flex items-center justify-center rounded-full bg-red-500 px-2 py-1 text-white"
+                                : ""
+                        }`}
+                      >
+                        {item.equipment_status.name}
+                      </span>
+                    </TableCell>
                     <TableCell>{item.user.name}</TableCell>
                     <TableCell>
                       {new Date(item.date_broken).toLocaleDateString("en-US", {

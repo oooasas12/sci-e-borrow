@@ -251,8 +251,8 @@ export const DialogShowBorrowApproval = ({
 
                     <div style="display: flex; justify-content: space-between; margin-top: auto; height: 100%;">
                         <div style="text-align: center; margin-top: auto;">
-                            <p>ลงชื่อ ${data[0].borrow_list.user.name} ผู้ยืม</p>
-                            <p style="margin-top: 5px;">( ${data[0].borrow_list.user.name} )</p>
+                            <p style="font-size: 12px;">ลงชื่อ ${data[0].borrow_list.user.name} ผู้ยืม</p>
+                            <p style="margin-top: 5px; font-size: 12px;">( ${data[0].borrow_list.user.name} )</p>
                         </div>
                         <div style="text-align: center;">
                             ${
@@ -266,8 +266,8 @@ export const DialogShowBorrowApproval = ({
                             `
                                 : ""
                             }
-                            <p>ลงชื่อ...........................................................ผู้อนุมัติ</p>
-                            <p style="margin-top: 5px;">( ${selectedSignature ? data[0].borrow_list.user.name : "......................................................"} )</p>
+                            <p style="font-size: 12px;">ลงชื่อ...........................................................ผู้อนุมัติ</p>
+                            <p style="margin-top: 5px; font-size: 12px;">( ${selectedSignature ? user.name : "......................................................"} )</p>
                         </div>
                     </div>
                 </div>
@@ -547,7 +547,7 @@ export const DialogShowBorrowApproval = ({
                       <p className="mt-1">
                         ({" "}
                         {selectedSignature
-                          ? data[0].borrow_list.user.name
+                          ? user.name
                           : "......................................................"}{" "}
                         )
                       </p>
@@ -604,6 +604,7 @@ export const DialogShowBorrowApproval = ({
                 <button
                   onClick={() => handleGeneratePDF("1")}
                   className="rounded-lg bg-primary_1 px-4 py-2 text-white hover:bg-dark"
+                  disabled={!selectedSignature}
                 >
                   อนุมัติ
                 </button>

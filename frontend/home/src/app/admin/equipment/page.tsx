@@ -51,6 +51,7 @@ import { EquipmentGroup } from "@/types/general";
 import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
 import { FaCirclePlus } from "react-icons/fa6";
 import html2pdf from "html2pdf.js";
+import { HiOutlineDotsVertical } from "react-icons/hi";
 
 const EquipmentPage: React.FC = () => {
   const {
@@ -130,6 +131,7 @@ const EquipmentPage: React.FC = () => {
     number[]
   >([]);
   const [testData, setTestData] = useState<Equipment[][]>([]);
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -514,7 +516,20 @@ const EquipmentPage: React.FC = () => {
     setValue("unit", value);
   };
 
+  const [equipmentLastUse, setEquipmentLastUse] = useState<string>("");
   const handleShowEquipment = (item: Equipment) => {
+    const fetchEquipmentLastUse = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/borrow-list/equipment-last-use/${item.id}`,
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setEquipmentLastUse(data.data.user.name);
+      } else {
+        setEquipmentLastUse("-");
+      }
+    };
+    fetchEquipmentLastUse();
     setShowEquipment(item);
     setOpenShowEquipment(true);
   };
@@ -579,7 +594,7 @@ const EquipmentPage: React.FC = () => {
 
     setTestData(groupedData);
     console.log("groupedData ::", groupedData);
-    
+
     // แปลง base64 ของโลโก้
     const logoUrl = "/images/logo-sru.png";
     const logoResponse = await fetch(logoUrl);
@@ -597,70 +612,75 @@ const EquipmentPage: React.FC = () => {
     document.body.appendChild(tempContainer);
 
     // สร้างเนื้อหา PDF
-    let pdfContent = 
+    let pdfContent =
       `<div>` +
       `<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 10px;">` +
-        `<div style="display: flex; gap: 8px; align-items: flex-end;">` +
-          `<img src="/images/logo-sru.png" alt="logo" style="width: 50px; height: 60px;"/>` +
-          `<div style="display: flex; flex-direction: column; gap: 6px;">` +
-            `<h1 style="font-size: 12px; font-weight: bold;">มหาวิทยาลัยราชภัฏสุราษฎร์ธานี</h1>` +
-            `<p style="font-size: 12px; font-weight: bold;">ระบบคลังพัสดุ</p>` +
-          `</div>` +
-        `</div>` +
-        `<div style="display: flex; flex-direction: column; gap: 12px;">` +
-          `<h1 style="font-size: 16px; font-weight: bold;">รายงานรายการครุภัณฑ์</h1>` +
-          `<p style="font-size: 10px;">013 : คลังคณะวิทยาศาสตร์และเทคโนโลยี</p>` +
-        `</div>` +
+      `<div style="display: flex; gap: 8px; align-items: flex-end;">` +
+      `<img src="/images/logo-sru.png" alt="logo" style="width: 50px; height: 60px;"/>` +
+      `<div style="display: flex; flex-direction: column; gap: 6px;">` +
+      `<h1 style="font-size: 12px; font-weight: bold;">มหาวิทยาลัยราชภัฏสุราษฎร์ธานี</h1>` +
+      `<p style="font-size: 12px; font-weight: bold;">ระบบคลังพัสดุ</p>` +
+      `</div>` +
+      `</div>` +
+      `<div style="display: flex; flex-direction: column; gap: 12px;">` +
+      `<h1 style="font-size: 16px; font-weight: bold;">รายงานรายการครุภัณฑ์</h1>` +
+      `<p style="font-size: 10px;">013 : คลังคณะวิทยาศาสตร์และเทคโนโลยี</p>` +
+      `</div>` +
       `</div>` +
       `<div style="width: 100%; height: 2px; background-color: black; margin: 10px 0px;"></div>` +
-      groupedData.map((group, index) => {
-        return (
-          `<div key="${index}">` +
+      groupedData
+        .map((group, index) => {
+          return (
+            `<div key="${index}">` +
             `<p style="font-size: 10px; font-weight: bold;">กลุ่มพัสดุ ${group[0]?.equipment_group?.code} : ${group[0]?.equipment_group?.name}</p>` +
             `<div style="width: 100%; padding: 20px 0px;">` +
-              `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px;">` +
-                `<thead>` +
-                  `<tr style="background-color: #d1d5db;">` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%; margin: auto auto;">ลำดับ</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">รหัสครุภัณฑ์</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 17%;">รายการครุภัณฑ์</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">ปกติ</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">ชำรุด</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">เสื่อมสภาพ</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">สูญหาย</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">หน่วยนับ</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">มูลค่าครุภัณฑ์</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">วันที่ได้มา</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 13%;">แหล่งเงิน</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">หมายเหตุ/<br/>เลขครุภัณฑ์เดิม</th>` +
-                    `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">สถานที่ตั้ง/<br/>จัดเก็บ</th>` +
-                  `</tr>` +
-                `</thead>` +
-                group.map((item, index) => 
+            `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px;">` +
+            `<thead>` +
+            `<tr style="background-color: #d1d5db;">` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%; margin: auto auto;">ลำดับ</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">รหัสครุภัณฑ์</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 17%;">รายการครุภัณฑ์</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">ปกติ</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">ชำรุด</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">เสื่อมสภาพ</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">สูญหาย</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">หน่วยนับ</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">มูลค่าครุภัณฑ์</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 5%;">วันที่ได้มา</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 13%;">แหล่งเงิน</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">หมายเหตุ/<br/>เลขครุภัณฑ์เดิม</th>` +
+            `<th style="border: 1px solid black; padding: 10px; text-align: center; width: 10%;">สถานที่ตั้ง/<br/>จัดเก็บ</th>` +
+            `</tr>` +
+            `</thead>` +
+            group
+              .map(
+                (item, index) =>
                   `<tbody>` +
-                    `<tr>` +
-                      `<td style="border: 1px solid black; padding: 10px; text-align: center;">${index + 1}</td>` +
-                      `<td style="border: 1px solid black; padding: 10px; vertical-align: middle;">${item.code}</td>` +
-                      `<td style="border: 1px solid black; padding: 10px;">${item.equipment_name.name}</td>` +
-                      `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${(item.equipment_status.id != 3 && item.equipment_status.id != 4 && item.equipment_status.id != 6) && "checked"} /></td>` +
-                      `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${(item.equipment_status.id == 3) && "checked"} /></td>` +
-                      `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${(item.equipment_status.id == 6) && "checked"} /></td>` +
-                      `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${(item.equipment_status.id == 4) && "checked"} /></td>` +
-                      `<td style="border: 1px solid black; padding: 10px; text-align: center;">${item.unit.name}</td>` +
-                      `<td style="border: 1px solid black; padding: 10px; text-align: right;">${parseFloat(item.value).toLocaleString("th-TH")}</td>` +
-                      `<td style="border: 1px solid black; padding: 10px; text-align: center;">${item.date_come ? new Date(item.date_come).toLocaleDateString("th-TH") : "-"}</td>` +
-                      `<td style="border: 1px solid black; padding: 10px;">${item.budget_source.name}</td>` +
-                      `<td style="border: 1px solid black; padding: 10px;">${item.code_old || "-"}</td>` +
-                      `<td style="border: 1px solid black; padding: 10px;">${item.location || "-"}</td>` +
-                    `</tr>` +
-                  `</tbody>`
-                ).join("") +
-              `</table>` +
+                  `<tr>` +
+                  `<td style="border: 1px solid black; padding: 10px; text-align: center;">${index + 1}</td>` +
+                  `<td style="border: 1px solid black; padding: 10px; vertical-align: middle;">${item.code}</td>` +
+                  `<td style="border: 1px solid black; padding: 10px;">${item.equipment_name.name}</td>` +
+                  `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${item.equipment_status.id != 3 && item.equipment_status.id != 4 && item.equipment_status.id != 6 && "checked"} /></td>` +
+                  `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${item.equipment_status.id == 3 && "checked"} /></td>` +
+                  `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${item.equipment_status.id == 6 && "checked"} /></td>` +
+                  `<td style="border: 1px solid black; padding: 10px; text-align: center;"><input type="checkbox" ${item.equipment_status.id == 4 && "checked"} /></td>` +
+                  `<td style="border: 1px solid black; padding: 10px; text-align: center;">${item.unit.name}</td>` +
+                  `<td style="border: 1px solid black; padding: 10px; text-align: right;">${parseFloat(item.value).toLocaleString("th-TH")}</td>` +
+                  `<td style="border: 1px solid black; padding: 10px; text-align: center;">${item.date_come ? new Date(item.date_come).toLocaleDateString("th-TH") : "-"}</td>` +
+                  `<td style="border: 1px solid black; padding: 10px;">${item.budget_source.name}</td>` +
+                  `<td style="border: 1px solid black; padding: 10px;">${item.code_old || "-"}</td>` +
+                  `<td style="border: 1px solid black; padding: 10px;">${item.location || "-"}</td>` +
+                  `</tr>` +
+                  `</tbody>`,
+              )
+              .join("") +
+            `</table>` +
             `</div>` +
-          `</div>`
-        );
-      }).join("") +
-    `</div>`;
+            `</div>`
+          );
+        })
+        .join("") +
+      `</div>`;
 
     tempContainer.innerHTML = pdfContent;
 
@@ -708,13 +728,38 @@ const EquipmentPage: React.FC = () => {
     }
   };
 
+  const handleChangeStatus = async (status: number, equipment_id: string) => {
+    const formData = new FormData();
+    formData.append("equipment_status_id", status.toString());
+    await toast.promise(
+      (async () => {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/equipment/${equipment_id}`,
+          {
+            method: "PATCH",
+            body: formData,
+          },
+        );
+
+        if (!response.ok) throw new Error("Failed to add data");
+
+        fetchData();
+      })(),
+      {
+        loading: "กำลังเปลี่ยนสถานะครุภัณฑ์...",
+        success: "เปลี่ยนสถานะครุภัณฑ์สำเร็จ",
+        error: "เกิดข้อผิดพลาดในการเปลี่ยนสถานะครุภัณฑ์",
+      },
+    );
+  };
+
   return (
     <Layout>
       <div className="container">
         <Toaster position="bottom-right" reverseOrder={false} />
         <h1 className="title lg text-font_color">รายการครุภัณฑ์</h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex justify-between flex-col md:flex-row gap-4">
+          <div className="flex flex-col justify-between gap-4 md:flex-row">
             <div className="flex flex-col gap-2">
               <Input
                 type="text"
@@ -723,40 +768,100 @@ const EquipmentPage: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <div className="flex gap-2">
-                <FilterListBox
-                  placeholder="ประเภทครุภัณฑ์"
-                  selected={selectedFilterEquipmentGroup}
-                  item={equipmentGroup}
-                  filter={filterEquipmentGroup}
-                />
-                <FilterListBox
-                  placeholder="สถานะครุภัณฑ์"
-                  selected={selectedFilterEquipmentStatus}
-                  item={equipmentStatus}
-                  filter={filterEquipmentStatus}
-                />
-                <FilterListBox
-                  placeholder="ชื่อครุภัณฑ์"
-                  selected={selectedFilterEquipmentName}
-                  item={equipmentName}
-                  filter={filterEquipmentName}
-                />
-                <button
-                  onClick={() => setShowDateFilter(!showDateFilter)}
-                  className="flex w-fit items-center gap-2 rounded-md border bg-white px-4 transition-all hover:bg-gray-100"
-                >
-                  <span>กรองตามวันที่ได้มา</span>
-                  <IoIosArrowDown
-                    className={`transition-transform ${showDateFilter ? "rotate-180" : ""}`}
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 lg:flex-row">
+                  <FilterListBox
+                    placeholder="ประเภทครุภัณฑ์"
+                    selected={selectedFilterEquipmentGroup}
+                    item={equipmentGroup}
+                    filter={filterEquipmentGroup}
                   />
-                </button>
+                  <FilterListBox
+                    placeholder="สถานะครุภัณฑ์"
+                    selected={selectedFilterEquipmentStatus}
+                    item={equipmentStatus}
+                    filter={filterEquipmentStatus}
+                  />
+                  <FilterListBox
+                    placeholder="ชื่อครุภัณฑ์"
+                    selected={selectedFilterEquipmentName}
+                    item={equipmentName}
+                    filter={filterEquipmentName}
+                  />
+                  <button
+                    onClick={() => setShowDateFilter(!showDateFilter)}
+                    className="flex h-9 w-full items-center justify-between gap-2 rounded-md border bg-white px-2 py-1 transition-all hover:bg-gray-100 lg:w-fit"
+                  >
+                    <span>กรองตามวันที่ได้มา</span>
+                    <IoIosArrowDown
+                      className={`text-sm transition-transform ${showDateFilter ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                </div>
+
+                {showDateFilter && (
+                  <div className="flex flex-col lg:flex-row  gap-4 rounded-lg bg-gray-50 p-4">
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="filter-date-start"
+                        className="text-sm text-gray-600"
+                      >
+                        ตั้งแต่วันที่
+                      </label>
+                      <Input
+                        id="filter-date-start"
+                        type="date"
+                        value={filterDateStart}
+                        onChange={(e) => setFilterDateStart(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="filter-date-end"
+                        className="text-sm text-gray-600"
+                      >
+                        ถึงวันที่
+                      </label>
+                      <Input
+                        id="filter-date-end"
+                        type="date"
+                        value={filterDateEnd}
+                        min={filterDateStart}
+                        onChange={(e) => setFilterDateEnd(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                    <button
+                      onClick={clearDateFilter}
+                      className="h-10 rounded-md border bg-gray-200 px-4 py-2 text-gray-700 transition-all hover:bg-gray-300"
+                    >
+                      ล้างตัวกรอง
+                    </button>
+                    {filterDateStart && filterDateEnd && (
+                      <div className="ml-2 text-sm text-gray-600">
+                        กำลังกรอง:{" "}
+                        {new Date(filterDateStart).toLocaleDateString("en-US", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}{" "}
+                        ถึง{" "}
+                        {new Date(filterDateEnd).toLocaleDateString("en-US", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex h-fit">
               <button
                 onClick={() => setOpenInsertData(true)}
-                className="mr-2 flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-2  text-white transition-all hover:bg-dark"
+                className="mr-2 flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-2 text-white transition-all hover:bg-dark"
               >
                 <span>เพิ่มรายการ</span>
               </button>
@@ -769,67 +874,13 @@ const EquipmentPage: React.FC = () => {
               </button>
             </div>
           </div>
-          {showDateFilter && (
-            <div className="flex items-end gap-4 rounded-lg bg-gray-50 p-4">
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="filter-date-start"
-                  className="text-sm text-gray-600"
-                >
-                  ตั้งแต่วันที่
-                </label>
-                <Input
-                  id="filter-date-start"
-                  type="date"
-                  value={filterDateStart}
-                  onChange={(e) => setFilterDateStart(e.target.value)}
-                  className="bg-white"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="filter-date-end"
-                  className="text-sm text-gray-600"
-                >
-                  ถึงวันที่
-                </label>
-                <Input
-                  id="filter-date-end"
-                  type="date"
-                  value={filterDateEnd}
-                  min={filterDateStart}
-                  onChange={(e) => setFilterDateEnd(e.target.value)}
-                  className="bg-white"
-                />
-              </div>
-              <button
-                onClick={clearDateFilter}
-                className="h-10 rounded-md border bg-gray-200 px-4 py-2 text-gray-700 transition-all hover:bg-gray-300"
-              >
-                ล้างตัวกรอง
-              </button>
-              {filterDateStart && filterDateEnd && (
-                <div className="ml-2 text-sm text-gray-600">
-                  กำลังกรอง:{" "}
-                  {new Date(filterDateStart).toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}{" "}
-                  ถึง{" "}
-                  {new Date(filterDateEnd).toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}
-                </div>
-              )}
-            </div>
-          )}
           <Table className="rounded-lg border">
             <TableHeader>
               <TableRow className="">
                 <TableHead className="whitespace-nowrap">#</TableHead>
+                <TableHead className="whitespace-nowrap">
+                  รหัสครุภัณฑ์
+                </TableHead>
                 <TableHead className="whitespace-nowrap">
                   รายการครุภัณฑ์
                 </TableHead>
@@ -856,9 +907,8 @@ const EquipmentPage: React.FC = () => {
                 .map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.id}</TableCell>
-                    <TableCell>
-                      {item.code} {item.equipment_name.name}
-                    </TableCell>
+                    <TableCell>{item.code}</TableCell>
+                    <TableCell>{item.equipment_name.name}</TableCell>
                     <TableCell>{item.equipment_group.name}</TableCell>
                     <TableCell>{item.unit.name}</TableCell>
                     <TableCell>{item.value}</TableCell>
@@ -874,35 +924,83 @@ const EquipmentPage: React.FC = () => {
                       <span
                         className={`${
                           item.equipment_status.id === 1
-                            ? "flex items-center justify-center rounded-full bg-green-500 px-2 py-1 text-white"
+                            ? "flex items-center justify-center rounded-full bg-green-500 px-2 py-1 text-center text-white"
                             : item.equipment_status.id === 2
-                              ? "flex items-center justify-center rounded-full bg-blue-500 px-2 py-1 text-white"
+                              ? "flex items-center justify-center rounded-full bg-blue-500 px-2 py-1 text-center text-white"
                               : item.equipment_status.id === 4
-                                ? "flex items-center justify-center rounded-full bg-red-500 px-2 py-1 text-white"
-                                : "flex items-center justify-center rounded-full bg-yellow-500 px-2 py-1 text-white"
+                                ? "flex items-center justify-center rounded-full bg-red-500 px-2 py-1 text-center text-white"
+                                : "flex items-center justify-center rounded-full bg-yellow-500 px-2 py-1 text-center text-white"
                         }`}
                       >
                         {item.equipment_status.name}
                       </span>
                     </TableCell>
-                    <TableCell className="flex items-center justify-center gap-2">
-                      <FaCircleExclamation
-                        className="cursor-pointer text-blue-500"
-                        size={20}
-                        onClick={() => handleShowEquipment(item)}
-                      />
-                      <MdEditSquare
-                        className="cursor-pointer text-yellow-500"
-                        onClick={() => {
-                          handleEdit(item);
-                        }}
-                        size={20}
-                      />
-                      <MdDelete
-                        className="cursor-pointer text-red-600"
-                        onClick={() => handleDel(item.id, item.code)}
-                        size={20}
-                      />
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-2">
+                        <Listbox onChange={() => {}} value={null}>
+                          {({ open }) => (
+                            <div
+                              className={`my-scroll relative ${open ? "z-50" : "z-10"}`}
+                            >
+                              {/* Listbox Button */}
+                              <ListboxButton
+                                onClick={() =>
+                                  setOpenMenuId(open ? null : item.id)
+                                }
+                                className="flex h-9 w-full items-center justify-center gap-3   text-center shadow-sm  focus:outline-none"
+                              >
+                                <span className="flex items-center justify-between gap-4 text-sm">
+                                  <HiOutlineDotsVertical
+                                    className="cursor-pointer text-gray-500"
+                                    size={20}
+                                  />
+                                </span>
+                              </ListboxButton>
+
+                              {/* Listbox Options */}
+                              <ListboxOptions className="absolute mt-1 max-h-60 -translate-x-1/2 w-fit overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                {equipmentStatus.map((status, index) => (
+                                  <ListboxOption
+                                    key={index}
+                                    value={6}
+                                    className={({ active }) =>
+                                      `flex cursor-pointer select-none items-center justify-between gap-2 px-4 py-2 ${
+                                        active ? "bg-gray-100" : "text-gray-900"
+                                      }`
+                                    }
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      handleChangeStatus(
+                                        status.id,
+                                        String(item.id),
+                                      );
+                                    }}
+                                  >
+                                    <span className="whitespace-pre">{status.name}</span>
+                                  </ListboxOption>
+                                ))}
+                              </ListboxOptions>
+                            </div>
+                          )}
+                        </Listbox>
+                        <FaCircleExclamation
+                          className="cursor-pointer text-blue-500"
+                          size={20}
+                          onClick={() => handleShowEquipment(item)}
+                        />
+                        <MdEditSquare
+                          className="cursor-pointer text-yellow-500"
+                          onClick={() => {
+                            handleEdit(item);
+                          }}
+                          size={20}
+                        />
+                        <MdDelete
+                          className="cursor-pointer text-red-600"
+                          onClick={() => handleDel(item.id, item.code)}
+                          size={20}
+                        />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -1500,6 +1598,10 @@ const EquipmentPage: React.FC = () => {
                       {ShowEquipment?.code_old}
                     </span>
                   </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <span className="text-font_color">ผู้ใช้งานล่าสุด</span>
+                    <span className="text-font_color">{equipmentLastUse}</span>
+                  </div>
                 </div>
               </div>
             </DialogPanel>
@@ -1508,7 +1610,7 @@ const EquipmentPage: React.FC = () => {
       </Dialog>
       {/* Modal สำหรับตัวกรองก่อนการส่งออก PDF */}
       <Dialog open={openExportPDF} onClose={() => setOpenExportPDF(false)}>
-        <DialogBackdrop className="z-40 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in fixed inset-0 bg-gray-500/75 transition-opacity" />
+        <DialogBackdrop className="data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in fixed inset-0 z-40 bg-gray-500/75 transition-opacity" />
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <DialogPanel className="data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in data-closed:scale-95 data-closed:translate-y-4 data-enter:translate-y-0 data-enter:scale-100 w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
@@ -1534,7 +1636,7 @@ const EquipmentPage: React.FC = () => {
                           <Input
                             type="checkbox"
                             id={`group-${group.id}`}
-                            className="h-4 w-4 rounded border-gray-300 text-primary_1 focus:ring-primary_1 "
+                            className="h-4 w-4 rounded border-gray-300 text-primary_1 focus:ring-primary_1"
                             checked={selectedGroupsForExport.includes(group.id)}
                             onChange={(e) =>
                               handleGroupFilterChange(
@@ -1551,7 +1653,6 @@ const EquipmentPage: React.FC = () => {
                           </label>
                         </div>
                       ))}
-                      
                     </div>
                   </div>
 

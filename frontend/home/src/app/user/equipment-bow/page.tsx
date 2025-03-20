@@ -563,37 +563,29 @@ const EquipmentBow: React.FC = () => {
         <Toaster position="bottom-right" reverseOrder={false} />
         <h1 className="title lg text-font_color">ประวัติการยืม-คืน</h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex justify-between flex-col md:flex-row gap-4">
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="ค้นหา..."
-                className="w-[300px] bg-white"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-              <button
-                onClick={() => setShowDateFilter(!showDateFilter)}
-                className="flex w-fit items-center gap-2 rounded-md border bg-gray-100 px-4 text-gray-700 transition-all hover:bg-gray-200"
-              >
-                <span>กรองตามวันที่ยืม</span>
-                <IoIosArrowDown
-                  className={`transition-transform ${showDateFilter ? "rotate-180" : ""}`}
+          <div className="flex flex-col justify-between gap-4 md:flex-row">
+            <div className="flex flex-col gap-2 lg:flex-row">
+              <div className="flex flex-col gap-2 lg:flex-row">
+                <Input
+                  type="text"
+                  placeholder="ค้นหา..."
+                  className="w-[300px] bg-white"
+                  value={searchTerm}
+                  onChange={handleSearch}
                 />
-              </button>
-            </div>
-            <div className="flex">
-              <button
-                onClick={() => openModalInsert()}
-                className="flex w-fit items-center gap-2 rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
-              >
-                <span>แจ้งการยืม-คืน</span>
-              </button>
-            </div>
-          </div>
+                <button
+                  onClick={() => setShowDateFilter(!showDateFilter)}
+                  className="flex h-9 w-full items-center justify-between gap-2 rounded-md border bg-gray-100 px-4 text-gray-700 transition-all hover:bg-gray-200 lg:w-fit"
+                >
+                  <span>กรองตามวันที่ยืม</span>
+                  <IoIosArrowDown
+                    className={`transition-transform ${showDateFilter ? "rotate-180" : ""}`}
+                  />
+                </button>
+              </div>
           {/* ส่วนของตัวกรองวันที่ */}
           {showDateFilter && (
-            <div className="flex items-end gap-4 rounded-lg bg-gray-50 p-4">
+            <div className="flex flex-col lg:flex-row items-start gap-4 rounded-lg bg-gray-50 p-4">
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="filter-date-start"
@@ -649,6 +641,16 @@ const EquipmentBow: React.FC = () => {
               )}
             </div>
           )}
+            </div>
+            <div className="flex">
+              <button
+                onClick={() => openModalInsert()}
+                className="flex w-fit items-center gap-2 rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
+              >
+                <span>แจ้งการยืม-คืน</span>
+              </button>
+            </div>
+          </div>
           <Table className="rounded-lg border">
             <TableHeader>
               <TableRow className="">

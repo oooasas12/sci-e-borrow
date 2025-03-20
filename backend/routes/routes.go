@@ -156,6 +156,7 @@ func Server(r *gin.Engine) {
 		EquipmentGroup.GET("/find-data-broken", EquipmentController.FindDataEquipmentBroken)
 		EquipmentGroup.GET("/find-data-lost", EquipmentController.FindDataEquipmentLost)
 		EquipmentGroup.GET("/find-data-unable", EquipmentController.FindDataEquipmentUnableUse)
+		EquipmentGroup.GET("/find-data-inform-broken", EquipmentController.FindDataEquipmentInformBroken)
 		EquipmentGroup.PUT("/:id", EquipmentController.Update)
 		EquipmentGroup.PATCH("/:id", EquipmentController.UpdateByName)
 		EquipmentGroup.POST("", EquipmentController.Create)
@@ -184,6 +185,7 @@ func Server(r *gin.Engine) {
 		BorrowListGroup.GET("/:id", BorrowListController.FindOne)
 		BorrowListGroup.GET("/branch/:id", BorrowListController.FindByBranchID)
 		BorrowListGroup.GET("/pdf/:file_name", BorrowListController.GetPDFFile)
+		BorrowListGroup.GET("/equipment-last-use/:id", BorrowListController.FindLastUserBorrowedEquipment)
 		BorrowListGroup.PATCH("/update-date-return/:id", BorrowListController.UpdateDateReturn)
 		BorrowListGroup.PATCH("/update-status-borrow/:id", BorrowListController.UpdateStatusBorrow)
 		BorrowListGroup.PATCH("/update-status-return/:id", BorrowListController.UpdateStatusReturn)
@@ -219,5 +221,13 @@ func Server(r *gin.Engine) {
 		dashboardGroup.GET("", dashboardController.GetDashboardData)
 		dashboardGroup.GET("/borrow-stats", dashboardController.GetBorrowStats)
 		dashboardGroup.GET("/yearly-borrow-stats", dashboardController.GetYearlyBorrowStats)
+	}
+
+	// เพิ่ม route สำหรับการนำเข้าข้อมูล
+	importGroup := r.Group("/api/import")
+	importController := controllers.Import{DB: db}
+	{
+		importGroup.GET("/equipment", importController.ImportEquipmentFromCSV)
+		importGroup.POST("/equipment", importController.UploadAndImportCSV)
 	}
 }

@@ -182,6 +182,15 @@ func (db *Equipment) FindDataEquipmentBroken(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
+func (db *Equipment) FindDataEquipmentInformBroken(ctx *gin.Context) {
+	var equipments []models.Equipment
+	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id != ? AND equipment_status_id != ? AND equipment_status_id != ? AND equipment_status_id != ?", 3, 4, 5, 6).Find(&equipments)
+
+	var response []models.EquipmentResponse
+	copier.Copy(&response, &equipments)
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
+}
+
 func (db *Equipment) FindDataEquipmentLost(ctx *gin.Context) {
 	var equipments []models.Equipment
 	db.DB.Preload("EquipmentStatus").Preload("BudgetSource").Preload("Unit").Preload("EquipmentGroup").Preload("EquipmentName").Where("equipment_status_id = ?", 4).Find(&equipments)

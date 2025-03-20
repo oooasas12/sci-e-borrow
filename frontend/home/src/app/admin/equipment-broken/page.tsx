@@ -200,7 +200,10 @@ const EquipmentBrokenPage: React.FC = () => {
     if (filterDateStart && filterDateEnd) {
       results = results.filter((item) => {
         const itemDate = new Date(item.date_broken);
-        return itemDate >= new Date(filterDateStart) && itemDate <= new Date(filterDateEnd);
+        return (
+          itemDate >= new Date(filterDateStart) &&
+          itemDate <= new Date(filterDateEnd)
+        );
       });
     }
 
@@ -494,7 +497,7 @@ const EquipmentBrokenPage: React.FC = () => {
         <Toaster position="bottom-right" reverseOrder={false} />
         <h1 className="title lg text-font_color">รายการครุภัณฑ์ชำรุด</h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
             <div className="flex flex-col gap-2">
               <Input
                 type="text"
@@ -503,40 +506,99 @@ const EquipmentBrokenPage: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <div className="flex items-stretch gap-2">
-                <FilterListBox
-                  placeholder="ประเภทครุภัณฑ์"
-                  selected={selectedFilterGroup}
-                  item={equipmentGroup}
-                  filter={filterGroup}
-                />
-                <FilterListBox
-                  placeholder="สถานะครุภัณฑ์"
-                  selected={selectedFilterStatus}
-                  item={equipmentStatus.filter(
-                    (item) =>
-                      item.id == 3 ||
-                      item.id == 4 ||
-                      item.id == 5 ||
-                      item.id == 6,
-                  )}
-                  filter={filterStatus}
-                />
-                <FilterListBox
-                  placeholder="ชื่อครุภัณฑ์"
-                  selected={selectedFilterType}
-                  item={equipmentName}
-                  filter={filterType}
-                />
-                <button
-                  onClick={() => setShowDateFilter(!showDateFilter)}
-                  className="flex w-fit items-center gap-2 rounded-md border bg-white px-4 py-1 transition-all hover:bg-gray-100"
-                >
-                  <span>กรองตามวันที่ชำรุด</span>
-                  <IoIosArrowDown
-                    className={`transition-transform ${showDateFilter ? "rotate-180" : ""}`}
+              <div className="flex flex-col items-stretch gap-2 lg:flex-row">
+                <div className="flex flex-col gap-2 lg:flex-row">
+                  <FilterListBox
+                    placeholder="ประเภทครุภัณฑ์"
+                    selected={selectedFilterGroup}
+                    item={equipmentGroup}
+                    filter={filterGroup}
                   />
-                </button>
+                  <FilterListBox
+                    placeholder="สถานะครุภัณฑ์"
+                    selected={selectedFilterStatus}
+                    item={equipmentStatus.filter(
+                      (item) =>
+                        item.id == 3 ||
+                        item.id == 4 ||
+                        item.id == 5 ||
+                        item.id == 6,
+                    )}
+                    filter={filterStatus}
+                  />
+                  <FilterListBox
+                    placeholder="ชื่อครุภัณฑ์"
+                    selected={selectedFilterType}
+                    item={equipmentName}
+                    filter={filterType}
+                  />
+                  <button
+                    onClick={() => setShowDateFilter(!showDateFilter)}
+                    className="flex h-9 w-full lg:w-fit items-center justify-between gap-2 rounded-md border bg-white px-2 py-1 transition-all hover:bg-gray-100"
+                  >
+                    <span className="text-sm">กรองตามวันที่ชำรุด</span>
+                    <IoIosArrowDown
+                      className={`transition-transform ${showDateFilter ? "rotate-180" : ""} text-sm`}
+                    />
+                  </button>
+                </div>
+                {showDateFilter && (
+                  <div className="flex flex-col lg:flex-row items-start gap-4 rounded-lg bg-gray-50 p-4">
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="filter-date-start"
+                        className="text-sm text-gray-600"
+                      >
+                        ตั้งแต่วันที่
+                      </label>
+                      <Input
+                        id="filter-date-start"
+                        type="date"
+                        value={filterDateStart}
+                        onChange={(e) => setFilterDateStart(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="filter-date-end"
+                        className="text-sm text-gray-600"
+                      >
+                        ถึงวันที่
+                      </label>
+                      <Input
+                        id="filter-date-end"
+                        type="date"
+                        value={filterDateEnd}
+                        min={filterDateStart}
+                        onChange={(e) => setFilterDateEnd(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                    <button
+                      onClick={clearDateFilter}
+                      className="h-10 rounded-md border bg-gray-200 px-4 py-2 text-gray-700 transition-all hover:bg-gray-300"
+                    >
+                      ล้างตัวกรอง
+                    </button>
+                    {filterDateStart && filterDateEnd && (
+                      <div className="ml-2 text-sm text-gray-600">
+                        กำลังกรอง:{" "}
+                        {new Date(filterDateStart).toLocaleDateString("en-US", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}{" "}
+                        ถึง{" "}
+                        {new Date(filterDateEnd).toLocaleDateString("en-US", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex h-full gap-3">
@@ -554,63 +616,6 @@ const EquipmentBrokenPage: React.FC = () => {
               </button>
             </div>
           </div>
-          {showDateFilter && (
-            <div className="flex items-end gap-4 rounded-lg bg-gray-50 p-4">
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="filter-date-start"
-                  className="text-sm text-gray-600"
-                >
-                  ตั้งแต่วันที่
-                </label>
-                <Input
-                  id="filter-date-start"
-                  type="date"
-                  value={filterDateStart}
-                  onChange={(e) => setFilterDateStart(e.target.value)}
-                  className="bg-white"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="filter-date-end"
-                  className="text-sm text-gray-600"
-                >
-                  ถึงวันที่
-                </label>
-                <Input
-                  id="filter-date-end"
-                  type="date"
-                  value={filterDateEnd}
-                  min={filterDateStart}
-                  onChange={(e) => setFilterDateEnd(e.target.value)}
-                  className="bg-white"
-                />
-              </div>
-              <button
-                onClick={clearDateFilter}
-                className="h-10 rounded-md border bg-gray-200 px-4 py-2 text-gray-700 transition-all hover:bg-gray-300"
-              >
-                ล้างตัวกรอง
-              </button>
-              {filterDateStart && filterDateEnd && (
-                <div className="ml-2 text-sm text-gray-600">
-                  กำลังกรอง:{" "}
-                  {new Date(filterDateStart).toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}{" "}
-                  ถึง{" "}
-                  {new Date(filterDateEnd).toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}
-                </div>
-              )}
-            </div>
-          )}
           <Table className="rounded-lg border">
             <TableHeader>
               <TableRow className="">

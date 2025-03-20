@@ -555,92 +555,95 @@ const EquipmentBow: React.FC = () => {
         <Toaster position="bottom-right" reverseOrder={false} />
         <h1 className="title lg text-font_color">รายงานการยืม-คืน</h1>
         <div className="mt-8 flex flex-col gap-4">
-          <div className="flex justify-between flex-col md:flex-row gap-4">
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="ค้นหา..."
-                className="w-[300px] bg-white"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-              <button
-                onClick={() => setShowDateFilter(!showDateFilter)}
-                className="flex w-fit items-center gap-2 rounded-md border bg-gray-100 px-4 text-gray-700 transition-all hover:bg-gray-200"
-              >
-                <span>กรองตามวันที่ยืม</span>
-                <IoIosArrowDown
-                  className={`transition-transform ${showDateFilter ? "rotate-180" : ""}`}
+          <div className="flex flex-col justify-between gap-4 md:flex-row">
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 lg:flex-row">
+                <Input
+                  type="text"
+                  placeholder="ค้นหา..."
+                  className="w-[300px] bg-white"
+                  value={searchTerm}
+                  onChange={handleSearch}
                 />
-              </button>
+                <button
+                  onClick={() => setShowDateFilter(!showDateFilter)}
+                  className="flex h-9 w-full items-center justify-between gap-2 rounded-md border bg-gray-100 px-2 py-1 transition-all hover:bg-gray-200 md:w-fit"
+                >
+                  <span>กรองตามวันที่ยืม</span>
+                  <IoIosArrowDown
+                    className={`text-sm transition-transform ${showDateFilter ? "rotate-180" : ""}`}
+                  />
+                </button>
+              </div>
+              {/* ส่วนของตัวกรองวันที่ */}
+              {showDateFilter && (
+                <div className="flex flex-col items-start gap-4 rounded-lg bg-gray-50 p-4 lg:flex-row">
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="filter-date-start"
+                      className="text-sm text-gray-600"
+                    >
+                      ตั้งแต่วันที่
+                    </label>
+                    <Input
+                      id="filter-date-start"
+                      type="date"
+                      value={filterDateStart}
+                      onChange={(e) => setFilterDateStart(e.target.value)}
+                      className="bg-white"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="filter-date-end"
+                      className="text-sm text-gray-600"
+                    >
+                      ถึงวันที่
+                    </label>
+                    <Input
+                      id="filter-date-end"
+                      type="date"
+                      value={filterDateEnd}
+                      min={filterDateStart}
+                      onChange={(e) => setFilterDateEnd(e.target.value)}
+                      className="bg-white"
+                    />
+                  </div>
+                  <button
+                    onClick={clearDateFilter}
+                    className="h-10 rounded-md border bg-gray-200 px-4 py-2 text-gray-700 transition-all hover:bg-gray-300"
+                  >
+                    ล้างตัวกรอง
+                  </button>
+                  {filterDateStart && filterDateEnd && (
+                    <div className="ml-2 text-sm text-gray-600">
+                      กำลังกรอง:{" "}
+                      {new Date(filterDateStart).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}{" "}
+                      ถึง{" "}
+                      {new Date(filterDateEnd).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex">
               <button
                 onClick={() => openModalInsert()}
-                className="flex w-fit items-center gap-2 rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
+                className="flex h-9 w-fit items-center gap-2 rounded-md border bg-primary_1 px-2 py-1 text-white transition-all hover:bg-dark md:w-fit"
               >
                 <span>เพิ่มรายการ</span>
               </button>
             </div>
           </div>
-          {/* ส่วนของตัวกรองวันที่ */}
-          {showDateFilter && (
-            <div className="flex items-end gap-4 rounded-lg bg-gray-50 p-4">
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="filter-date-start"
-                  className="text-sm text-gray-600"
-                >
-                  ตั้งแต่วันที่
-                </label>
-                <Input
-                  id="filter-date-start"
-                  type="date"
-                  value={filterDateStart}
-                  onChange={(e) => setFilterDateStart(e.target.value)}
-                  className="bg-white"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="filter-date-end"
-                  className="text-sm text-gray-600"
-                >
-                  ถึงวันที่
-                </label>
-                <Input
-                  id="filter-date-end"
-                  type="date"
-                  value={filterDateEnd}
-                  min={filterDateStart}
-                  onChange={(e) => setFilterDateEnd(e.target.value)}
-                  className="bg-white"
-                />
-              </div>
-              <button
-                onClick={clearDateFilter}
-                className="h-10 rounded-md border bg-gray-200 px-4 py-2 text-gray-700 transition-all hover:bg-gray-300"
-              >
-                ล้างตัวกรอง
-              </button>
-              {filterDateStart && filterDateEnd && (
-                <div className="ml-2 text-sm text-gray-600">
-                  กำลังกรอง:{" "}
-                  {new Date(filterDateStart).toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}{" "}
-                  ถึง{" "}
-                  {new Date(filterDateEnd).toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+
           <Table className="rounded-lg border">
             <TableHeader>
               <TableRow className="">
@@ -687,28 +690,34 @@ const EquipmentBow: React.FC = () => {
                           )
                         : "-"}
                     </TableCell>
-                    <TableCell>{item.user.name}</TableCell>
+                    <TableCell>
+                      <span className="whitespace-pre">{item.user.name}</span>
+                    </TableCell>
                     <TableCell>
                       {item.approval_status_borrow.id === 1 ? (
                         <button
                           onClick={() => handleViewPDF(item.doc_borrow)}
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
                         >
-                          ดูเอกสารการยืม
+                          <span className="whitespace-pre px-4">
+                            ดูเอกสารการยืม
+                          </span>
                         </button>
                       ) : item.approval_status_borrow.id != 2 ? (
                         <button
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none"
                           disabled
                         >
-                          รออนุมัติ
+                          <span className="whitespace-pre px-4">รออนุมัติ</span>
                         </button>
                       ) : (
                         <button
                           disabled
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-gray-500 px-4 py-2 text-white"
                         >
-                          ไม่อนุมัติ
+                          <span className="whitespace-pre px-4">
+                            ไม่อนุมัติ
+                          </span>
                         </button>
                       )}
                     </TableCell>
@@ -718,24 +727,30 @@ const EquipmentBow: React.FC = () => {
                           onClick={() => handleViewPDF(item.doc_return)}
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
                         >
-                          ดูเอกสารการยืม
+                          <span className="whitespace-pre px-4">
+                            ดูเอกสารการยืม
+                          </span>
                         </button>
                       ) : item.approval_status_return.id != 2 &&
                         item.approval_status_borrow.id != 2 ? (
                         <button
-                          className="mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none"
+                          className="wh mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none"
                           disabled
                         >
-                          {item.date_return <= new Date().toISOString()
-                            ? "รออนุมัติ"
-                            : "ยังไม่ถึงวันคืน"}
+                          <span className="whitespace-pre px-4">
+                            {item.date_return <= new Date().toISOString()
+                              ? "รออนุมัติ"
+                              : "ยังไม่ถึงวันคืน"}
+                          </span>
                         </button>
                       ) : (
                         <button
                           disabled
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-gray-500 px-4 py-2 text-white"
                         >
-                          ไม่อนุมัติ
+                          <span className="whitespace-pre px-4">
+                            ไม่อนุมัติ
+                          </span>
                         </button>
                       )}
                     </TableCell>

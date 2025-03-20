@@ -141,6 +141,26 @@ const EquipmentBow: React.FC = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+
+    if (user.position_fac.id === 3) {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/borrow-list/branch/1`,
+        );
+        const result = await response.json();
+  
+        if (response.ok) {
+          setData([...result.data, ...data]);
+          setFilteredData([...result.data, ...data]);
+        } else {
+          setData([]);
+          setFilteredData([]);
+          toast.error("ไม่พบข้อมูล");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
   };
 
   const fetchEquipment = async () => {
@@ -345,6 +365,10 @@ const EquipmentBow: React.FC = () => {
       toast.error("เกิดข้อผิดพลาดในการดึงข้อมูลรายละเอียดการยืม");
       return;
     }
+  };
+  
+  const resetData = () => {
+    fetchBorrowListDetail();
   };
 
   const handleEdit = (data: BorrowList) => {
@@ -591,7 +615,7 @@ const EquipmentBow: React.FC = () => {
         </h1>
         <div className="mt-8 flex flex-col gap-4">
           <div className="flex justify-between flex-col md:flex-row gap-4">
-            <div className="flex gap-2">
+            <div className="flex flex-col lg:flex-row gap-2">
               <Input
                 type="text"
                 placeholder="ค้นหา..."
@@ -601,7 +625,7 @@ const EquipmentBow: React.FC = () => {
               />
               <button
                 onClick={() => setShowDateFilter(!showDateFilter)}
-                className="flex w-fit items-center gap-2 rounded-md border bg-gray-100 px-4 text-gray-700 transition-all hover:bg-gray-200"
+                className="flex w-full lg:w-fit h-9 items-center justify-between gap-2 rounded-md border bg-gray-100 px-4 text-gray-700 transition-all hover:bg-gray-200"
               >
                 <span>กรองตามวันที่ยืม</span>
                 <IoIosArrowDown
@@ -612,7 +636,7 @@ const EquipmentBow: React.FC = () => {
           </div>
           {/* ส่วนของตัวกรองวันที่ */}
           {showDateFilter && (
-            <div className="flex items-end gap-4 rounded-lg bg-gray-50 p-4">
+            <div className="flex flex-col lg:flex-row items-start gap-4 rounded-lg bg-gray-50 p-4">
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="filter-date-start"
@@ -716,7 +740,11 @@ const EquipmentBow: React.FC = () => {
                           )
                         : "-"}
                     </TableCell>
-                    <TableCell>{item.user.name}</TableCell>
+                    <TableCell>
+                      <span className="whitespace-pre lg:whitespace-normal">
+                        {item.user.name}
+                      </span>
+                    </TableCell>
                     <TableCell>
                       <span className="flex justify-center text-center">
                         {item.date_return &&
@@ -731,21 +759,27 @@ const EquipmentBow: React.FC = () => {
                           onClick={() => handleViewPDF(item.doc_borrow)}
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
                         >
-                          ดูเอกสารการยืม
+                          <span className="whitespace-pre px-4">
+                            ดูเอกสารการยืม
+                          </span>
                         </button>
                       ) : item.approval_status_borrow.id != 2 ? (
                         <button
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-yellow-500 px-4 py-2 text-white outline-none hover:bg-yellow-600"
                           onClick={() => handleShowDetail(item.id)}
                         >
-                          รออนุมัติ
+                          <span className="whitespace-pre px-4">
+                            รออนุมัติ
+                          </span>
                         </button>
                       ) : (
                         <button
                           disabled
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-gray-500 px-4 py-2 text-white"
                         >
-                          ไม่อนุมัติ
+                          <span className="whitespace-pre px-4">
+                            ไม่อนุมัติ
+                          </span>
                         </button>
                       )}
                     </TableCell>
@@ -755,7 +789,9 @@ const EquipmentBow: React.FC = () => {
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-primary_1 px-4 py-2 text-white hover:bg-dark"
                           onClick={() => handleViewPDF(item.doc_return)}
                         >
-                          ดูเอกสารการคืน
+                          <span className="whitespace-pre px-4">
+                            ดูเอกสารการคืน
+                          </span>
                         </button>
                       ) : item.approval_status_borrow.id != 2 ? (
                         <button
@@ -766,16 +802,20 @@ const EquipmentBow: React.FC = () => {
                             !item.date_return
                           }
                         >
-                          {item.date_return <= new Date().toISOString()
-                            ? "รออนุมัติ"
-                            : "ยังไม่ถึงวันคืน"}
+                          <span className="whitespace-pre px-4">
+                            {item.date_return <= new Date().toISOString()
+                              ? "รออนุมัติ"
+                              : "ยังไม่ถึงวันคืน"}
+                          </span>
                         </button>
                       ) : (
                         <button
                           disabled
                           className="mx-auto flex w-[70%] justify-center rounded-md bg-gray-500 px-4 py-2 text-white"
                         >
-                          ไม่อนุมัติ
+                          <span className="whitespace-pre px-4">
+                            ไม่อนุมัติ
+                          </span>
                         </button>
                       )}
                     </TableCell>

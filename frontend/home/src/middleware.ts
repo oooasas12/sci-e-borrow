@@ -117,7 +117,7 @@ export async function middleware(request: NextRequest) {
 
     // เช็คการเข้าถึงหน้า admin
     if (pathname.startsWith("/admin")) {
-      if (branchId !== 5 && positionFacId !== 2 && positionFacId !== 1 && positionFacId !== 6) {
+      if (branchId !== 1 && branchId !== 2 && positionFacId !== 2 && positionFacId !== 3) {
         console.log("not admin");
         handleLogout();
         return NextResponse.redirect(new URL("/login?not_admin=true", request.url));
@@ -135,14 +135,14 @@ export async function middleware(request: NextRequest) {
 
     // ถ้าไม่ใช่ทั้ง admin และ approval จะเข้าถึงได้เฉพาะหน้า user เท่านั้น
     if (pathname.startsWith("/user")) {
-      if (branchId == 5 || branchId == 2 || positionFacId == 1 || positionFacId == 2 || positionFacId == 6) {
+      if (branchId == 1 || branchId == 2 || positionFacId == 1 || positionFacId == 2 || positionFacId == 3) {
         handleLogout();
         return NextResponse.redirect(new URL("/login?not_user=true", request.url));
       }
     }
   } catch {
     // ถ้า user data ไม่ถูกต้อง ให้ redirect ไปหน้า login
-    return NextResponse.redirect(new URL("/login?not_useraaa=true", request.url));
+    return NextResponse.redirect(new URL("/login?not_user=true", request.url));
   }
 
   return response;

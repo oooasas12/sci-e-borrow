@@ -41,6 +41,7 @@ type UpdateStatusBorrow struct {
 type UpdateStatusReturn struct {
 	ApprovalStatusReturnID uint                  `form:"approval_status_return_id" binding:"required"`
 	File                   *multipart.FileHeader `form:"file" binding:"omitempty"`
+	EquipmentIDs           []uint                `form:"equipment_ids[]"`
 }
 
 type UpdateByNameBorrowListForm struct {

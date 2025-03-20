@@ -141,8 +141,8 @@ export const Sidebar = () => {
     },
   ];
   return (
-    <div className="my-scroll sidebar top-0 w-full break-words bg-primary_1 relative lg:min-h-screen lg:w-64 lg:min-w-64">
-      <div className="w-62 fixed flex h-screen flex-col justify-between overflow-auto">
+    <div className="my-scroll sidebar top-0 w-full break-words  relative lg:min-h-screen lg:w-64 lg:min-w-64">
+      <div className="w-62 fixed flex h-screen flex-col justify-between bg-primary_1 overflow-auto">
         <div className="flex flex-col gap-2">
           <div className="relative flex flex-row items-center px-6 py-4 lg:hidden">
             <div className="flex items-center gap-4">
@@ -292,15 +292,15 @@ export const Sidebar = () => {
         <div className="w-62 flex flex-col justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full">
-              <div className="flex cursor-pointer flex-col gap-2">
+              <div className="flex cursor-pointer flex-col gap-2 w-60">
                 <div className="flex items-center gap-2 px-4 py-2 text-white">
                   <div className="flex items-center justify-center rounded-full bg-gray-300 px-6 py-4">
                     <span className="text-2xl font-bold">
                       {user.name ? user.name.charAt(0).toUpperCase() : ""}
                     </span>
                   </div>
-                  <div className="flex flex-col items-start">
-                    <span className="text-base text-white">
+                  <div className="flex flex-col items-start ">
+                    <span className="text-base text-white line-clamp-2 text-left">
                       {user.name ? user.name : ""}
                     </span>
                     <span className="text-xs text-gray-400">

@@ -323,37 +323,27 @@ const Settime: React.FC = () => {
         </h1>
         <div className="mt-8 flex flex-col gap-4">
           <div className="flex justify-between flex-col md:flex-row gap-4">
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="ค้นหา..."
-                className="w-[300px] min-w-[250px] bg-white"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col lg:flex-row gap-2">
+                <Input
+                  type="text"
+                  placeholder="ค้นหา..."
+                  className="w-[300px] min-w-[250px] bg-white"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button
                 onClick={() => setShowDateFilter(!showDateFilter)}
-                className="flex w-fit items-center gap-2 rounded-md border bg-gray-100 px-4 text-gray-700 transition-all hover:bg-gray-200"
+                className="flex w-full lg:w-fit h-9 items-center justify-between gap-2 rounded-md border bg-gray-100 px-4 text-gray-700 transition-all hover:bg-gray-200"
               >
                 <span>กรองตามวันที่</span>
                 <IoIosArrowDown
                   className={`transition-transform ${showDateFilter ? "rotate-180" : ""}`}
                 />
-              </button>
-            </div>
-            <div className="flex">
-              <button
-                onClick={() => setOpenInsertData(true)}
-                className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
-              >
-                <span>เพิ่มรายการ</span>
-              </button>
-            </div>
-          </div>
-
-          {/* ส่วนของตัวกรองวันที่ */}
-          {showDateFilter && (
-            <div className="flex items-end gap-4 rounded-lg bg-gray-50 p-4">
+                </button>
+              </div>
+              {showDateFilter && (
+            <div className="flex flex-col lg:flex-row items-start gap-4 rounded-lg bg-gray-50 p-4">
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="filter-date-start"
@@ -409,6 +399,19 @@ const Settime: React.FC = () => {
               )}
             </div>
           )}
+            </div>
+            <div className="flex">
+              <button
+                onClick={() => setOpenInsertData(true)}
+                className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-primary_1 px-6 py-1.5 text-white transition-all hover:bg-dark"
+              >
+                <span>เพิ่มรายการ</span>
+              </button>
+            </div>
+          </div>
+
+          {/* ส่วนของตัวกรองวันที่ */}
+          
           <Table className="rounded-lg border">
             <TableHeader>
               <TableRow className="">

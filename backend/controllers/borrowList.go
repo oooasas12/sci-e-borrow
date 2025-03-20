@@ -405,30 +405,92 @@ func (db *BorrowList) UpdateStatusReturn(ctx *gin.Context) {
 		updates["doc_return"] = fileName
 	}
 
+	// ตรวจสอบว่ามีการส่ง equipment_ids มาหรือไม่
+	equipmentIDs := form.EquipmentIDs
+	if len(equipmentIDs) == 0 {
+		// กรณีไม่มีการระบุ equipment_ids อัพเดตทุกรายการ (เข้ากับโค้ดเดิม)
+		var allBorrowListDetails []models.BorrowListDetail
+		if err := db.DB.Where("borrow_list_id = ?", id).Find(&allBorrowListDetails).Error; err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
+			return
+		}
+
+		for _, detail := range allBorrowListDetails {
+			equipmentIDs = append(equipmentIDs, detail.ID)
+		}
+	}
+
 	// อัพเดตข้อมูลใน DB
 	if err := db.DB.Model(&borrowList).Updates(updates).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Update BorrowList not found"})
 		return
 	}
 
-	// ถ้า ApprovalStatusReturnID = 1 ให้อัพเดตสถานะอุปกรณ์
-	if form.ApprovalStatusReturnID == 1 {
-		var borrowListDetails []models.BorrowListDetail
-		if err := db.DB.Where("borrow_list_id = ?", id).Find(&borrowListDetails).Error; err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList not found"})
+	// รับข้อมูลรายละเอียดทั้งหมดของการยืม
+	var allBorrowListDetails []models.BorrowListDetail
+	if err := db.DB.Where("borrow_list_id = ?", id).Find(&allBorrowListDetails).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "BorrowList details not found"})
+		return
+	}
+
+	// แยกรายการที่จะคืนและไม่คืน
+	var detailsToReturn []models.BorrowListDetail
+	var detailsNotReturning []models.BorrowListDetail
+
+	for _, detail := range allBorrowListDetails {
+		shouldReturn := false
+		for _, eqID := range equipmentIDs {
+			if detail.ID == eqID {
+				shouldReturn = true
+				break
+			}
+		}
+
+		if shouldReturn {
+			detailsToReturn = append(detailsToReturn, detail)
+		} else {
+			detailsNotReturning = append(detailsNotReturning, detail)
+		}
+	}
+
+	// ถ้ามีรายการที่ไม่คืน
+	if len(detailsNotReturning) > 0 {
+		// สร้าง BorrowList ใหม่สำหรับรายการที่ยังไม่คืน
+		newBorrowList := models.BorrowList{
+			DateBorrow:             borrowList.DateBorrow,
+			DateReturn:             borrowList.DateReturn,
+			DocBorrow:              borrowList.DocBorrow,
+			ApprovalStatusBorrowID: borrowList.ApprovalStatusBorrowID,
+			ApprovalStatusReturnID: 3, // รอการคืน
+			UserID:                 borrowList.UserID,
+		}
+
+		if err := db.DB.Create(&newBorrowList).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new BorrowList for remaining items"})
 			return
 		}
 
-		// อัปเดต EquipmentStatusID เป็น 1 สำหรับ Equipment ทั้งหมดที่เกี่ยวข้อง
+		// อัพเดต BorrowListDetail ของรายการที่ยังไม่คืนให้ชี้ไปที่ BorrowList ใหม่
+		for _, detail := range detailsNotReturning {
+			if err := db.DB.Model(&detail).Update("borrow_list_id", newBorrowList.ID).Error; err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update BorrowListDetail"})
+				return
+			}
+		}
+	}
+
+	// ถ้า ApprovalStatusReturnID = 1 (อนุมัติการคืน) ให้อัพเดตสถานะอุปกรณ์
+	if form.ApprovalStatusReturnID == 1 && len(detailsToReturn) > 0 {
+		// อัปเดต EquipmentStatusID เป็น 1 สำหรับ Equipment ที่คืน
 		var equipment models.Equipment
-		equipmentIDs := []uint{}
-		for _, detail := range borrowListDetails {
-			equipmentIDs = append(equipmentIDs, detail.EquipmentID)
+		equipmentIDsToUpdate := []uint{}
+		for _, detail := range detailsToReturn {
+			equipmentIDsToUpdate = append(equipmentIDsToUpdate, detail.EquipmentID)
 		}
 
-		if len(equipmentIDs) > 0 {
+		if len(equipmentIDsToUpdate) > 0 {
 			if err := db.DB.Model(&equipment).
-				Where("id IN ?", equipmentIDs).
+				Where("id IN ?", equipmentIDsToUpdate).
 				Update("equipment_status_id", 1).Error; err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update EquipmentStatus"})
 				return
@@ -532,4 +594,44 @@ func (db *BorrowList) GetPDFFile(ctx *gin.Context) {
 
 	// ส่งไฟล์กลับไป
 	ctx.File(filePath)
+}
+
+func (db *BorrowList) FindLastUserBorrowedEquipment(ctx *gin.Context) {
+	// รับ equipment_id จากพารามิเตอร์
+	equipmentID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "รหัสอุปกรณ์ไม่ถูกต้อง"})
+		return
+	}
+
+	// ดึงข้อมูล BorrowListDetail ล่าสุดของอุปกรณ์นี้
+	var borrowListDetail models.BorrowListDetail
+	if err := db.DB.Where("equipment_id = ?", equipmentID).
+		Order("created_at DESC").
+		First(&borrowListDetail).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "ไม่พบข้อมูลการยืมอุปกรณ์นี้"})
+		return
+	}
+
+	// ดึงข้อมูล BorrowList ที่เกี่ยวข้อง
+	var borrowList models.BorrowList
+	if err := db.DB.Preload("User").
+		Preload("User.PositionFac").
+		Preload("User.PositionBranch").
+		Preload("User.Branch").
+		Preload("ApprovalStatusBorrow").
+		Preload("ApprovalStatusReturn").
+		First(&borrowList, borrowListDetail.BorrowListID).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "ไม่พบข้อมูลการยืม"})
+		return
+	}
+
+	// สร้าง response
+	var response models.BorrowListResponse
+	copier.Copy(&response, &borrowList)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":    response,
+		"message": "ดึงข้อมูลผู้ยืมล่าสุดสำเร็จ",
+	})
 }
